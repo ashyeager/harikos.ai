@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.next/
+coverage/
+.tmp/
+.harikos/
+*.tsbuildinfo
+*.log
+.env
+.env.*
+!.env.example

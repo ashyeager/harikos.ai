@@ -1,0 +1,33 @@
+{
+  "name": "harikos-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first, evidence-backed project truth for AI coding agents.",
+  "type": "module",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm --filter @harikos/db build && pnpm --filter @harikos/core build && pnpm --filter @harikos/cli build && pnpm --filter @harikos/mcp build && pnpm --filter @harikos/web build",
+    "clean": "pnpm -r --if-present clean",
+    "demo": "tsx scripts/demo-transition.ts",
+    "dev:web": "pnpm --filter @harikos/web dev",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc -b --pretty false",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "mcp:smoke": "tsx scripts/mcp-smoke.ts"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "eslint": "^9.39.5",
+    "tsx": "^4.23.12",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.11"
+  }
+}
