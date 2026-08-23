@@ -210,6 +210,9 @@ button { color: inherit; }
 .page-header h1 { margin: 8px 0 8px; font-size: clamp(32px, 3.5vw, 50px); line-height: 1.02; letter-spacing: -.055em; }
 .page-header p { max-width: 780px; margin: 0; color: var(--muted); line-height: 1.55; }
 .page-action { flex: 0 0 auto; }
+.project-actions { display: flex; align-items: flex-start; gap: 10px; }
+.rescan-control { display: grid; }
+.dark-spinner { border-color: rgba(8,8,12,.18); border-top-color: currentColor; }
 .panel { border: 1px solid var(--line); background: white; }
 .panel-heading { min-height: 70px; padding: 18px 21px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); }
 .panel-heading h2 { margin: 4px 0 0; font-size: 18px; letter-spacing: -.025em; }
@@ -538,6 +541,8 @@ button { color: inherit; }
   .page-header { display: grid; gap: 20px; }
   .page-header h1 { font-size: 35px; }
   .page-action, .page-action .button { width: 100%; }
+  .project-actions { display: grid; width: 100%; }
+  .rescan-control { width: 100%; }
   .metric-grid { grid-template-columns: 1fr 1fr; }
   .metric-grid article { min-height: 110px; padding: 15px; }
   .metric-grid article > strong { font-size: 31px; }

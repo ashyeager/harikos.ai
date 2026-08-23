@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { AppShell } from "../../../../components/app-shell";
 import { PageHeader } from "../../../../components/page-header";
+import { RescanProjectButton } from "../../../../components/rescan-project-button";
 import { StatusBadge } from "../../../../components/status-badge";
 import { TruthCard } from "../../../../components/truth-card";
 import { projectSnapshot } from "../../../../lib/project-data";
@@ -20,7 +21,12 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
         eyebrow={`${snapshot.mode.toUpperCase()} REPOSITORY`}
         title={snapshot.repository.name}
         copy={`${snapshot.repository.owner ? `${snapshot.repository.owner} / ` : ""}${snapshot.repository.defaultBranch} · verified against ${snapshot.repository.headSha.slice(0, 12)}`}
-        action={<Link className="button button-dark" href={`/app/project/${snapshot.projectId}/context`}>Prepare agent context <span>→</span></Link>}
+        action={(
+          <div className="project-actions">
+            <Link className="button button-dark" href={`/app/project/${snapshot.projectId}/context`}>Prepare agent context <span>→</span></Link>
+            {snapshot.mode === "github" ? <RescanProjectButton projectId={snapshot.projectId} /> : null}
+          </div>
+        )}
       />
       <div className="overview-status-bar">
         <div><i /><span><strong>Project Truth is current</strong><small>Last scan {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
