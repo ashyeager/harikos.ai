@@ -1,6 +1,6 @@
 export function LandingDemo() {
   return (
-    <div className="truth-terminal" aria-label="HARIKOS truth update example">
+    <section className="truth-terminal" aria-label="HARIKOS truth update example">
       <div className="terminal-bar">
         <div className="window-dots" aria-hidden="true">
           <span />
@@ -39,6 +39,6 @@ export function LandingDemo() {
           <i className="pulse-cursor" />
         </div>
       </div>
-    </div>
+    </section>
   );
 }

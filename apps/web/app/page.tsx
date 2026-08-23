@@ -101,7 +101,7 @@ export default function LandingPage() {
             <div><strong>Repository monitoring</strong><small>Semantic changes, not noisy file counts</small></div>
             <span className="monitor-live"><i /> WATCHING MAIN</span>
           </div>
-          <div className="monitor-chart" aria-label="Project truth verification timeline">
+          <div className="monitor-chart" role="img" aria-label="Project truth verification timeline">
             {[42, 58, 51, 78, 64, 86].map((height, index) => (
               <div className={index === 3 ? "alert-bar" : ""} key={height + index} style={{ "--bar-height": `${height}%` } as React.CSSProperties}>
                 {index === 3 ? <span>DRIFT</span> : null}
