@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "pnpm --filter @harikos/db build && pnpm --filter @harikos/core build && pnpm --filter @harikos/cli build && pnpm --filter @harikos/mcp build && pnpm --filter @harikos/web build",
+    "build:web": "pnpm --filter @harikos/db build && pnpm --filter @harikos/core build && pnpm --filter @harikos/web build",
     "build:phase1": "pnpm --filter \"@harikos/cli...\" run build",
     "clean": "pnpm -r --if-present run clean",
     "demo": "tsx scripts/demo-transition.ts",

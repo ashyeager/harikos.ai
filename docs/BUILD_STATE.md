@@ -43,5 +43,6 @@ pnpm demo
 
 ## Delivery boundary
 
-This stage delivers the validated implementation to GitHub only. No Vercel or
-other production deployment is performed.
+The repository includes a Vercel monorepo build configuration for the Next.js
+application under `apps/web`. Production deployment and its live verification
+are tracked as release evidence rather than inferred from a local build.

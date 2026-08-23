@@ -70,4 +70,12 @@ authentication provider, applies a Supabase migration, and proves that:
 - [`docs/MVP.md`](docs/MVP.md)
 - [`docs/BUILD_STATE.md`](docs/BUILD_STATE.md)
 
-This repository is intentionally not deployed by the local build workflow.
+## Deploy to Vercel
+
+Create a Vercel project with `apps/web` as its Root Directory. The checked-in
+`apps/web/vercel.json` builds the web application together with its required
+`@harikos/db` and `@harikos/core` workspace packages.
+
+Configure the server-side values listed in `.env.example` through Vercel's
+environment settings; never commit their values. GitHub OAuth/App and managed
+PostgreSQL features remain visibly unavailable until those credentials exist.
