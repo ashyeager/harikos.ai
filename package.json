@@ -10,16 +10,20 @@
   },
   "scripts": {
     "build": "pnpm --filter @harikos/db build && pnpm --filter @harikos/core build && pnpm --filter @harikos/cli build && pnpm --filter @harikos/mcp build && pnpm --filter @harikos/web build",
+    "build:phase1": "pnpm --filter \"@harikos/cli...\" run build",
     "clean": "pnpm -r --if-present clean",
     "demo": "tsx scripts/demo-transition.ts",
     "dev:web": "pnpm --filter @harikos/web dev",
     "lint": "eslint . --max-warnings=0",
+    "pretest": "pnpm run build:phase1",
     "typecheck": "tsc -b --pretty false",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --configLoader runner",
+    "test:watch": "vitest --configLoader runner",
     "mcp:smoke": "tsx scripts/mcp-smoke.ts"
   },
   "devDependencies": {
+    "@harikos/cli": "workspace:*",
+    "@rolldown/binding-wasm32-wasi": "1.2.5",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",

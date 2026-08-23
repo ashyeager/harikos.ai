@@ -6,7 +6,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "harikos": "./dist/index.js"
+    "harikos": "./bin/harikos.js"
   },
   "scripts": {
     "build": "tsc -b",
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@harikos/core": "workspace:*",
-    "commander": "^14.0.3",
-    "zod": "^4.4.3"
+    "commander": "^14.0.3"
   }
 }
