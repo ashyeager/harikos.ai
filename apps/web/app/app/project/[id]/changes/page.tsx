@@ -11,6 +11,7 @@ export default async function ChangesPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const snapshot = await projectSnapshot(id);
   if (!snapshot) notFound();
+  const openContradictions = snapshot.contradictions.filter((item) => item.status === "open");
   return (
     <AppShell snapshot={snapshot}>
       <PageHeader eyebrow="SEMANTIC HISTORY" title="Changes & drift" copy="Meaningful changes to project understanding, with old truth preserved and stale evidence exposed." />
@@ -29,10 +30,11 @@ export default async function ChangesPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
         <aside className="panel contradiction-panel">
-          <div className="panel-heading"><div><span>ACTIVE DRIFT</span><h2>Contradictions</h2></div><b>{snapshot.contradictions.length}</b></div>
+          <div className="panel-heading"><div><span>CONTRADICTIONS</span><h2>Current and resolved</h2></div><b>{openContradictions.length} OPEN</b></div>
           {snapshot.contradictions.map((item) => (
-            <article key={item.id}><span>!</span><div><strong>Documentation differs from code</strong><p>{item.reason}</p><small>{item.status.toUpperCase()} · REVIEW RECOMMENDED</small></div></article>
+            <article key={item.id}><span>{item.status === "open" ? "!" : "✓"}</span><div><strong>{item.status === "open" ? "Active contradiction" : "Resolved transition"}</strong><p>{item.reason}</p><small>{item.status === "open" ? "OPEN · REVIEW RECOMMENDED" : "RESOLVED · HISTORY PRESERVED"}</small></div></article>
           ))}
+          {snapshot.contradictions.length === 0 ? <p>No contradictions have been recorded.</p> : null}
         </aside>
       </section>
     </AppShell>

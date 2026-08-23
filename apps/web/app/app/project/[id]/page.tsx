@@ -15,6 +15,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
   const snapshot = await projectSnapshot(id);
   if (!snapshot) notFound();
   const current = snapshot.truths.filter((claim) => claim.status === "verified" || claim.status === "likely");
+  const openContradictions = snapshot.contradictions.filter((item) => item.status === "open");
   return (
     <AppShell snapshot={snapshot}>
       <PageHeader
@@ -32,7 +33,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
         <div><i /><span><strong>Project Truth is current</strong><small>Last scan {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
         <div><span>FILES ANALYZED</span><strong>{snapshot.sourceCount}</strong></div>
         <div><span>VERIFIED</span><strong>{current.filter((claim) => claim.status === "verified").length}</strong></div>
-        <div><span>DRIFT</span><strong>{snapshot.contradictions.length}</strong></div>
+        <div><span>DRIFT</span><strong>{openContradictions.length}</strong></div>
       </div>
       <section className="truth-card-grid overview-cards">
         {current.slice(0, 6).map((claim) => <TruthCard claim={claim} projectId={snapshot.projectId} key={claim.id} />)}
@@ -51,7 +52,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
           {snapshot.changes[0] ? <>
             <p>{snapshot.changes[0].summary}</p>
             <div className="mini-transition"><span>{snapshot.changes[0].previousValue}</span><b>→</b><strong>{snapshot.changes[0].currentValue}</strong></div>
-            <StatusBadge status={snapshot.contradictions.length ? "contradicted" : "verified"} />
+            <StatusBadge status={openContradictions.length ? "contradicted" : "verified"} />
             <Link href={`/app/project/${snapshot.projectId}/changes`}>Inspect the change <b>→</b></Link>
           </> : <p>Rescan after a repository change to build semantic history.</p>}
         </div>
