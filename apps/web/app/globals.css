@@ -148,7 +148,7 @@ button { color: inherit; }
 .final-cta h2 { margin: 0; font-size: clamp(45px, 5vw, 74px); letter-spacing: -.06em; }
 .marketing-footer { min-height: 180px; padding: 45px clamp(24px, 4vw, 64px); display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 50px; background: #08080a; color: white; border-top: 1px solid #27272c; }
 .marketing-footer > div:first-child { display: grid; gap: 12px; }
-.marketing-footer small, .marketing-footer > span { color: #73737c; font-family: var(--mono); font-size: 8px; letter-spacing: .08em; }
+.marketing-footer small, .marketing-footer > span { color: #8e8e98; font-family: var(--mono); font-size: 8px; letter-spacing: .08em; }
 .marketing-footer > div:nth-child(2) { display: flex; gap: 28px; color: #b1b1b9; font-family: var(--mono); font-size: 10px; }
 
 /* Authentication */
