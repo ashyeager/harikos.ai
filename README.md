@@ -1,5 +1,7 @@
 # HARIKOS AI
 
+Production: [harikos-ai.vercel.app](https://harikos-ai.vercel.app)
+
 HARIKOS AI is a cloud-first Project Truth layer for AI-built software. It
 collects bounded repository evidence, derives typed claims, preserves temporal
 history, surfaces contradictions, and prepares current context for coding

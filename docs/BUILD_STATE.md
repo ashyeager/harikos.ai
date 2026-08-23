@@ -19,9 +19,11 @@ Updated: August 23, 2026
 ## Credential-dependent
 
 The GitHub OAuth/App and PostgreSQL implementations are real, but this checkout
-does not contain credentials. Their live external handshake and managed database
-connection therefore remain unverified. The UI reports these boundaries as
-`NOT CONFIGURED` instead of simulating success.
+does not contain credentials. Production has a generated session secret and its
+canonical public URL configured; GitHub credentials and `DATABASE_URL` are not
+configured. Their live external handshake and managed database connection
+therefore remain unverified. The UI reports these boundaries as `NOT CONFIGURED`
+instead of simulating success.
 
 Required values are documented in `.env.example`:
 
@@ -46,3 +48,5 @@ pnpm demo
 The repository includes a Vercel monorepo build configuration for the Next.js
 application under `apps/web`. Production deployment and its live verification
 are tracked as release evidence rather than inferred from a local build.
+
+Canonical production URL: <https://harikos-ai.vercel.app>
