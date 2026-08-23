@@ -21,17 +21,19 @@ import {
   analyzeRepository,
   createGitHubInstallationToken,
   GitHubRepositorySource,
+  listGitHubInstallationRepositories,
   projectSnapshotSchema,
   projectTruthClaimSchema,
   readGitHubAppConfig,
   type CandidateEvidence,
   type ContextPack,
+  type GitHubInstallation,
   type ProjectSnapshot,
   type ProjectTruthClaim,
 } from "@harikos/core";
 import { z } from "zod";
 
-import type { WebSession } from "./session";
+import type { AuthIdentity } from "./auth";
 
 export const createCloudProjectSchema = z.object({
   installationId: z.string().regex(/^\d+$/u),
@@ -51,64 +53,111 @@ export class RepositoryAuthorizationError extends Error {
   }
 }
 
-const authorizedRepositoriesSchema = z.object({
-  repositories: z.array(
-    z.object({
-      id: z.number().int().positive(),
-      name: z.string(),
-      private: z.boolean(),
-      default_branch: z.string(),
-      owner: z.object({ login: z.string() }),
-    }),
-  ),
-});
-
-export async function verifyRepositorySelection(
-  session: WebSession,
+export function verifyRepositorySelection(
+  repositories: Awaited<ReturnType<typeof listGitHubInstallationRepositories>>,
   selection: CreateCloudProjectInput,
-  fetcher: typeof fetch = fetch,
-): Promise<void> {
-  for (let page = 1; page <= 10; page += 1) {
-    const response = await fetcher(
-      `https://api.github.com/user/installations/${selection.installationId}/repositories?per_page=100&page=${page}`,
-      {
-        headers: {
-          Accept: "application/vnd.github+json",
-          Authorization: `Bearer ${session.accessToken}`,
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-        cache: "no-store",
-      },
-    );
-    if (!response.ok) {
-      throw new RepositoryAuthorizationError("GitHub could not verify access to that installation.");
+): void {
+  const match = repositories.find(
+    (repository) => String(repository.id) === selection.githubRepositoryId,
+  );
+  if (match) {
+    if (
+      match.owner.login !== selection.owner ||
+      match.name !== selection.name ||
+      match.default_branch !== selection.defaultBranch ||
+      match.private !== selection.private
+    ) {
+      throw new RepositoryAuthorizationError(
+        "Repository metadata did not match GitHub's authorized record.",
+      );
     }
-    const body = authorizedRepositoriesSchema.parse(await response.json());
-    const match = body.repositories.find(
-      (repository) => String(repository.id) === selection.githubRepositoryId,
-    );
-    if (match) {
-      if (
-        match.owner.login !== selection.owner ||
-        match.name !== selection.name ||
-        match.default_branch !== selection.defaultBranch ||
-        match.private !== selection.private
-      ) {
-        throw new RepositoryAuthorizationError("Repository metadata did not match GitHub's authorized record.");
-      }
-      return;
-    }
-    if (body.repositories.length < 100) break;
+    return;
   }
-  throw new RepositoryAuthorizationError("That repository is not authorized for this GitHub user and installation.");
+  throw new RepositoryAuthorizationError(
+    "That repository is not authorized for this GitHub user and installation.",
+  );
 }
 
 function databaseConfig() {
   const config = readCloudDatabaseConfig();
   if (!config) {
-    throw new Error("PostgreSQL is not configured. Add DATABASE_URL to create cloud projects.");
+    throw new Error("PostgreSQL is not configured. Add DATABASE_URL or POSTGRES_URL.");
   }
   return config;
+}
+
+function openConfiguredCloudDatabase() {
+  return openCloudDatabase(databaseConfig(), { migrate: false });
+}
+
+async function ensureCloudUser(
+  connection: Awaited<ReturnType<typeof openCloudDatabase>>,
+  identity: AuthIdentity,
+) {
+  const [user] = await connection.db
+    .insert(cloudUsers)
+    .values({
+      supabaseUserId: identity.id,
+      githubUserId: identity.githubUserId,
+      login: identity.login,
+      displayName: identity.displayName,
+      avatarUrl: identity.avatarUrl,
+    })
+    .onConflictDoUpdate({
+      target: cloudUsers.githubUserId,
+      set: {
+        supabaseUserId: identity.id,
+        login: identity.login,
+        displayName: identity.displayName,
+        avatarUrl: identity.avatarUrl,
+      },
+    })
+    .returning();
+  if (!user) throw new Error("Could not persist the authenticated user.");
+  return user;
+}
+
+export async function saveCloudInstallation(
+  identity: AuthIdentity,
+  installation: GitHubInstallation,
+): Promise<void> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const user = await ensureCloudUser(connection, identity);
+    const installationId = String(installation.id);
+    const [existing] = await connection.db
+      .select()
+      .from(cloudRepositoryInstallations)
+      .where(eq(cloudRepositoryInstallations.installationId, installationId));
+    if (existing && existing.ownerId !== user.id) {
+      throw new RepositoryAuthorizationError(
+        "That GitHub installation is already owned by another HARIKOS account.",
+      );
+    }
+    if (existing) {
+      await connection.db
+        .update(cloudRepositoryInstallations)
+        .set({
+          accountId: String(installation.account.id),
+          accountLogin: installation.account.login,
+          accountType: installation.account.type,
+          repositorySelection: installation.repository_selection,
+          updatedAt: new Date(),
+        })
+        .where(eq(cloudRepositoryInstallations.id, existing.id));
+      return;
+    }
+    await connection.db.insert(cloudRepositoryInstallations).values({
+      ownerId: user.id,
+      installationId,
+      accountId: String(installation.account.id),
+      accountLogin: installation.account.login,
+      accountType: installation.account.type,
+      repositorySelection: installation.repository_selection,
+    });
+  } finally {
+    await connection.close();
+  }
 }
 
 function namespaceId(projectId: string, id: string): string {
@@ -141,53 +190,54 @@ function namespaceSnapshot(snapshot: ProjectSnapshot, projectId: string): Projec
 }
 
 export async function createCloudProject(
-  session: WebSession,
+  identity: AuthIdentity,
   input: CreateCloudProjectInput,
 ): Promise<{ id: string; name: string }> {
   const parsed = createCloudProjectSchema.parse(input);
-  await verifyRepositorySelection(session, parsed);
-  const connection = await openCloudDatabase(databaseConfig());
+  const appConfig = readGitHubAppConfig();
+  if (!appConfig) throw new Error("GitHub App credentials are not configured.");
+  const connection = await openConfiguredCloudDatabase();
   try {
+    const [installation] = await connection.db
+      .select({
+        id: cloudRepositoryInstallations.id,
+        ownerId: cloudRepositoryInstallations.ownerId,
+        installationId: cloudRepositoryInstallations.installationId,
+      })
+      .from(cloudRepositoryInstallations)
+      .innerJoin(cloudUsers, eq(cloudRepositoryInstallations.ownerId, cloudUsers.id))
+      .where(
+        and(
+          eq(cloudRepositoryInstallations.installationId, parsed.installationId),
+          eq(cloudUsers.supabaseUserId, identity.id),
+        ),
+      );
+    if (!installation) {
+      throw new RepositoryAuthorizationError(
+        "That GitHub installation is not authorized for this account.",
+      );
+    }
+    const repositories = await listGitHubInstallationRepositories(
+      appConfig,
+      parsed.installationId,
+    );
+    verifyRepositorySelection(repositories, parsed);
     return await connection.db.transaction(async (tx) => {
-      const [user] = await tx
-        .insert(cloudUsers)
-        .values({
-          githubUserId: session.user.githubUserId,
-          login: session.user.login,
-          displayName: session.user.name,
-          avatarUrl: session.user.avatarUrl,
-        })
-        .onConflictDoUpdate({
-          target: cloudUsers.githubUserId,
-          set: {
-            login: session.user.login,
-            displayName: session.user.name,
-            avatarUrl: session.user.avatarUrl,
-          },
-        })
-        .returning();
-      if (!user) {
-        throw new Error("Could not persist the GitHub user.");
-      }
       const [project] = await tx
         .insert(cloudProjects)
-        .values({ ownerId: user.id, name: parsed.name })
+        .values({ ownerId: installation.ownerId, name: parsed.name })
         .returning();
       if (!project) {
         throw new Error("Could not create the HARIKOS project.");
       }
       await tx.insert(cloudRepositories).values({
         projectId: project.id,
+        installationId: installation.id,
         githubRepositoryId: parsed.githubRepositoryId,
         owner: parsed.owner,
         name: parsed.name,
         defaultBranch: parsed.defaultBranch,
         private: parsed.private,
-      });
-      await tx.insert(cloudRepositoryInstallations).values({
-        projectId: project.id,
-        installationId: parsed.installationId,
-        accountLogin: parsed.owner,
       });
       return { id: project.id, name: project.name };
     });
@@ -196,14 +246,14 @@ export async function createCloudProject(
   }
 }
 
-export async function listCloudProjects(session: WebSession) {
+export async function listCloudProjects(identity: AuthIdentity) {
   const config = readCloudDatabaseConfig();
   if (!config) {
     return [];
   }
-  const connection = await openCloudDatabase(config);
+  const connection = await openCloudDatabase(config, { migrate: false });
   try {
-    return connection.db
+    return await connection.db
       .select({
         id: cloudProjects.id,
         name: cloudProjects.name,
@@ -215,13 +265,47 @@ export async function listCloudProjects(session: WebSession) {
       .from(cloudProjects)
       .innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id))
       .innerJoin(cloudRepositories, eq(cloudProjects.id, cloudRepositories.projectId))
-      .where(eq(cloudUsers.githubUserId, session.user.githubUserId));
+      .where(eq(cloudUsers.supabaseUserId, identity.id));
   } finally {
     await connection.close();
   }
 }
 
-async function authorizedProject(connection: Awaited<ReturnType<typeof openCloudDatabase>>, session: WebSession, projectId: string) {
+export async function listAuthorizedRepositories(identity: AuthIdentity) {
+  const config = readCloudDatabaseConfig();
+  const appConfig = readGitHubAppConfig();
+  if (!config || !appConfig) return [];
+  const connection = await openCloudDatabase(config, { migrate: false });
+  try {
+    const installations = await connection.db
+      .select({ installationId: cloudRepositoryInstallations.installationId })
+      .from(cloudRepositoryInstallations)
+      .innerJoin(cloudUsers, eq(cloudRepositoryInstallations.ownerId, cloudUsers.id))
+      .where(eq(cloudUsers.supabaseUserId, identity.id));
+    const repositories: Array<CreateCloudProjectInput> = [];
+    for (const installation of installations) {
+      const authorized = await listGitHubInstallationRepositories(
+        appConfig,
+        installation.installationId,
+      );
+      repositories.push(
+        ...authorized.map((repository) => ({
+          installationId: installation.installationId,
+          githubRepositoryId: String(repository.id),
+          owner: repository.owner.login,
+          name: repository.name,
+          defaultBranch: repository.default_branch,
+          private: repository.private,
+        })),
+      );
+    }
+    return repositories;
+  } finally {
+    await connection.close();
+  }
+}
+
+async function authorizedProject(connection: Awaited<ReturnType<typeof openCloudDatabase>>, identity: AuthIdentity, projectId: string) {
   const [record] = await connection.db
     .select({
       id: cloudProjects.id,
@@ -239,12 +323,12 @@ async function authorizedProject(connection: Awaited<ReturnType<typeof openCloud
     .innerJoin(cloudRepositories, eq(cloudProjects.id, cloudRepositories.projectId))
     .innerJoin(
       cloudRepositoryInstallations,
-      eq(cloudProjects.id, cloudRepositoryInstallations.projectId),
+      eq(cloudRepositories.installationId, cloudRepositoryInstallations.id),
     )
     .where(
       and(
         eq(cloudProjects.id, projectId),
-        eq(cloudUsers.githubUserId, session.user.githubUserId),
+        eq(cloudUsers.supabaseUserId, identity.id),
       ),
     );
   if (!record) {
@@ -306,10 +390,10 @@ async function loadPreviousTruths(
 }
 
 export async function scanCloudProject(
-  session: WebSession,
+  identity: AuthIdentity,
   projectId: string,
 ): Promise<ProjectSnapshot> {
-  const connection = await openCloudDatabase(databaseConfig());
+  const connection = await openConfiguredCloudDatabase();
   const appConfig = readGitHubAppConfig();
   if (!appConfig) {
     await connection.close();
@@ -317,7 +401,7 @@ export async function scanCloudProject(
   }
   let scanId: string | undefined;
   try {
-    const project = await authorizedProject(connection, session, projectId);
+    const project = await authorizedProject(connection, identity, projectId);
     const previous = await loadPreviousTruths(connection, projectId);
     const [scan] = await connection.db
       .insert(cloudScans)
@@ -481,13 +565,13 @@ export async function scanCloudProject(
 }
 
 export async function saveCloudContextPack(
-  session: WebSession,
+  identity: AuthIdentity,
   projectId: string,
   pack: ContextPack,
 ): Promise<void> {
-  const connection = await openCloudDatabase(databaseConfig());
+  const connection = await openConfiguredCloudDatabase();
   try {
-    await authorizedProject(connection, session, projectId);
+    await authorizedProject(connection, identity, projectId);
     await connection.db.insert(cloudContextPacks).values({
       projectId,
       task: pack.task,
@@ -500,16 +584,16 @@ export async function saveCloudContextPack(
 }
 
 export async function loadCloudSnapshot(
-  session: WebSession,
+  identity: AuthIdentity,
   projectId: string,
 ): Promise<ProjectSnapshot | undefined> {
   const config = readCloudDatabaseConfig();
   if (!config) {
     return undefined;
   }
-  const connection = await openCloudDatabase(config);
+  const connection = await openCloudDatabase(config, { migrate: false });
   try {
-    const project = await authorizedProject(connection, session, projectId);
+    const project = await authorizedProject(connection, identity, projectId);
     const [truths, contradictions, changes, scans] = await Promise.all([
       loadPreviousTruths(connection, projectId),
       connection.db.select().from(cloudContradictions).where(eq(cloudContradictions.projectId, projectId)),

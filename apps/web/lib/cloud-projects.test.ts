@@ -1,18 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { verifyRepositorySelection } from "./cloud-projects";
-import type { WebSession } from "./session";
-
-const session: WebSession = {
-  user: {
-    githubUserId: "42",
-    login: "builder",
-    name: null,
-    avatarUrl: null,
-  },
-  accessToken: "encrypted-at-rest-by-session-boundary",
-  expiresAt: "2026-08-24T00:00:00.000Z",
-};
 
 const selection = {
   installationId: "123",
@@ -25,52 +13,36 @@ const selection = {
 
 describe("cloud repository authorization", () => {
   it("accepts only repository metadata returned by the user's installation", async () => {
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          repositories: [
-            {
-              id: 456,
-              name: "project",
-              private: true,
-              default_branch: "main",
-              owner: { login: "builder" },
-            },
-          ],
-        }),
-        { status: 200 },
+    expect(() =>
+      verifyRepositorySelection(
+        [
+          {
+            id: 456,
+            name: "project",
+            private: true,
+            default_branch: "main",
+            owner: { login: "builder" },
+          },
+        ],
+        selection,
       ),
-    );
-
-    await expect(
-      verifyRepositorySelection(session, selection, fetcher),
-    ).resolves.toBeUndefined();
-    expect(fetcher).toHaveBeenCalledWith(
-      expect.stringContaining("/user/installations/123/repositories"),
-      expect.objectContaining({ cache: "no-store" }),
-    );
+    ).not.toThrow();
   });
 
   it("rejects forged repository metadata before persistence", async () => {
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          repositories: [
-            {
-              id: 456,
-              name: "different-project",
-              private: true,
-              default_branch: "main",
-              owner: { login: "builder" },
-            },
-          ],
-        }),
-        { status: 200 },
+    expect(() =>
+      verifyRepositorySelection(
+        [
+          {
+            id: 456,
+            name: "different-project",
+            private: true,
+            default_branch: "main",
+            owner: { login: "builder" },
+          },
+        ],
+        selection,
       ),
-    );
-
-    await expect(
-      verifyRepositorySelection(session, selection, fetcher),
-    ).rejects.toThrow("metadata did not match");
+    ).toThrow("metadata did not match");
   });
 });

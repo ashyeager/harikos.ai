@@ -11,6 +11,8 @@
   "dependencies": {
     "@harikos/core": "workspace:*",
     "@harikos/db": "workspace:*",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.3",
     "next": "^16.3.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

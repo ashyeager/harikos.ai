@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { Brand } from "../../components/brand";
 import { integrationStatus } from "../../lib/config";
+import { getAuthIdentity } from "../../lib/auth";
 
 export const metadata: Metadata = { title: "Connect GitHub" };
 
-export default function LoginPage() {
+export default async function LoginPage() {
   const status = integrationStatus();
+  if (await getAuthIdentity()) redirect("/app/projects");
   return (
     <main className="auth-page">
       <header className="auth-nav"><Brand /><Link href="/">Back to overview</Link></header>
@@ -26,17 +29,14 @@ export default function LoginPage() {
           <div className="connect-mark" aria-hidden="true">⌘</div>
           <h2>Continue with GitHub</h2>
           <p>Authenticate, install the HARIKOS GitHub App on selected repositories, then choose what to analyze.</p>
-          {status.githubOAuth ? (
+          {status.supabaseAuth ? (
             <a className="button button-dark full-button" href="/api/auth/github/start">Continue with GitHub <span>→</span></a>
           ) : (
             <div className="config-notice">
               <span>CONFIGURATION NEEDED</span>
-              Add GitHub OAuth/App credentials to enable the real connection flow.
+              Connect Supabase Auth to enable the real GitHub sign-in flow.
             </div>
           )}
-          {status.localDemo ? (
-            <Link className="button button-ghost full-button" href="/app/dashboard">Open verified local demo</Link>
-          ) : null}
           <small>By continuing, you authorize only the repositories you select.</small>
         </div>
       </section>

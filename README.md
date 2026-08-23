@@ -7,8 +7,8 @@ collects bounded repository evidence, derives typed claims, preserves temporal
 history, surfaces contradictions, and prepares current context for coding
 agents.
 
-The production surface is a responsive Next.js application backed by a GitHub
-App and PostgreSQL/Supabase-ready persistence. SQLite and the CLI remain local
+The production surface is a responsive Next.js application backed by Supabase
+Auth, a read-only GitHub App, and Supabase PostgreSQL. SQLite and the CLI remain local
 supporting adapters for deterministic development and verification.
 
 ## Requirements
@@ -16,7 +16,7 @@ supporting adapters for deterministic development and verification.
 - Node.js 20+
 - pnpm 11+
 - Git
-- optional GitHub App/OAuth and PostgreSQL credentials for cloud integration
+- Supabase and GitHub credentials from `.env.example` for the cloud product
 
 ## Install and verify
 
@@ -35,10 +35,9 @@ pnpm test:e2e
 pnpm dev:web
 ```
 
-Open `http://localhost:3000`. Without external credentials, the product shows
-an honest controlled fixture and can scan this local repository. Copy
-`.env.example` to `.env.local` only when configuring the real GitHub and
-PostgreSQL boundaries.
+Open `http://localhost:3000`. Public pages remain available without credentials;
+product routes require a verified Supabase Auth session. Copy `.env.example`
+to `.env.local` only when configuring the real GitHub and PostgreSQL boundaries.
 
 ## Local CLI
 
@@ -78,6 +77,7 @@ Create a Vercel project with `apps/web` as its Root Directory. The checked-in
 `apps/web/vercel.json` builds the web application together with its required
 `@harikos/db` and `@harikos/core` workspace packages.
 
-Configure the server-side values listed in `.env.example` through Vercel's
-environment settings; never commit their values. GitHub OAuth/App and managed
-PostgreSQL features remain visibly unavailable until those credentials exist.
+Connect the Supabase Marketplace resource to Vercel, configure the GitHub OAuth
+provider in Supabase, and add only the server-side GitHub App values listed in
+`.env.example`. Never commit credential values. Apply schema migrations with
+`pnpm db:migrate:cloud` before promoting a release.

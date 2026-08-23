@@ -16,6 +16,35 @@ const installationTokenSchema = z.object({
   permissions: z.record(z.string(), z.string()).optional(),
 });
 
+export const githubInstallationSchema = z.object({
+  id: z.number().int().positive(),
+  account: z.object({
+    id: z.number().int().positive(),
+    login: z.string().min(1),
+    type: z.enum(["User", "Organization"]),
+  }),
+  repository_selection: z.enum(["all", "selected"]),
+  suspended_at: z.string().datetime({ offset: true }).nullable().default(null),
+});
+
+export type GitHubInstallation = z.infer<typeof githubInstallationSchema>;
+
+const installationRepositoriesSchema = z.object({
+  repositories: z.array(
+    z.object({
+      id: z.number().int().positive(),
+      name: z.string().min(1),
+      private: z.boolean(),
+      default_branch: z.string().min(1),
+      owner: z.object({ login: z.string().min(1) }),
+    }),
+  ),
+});
+
+export type GitHubInstallationRepository = z.infer<
+  typeof installationRepositoriesSchema
+>["repositories"][number];
+
 function base64Url(input: string): string {
   return Buffer.from(input).toString("base64url");
 }
@@ -85,4 +114,64 @@ export async function createGitHubInstallationToken(
   }
   const token = installationTokenSchema.parse(await response.json());
   return { token: token.token, expiresAt: token.expires_at };
+}
+
+export async function getGitHubInstallation(
+  config: GitHubAppConfig,
+  installationId: string,
+  fetcher: typeof fetch = fetch,
+): Promise<GitHubInstallation> {
+  if (!/^\d+$/u.test(installationId)) {
+    throw new Error("A numeric GitHub installation ID is required.");
+  }
+  const response = await fetcher(
+    `https://api.github.com/app/installations/${installationId}`,
+    {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${createGitHubAppJwt(config)}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      cache: "no-store",
+    },
+  );
+  if (!response.ok) {
+    throw new Error(
+      `GitHub App installation lookup failed with status ${response.status}.`,
+    );
+  }
+  return githubInstallationSchema.parse(await response.json());
+}
+
+export async function listGitHubInstallationRepositories(
+  config: GitHubAppConfig,
+  installationId: string,
+  fetcher: typeof fetch = fetch,
+): Promise<GitHubInstallationRepository[]> {
+  const { token } = await createGitHubInstallationToken(config, installationId, {
+    fetcher,
+  });
+  const repositories: GitHubInstallationRepository[] = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const response = await fetcher(
+      `https://api.github.com/installation/repositories?per_page=100&page=${page}`,
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${token}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+        cache: "no-store",
+      },
+    );
+    if (!response.ok) {
+      throw new Error(
+        `GitHub installation repository lookup failed with status ${response.status}.`,
+      );
+    }
+    const pageData = installationRepositoriesSchema.parse(await response.json());
+    repositories.push(...pageData.repositories);
+    if (pageData.repositories.length < 100) break;
+  }
+  return repositories;
 }

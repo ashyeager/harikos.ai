@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("landing, demo navigation, and current context form a complete product path", async ({
+test("landing, GitHub sign-in, and protected product routes form a complete public path", async ({
   page,
 }, testInfo) => {
   await page.goto("/");
@@ -23,12 +23,7 @@ test("landing, demo navigation, and current context form a complete product path
   await connect.click();
   await page.waitForURL("**/login", { timeout: 15_000 });
   await expect(page.getByRole("heading", { name: "Connect a repository. Build Project Truth." })).toBeVisible();
-  await page.getByRole("link", { name: "Open verified local demo" }).click();
-  await expect(page.getByRole("heading", { name: /acme-platform is understood/u })).toBeVisible();
-
-  await page.goto("/app/project/demo-project-truth/context");
-  await page.getByRole("button", { name: "Prepare Agent Context" }).click();
-  const result = page.locator(".context-result");
-  await expect(result).toContainText("Supabase Auth (VERIFIED");
-  await expect(result).not.toContainText("Clerk (SUPERSEDED");
+  await page.goto("/app/dashboard");
+  await page.waitForURL("**/login", { timeout: 15_000 });
+  await expect(page.getByText("Continue with GitHub", { exact: true }).first()).toBeVisible();
 });

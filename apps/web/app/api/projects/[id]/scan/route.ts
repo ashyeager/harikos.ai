@@ -6,7 +6,7 @@ import {
   isLocalDemoEnabled,
   localRepositoryPath,
 } from "../../../../../lib/config";
-import { getWebSession } from "../../../../../lib/session";
+import { getAuthIdentity } from "../../../../../lib/auth";
 
 export const runtime = "nodejs";
 
@@ -26,7 +26,7 @@ export async function POST(
       const snapshot = await scanAndPersistLocalProject(localRepositoryPath());
       return NextResponse.json({ ...snapshot, projectId: "local-harikos" });
     }
-    const session = await getWebSession();
+    const session = await getAuthIdentity();
     if (!session) {
       return NextResponse.json({ error: "Authentication required." }, { status: 401 });
     }

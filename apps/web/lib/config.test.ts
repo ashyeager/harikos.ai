@@ -18,13 +18,11 @@ describe("web integration configuration", () => {
     ).toThrow("http or https");
   });
 
-  it("does not report OAuth ready without an encryption secret", () => {
+  it("does not report Supabase Auth ready without public project configuration", () => {
     expect(
       integrationStatus({
-        GITHUB_CLIENT_ID: "client",
-        GITHUB_CLIENT_SECRET: "secret",
         NODE_ENV: "production",
       }),
-    ).toMatchObject({ githubOAuth: false, localDemo: false });
+    ).toMatchObject({ supabaseAuth: false, localDemo: false });
   });
 });

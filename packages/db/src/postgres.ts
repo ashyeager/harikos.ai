@@ -41,7 +41,8 @@ function defaultMigrationsFolder(): string {
 export function readCloudDatabaseConfig(
   environment: NodeJS.ProcessEnv = process.env,
 ): CloudDatabaseConfig | undefined {
-  const databaseUrl = environment.DATABASE_URL?.trim();
+  const databaseUrl =
+    environment.DATABASE_URL?.trim() || environment.POSTGRES_URL?.trim();
   if (!databaseUrl) {
     return undefined;
   }

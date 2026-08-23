@@ -3,8 +3,7 @@ import {
   index,
   integer,
   jsonb,
-  pgEnum,
-  pgTable,
+  pgSchema,
   real,
   text,
   timestamp,
@@ -12,7 +11,9 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const cloudClaimStatus = pgEnum("claim_status", [
+const harikosCloud = pgSchema("harikos");
+
+export const cloudClaimStatus = harikosCloud.enum("claim_status", [
   "candidate",
   "verified",
   "likely",
@@ -23,15 +24,16 @@ export const cloudClaimStatus = pgEnum("claim_status", [
   "rejected",
 ]);
 
-export const cloudEpistemicType = pgEnum("epistemic_type", [
+export const cloudEpistemicType = harikosCloud.enum("epistemic_type", [
   "observed",
   "derived",
   "inferred",
   "declared",
 ]);
 
-export const cloudUsers = pgTable("users", {
+export const cloudUsers = harikosCloud.table("users", {
   id: uuid("id").defaultRandom().primaryKey(),
+  supabaseUserId: text("supabase_user_id").notNull().unique(),
   githubUserId: text("github_user_id").notNull().unique(),
   login: text("login").notNull(),
   displayName: text("display_name"),
@@ -41,7 +43,34 @@ export const cloudUsers = pgTable("users", {
     .notNull(),
 });
 
-export const cloudProjects = pgTable(
+export const cloudRepositoryInstallations = harikosCloud.table(
+  "repository_installations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    ownerId: uuid("owner_id")
+      .notNull()
+      .references(() => cloudUsers.id, { onDelete: "cascade" }),
+    installationId: text("installation_id").notNull(),
+    accountId: text("account_id").notNull(),
+    accountLogin: text("account_login").notNull(),
+    accountType: text("account_type").notNull(),
+    repositorySelection: text("repository_selection").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("repository_installations_installation_unique").on(
+      table.installationId,
+    ),
+    index("repository_installations_owner_idx").on(table.ownerId),
+  ],
+);
+
+export const cloudProjects = harikosCloud.table(
   "projects",
   {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -59,13 +88,18 @@ export const cloudProjects = pgTable(
   (table) => [index("projects_owner_idx").on(table.ownerId)],
 );
 
-export const cloudRepositories = pgTable(
+export const cloudRepositories = harikosCloud.table(
   "repositories",
   {
     id: uuid("id").defaultRandom().primaryKey(),
     projectId: uuid("project_id")
       .notNull()
       .references(() => cloudProjects.id, { onDelete: "cascade" }),
+    installationId: uuid("installation_id")
+      .notNull()
+      .references(() => cloudRepositoryInstallations.id, {
+        onDelete: "restrict",
+      }),
     githubRepositoryId: text("github_repository_id").notNull(),
     owner: text("owner").notNull(),
     name: text("name").notNull(),
@@ -79,25 +113,7 @@ export const cloudRepositories = pgTable(
   ],
 );
 
-export const cloudRepositoryInstallations = pgTable(
-  "repository_installations",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    projectId: uuid("project_id")
-      .notNull()
-      .references(() => cloudProjects.id, { onDelete: "cascade" }),
-    installationId: text("installation_id").notNull(),
-    accountLogin: text("account_login").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-  },
-  (table) => [
-    uniqueIndex("repository_installations_project_unique").on(table.projectId),
-  ],
-);
-
-export const cloudScans = pgTable(
+export const cloudScans = harikosCloud.table(
   "scans",
   {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -115,7 +131,7 @@ export const cloudScans = pgTable(
   (table) => [index("scans_project_started_idx").on(table.projectId, table.startedAt)],
 );
 
-export const cloudClaims = pgTable(
+export const cloudClaims = harikosCloud.table(
   "claims",
   {
     id: text("id").primaryKey(),
@@ -147,7 +163,7 @@ export const cloudClaims = pgTable(
   ],
 );
 
-export const cloudEvidence = pgTable(
+export const cloudEvidence = harikosCloud.table(
   "evidence",
   {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -171,7 +187,7 @@ export const cloudEvidence = pgTable(
   (table) => [index("evidence_claim_idx").on(table.claimId)],
 );
 
-export const cloudContradictions = pgTable(
+export const cloudContradictions = harikosCloud.table(
   "contradictions",
   {
     id: text("id").primaryKey(),
@@ -191,7 +207,7 @@ export const cloudContradictions = pgTable(
   (table) => [index("contradictions_project_idx").on(table.projectId)],
 );
 
-export const cloudMemories = pgTable(
+export const cloudMemories = harikosCloud.table(
   "memories",
   {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -209,7 +225,7 @@ export const cloudMemories = pgTable(
   (table) => [index("memories_project_idx").on(table.projectId)],
 );
 
-export const cloudProjectChanges = pgTable(
+export const cloudProjectChanges = harikosCloud.table(
   "project_changes",
   {
     id: text("id").primaryKey(),
@@ -231,7 +247,7 @@ export const cloudProjectChanges = pgTable(
   (table) => [index("project_changes_project_idx").on(table.projectId)],
 );
 
-export const cloudContextPacks = pgTable(
+export const cloudContextPacks = harikosCloud.table(
   "context_packs",
   {
     id: uuid("id").defaultRandom().primaryKey(),

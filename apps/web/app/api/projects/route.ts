@@ -7,13 +7,16 @@ import {
   listCloudProjects,
   RepositoryAuthorizationError,
 } from "../../../lib/cloud-projects";
-import { getWebSession } from "../../../lib/session";
+import { getAuthIdentity } from "../../../lib/auth";
 
 export const runtime = "nodejs";
 
 export async function GET() {
-  const session = await getWebSession();
-  const cloud = session ? await listCloudProjects(session) : [];
+  const session = await getAuthIdentity();
+  if (!session) {
+    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+  }
+  const cloud = await listCloudProjects(session);
   const demo = createFlagshipDemoSnapshot();
   return NextResponse.json({
     projects: [
@@ -30,9 +33,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await getWebSession();
+  const session = await getAuthIdentity();
   if (!session) {
-    return NextResponse.json({ error: "Authenticate with GitHub first." }, { status: 401 });
+    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
   }
   try {
     const body: unknown = await request.json();

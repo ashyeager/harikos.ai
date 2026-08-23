@@ -443,6 +443,19 @@ project_changes
 context_packs
 ```
 
+HARIKOS tables live in the dedicated `harikos` PostgreSQL schema. Supabase
+Auth owns identity and session cookies; application rows key ownership to the
+verified Supabase user ID. The browser has no direct table grants. Server-side
+Drizzle queries enforce ownership on every project and installation lookup,
+while RLS and schema revocation provide defense in depth for Supabase API
+roles.
+
+GitHub login and GitHub repository authorization are separate. Supabase Auth
+uses a GitHub OAuth App for identity. The HARIKOS GitHub App uses a brief user
+authorization exchange only to prove installation ownership, discards that
+user token, and then reads repository metadata and contents with one-hour,
+read-only installation tokens.
+
 Reuse Drizzle if practical.
 
 SQLite can stay for Phase 1/tests/local tooling but is not the primary SaaS DB.

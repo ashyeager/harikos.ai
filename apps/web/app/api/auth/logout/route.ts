@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "../../../../lib/session";
+import { createSupabaseServerClient } from "../../../../lib/supabase/server";
 
-export function POST(request: Request) {
+export async function POST(request: Request) {
+  const supabase = await createSupabaseServerClient();
+  await supabase.auth.signOut();
   const response = NextResponse.redirect(new URL("/", request.url), 303);
-  response.cookies.delete(SESSION_COOKIE);
+  response.headers.set("Cache-Control", "private, no-store");
   return response;
 }

@@ -10,27 +10,36 @@ Updated: August 23, 2026
 - evidence-backed claims, confidence, contradictions, supersession, and stale-state handling;
 - task-specific Context Packs and evidence-grounded project explanations;
 - SQLite persistence retained for local tools;
-- PostgreSQL/Supabase-ready schema, migrations, and authorized project queries;
-- encrypted GitHub OAuth sessions and repository-scoped, read-only GitHub App tokens;
+- Supabase PostgreSQL schema, migrations, ownership-filtered project queries, and RLS-enabled server-only tables;
+- Supabase Auth with GitHub identity and refreshed SSR cookies;
+- signed GitHub installation state plus repository-scoped, short-lived, read-only GitHub App tokens;
 - landing, login, projects, overview, truth, claim detail, changes, understand, context, and settings routes;
 - typed APIs, supporting CLI, and reproducible Clerk-to-Supabase fixture;
 - desktop/mobile browser flow, responsive layout, runtime/console checks, and Playwright coverage.
 
-## Credential-dependent
+## Verified in production
 
-The GitHub OAuth/App and PostgreSQL implementations are real, but this checkout
-does not contain credentials. Production has a generated session secret and its
-canonical public URL configured; GitHub credentials and `DATABASE_URL` are not
-configured. Their live external handshake and managed database connection
-therefore remain unverified. The UI reports these boundaries as `NOT CONFIGURED`
-instead of simulating success.
+Production at <https://harikos-ai.vercel.app> was exercised end to end with the
+canonical private repository `ashyeager/harikos.ai`:
 
-Required values are documented in `.env.example`:
+- GitHub sign-in completed through Supabase Auth;
+- the public GitHub App was installed with only Contents: Read and Metadata: Read;
+- installation ownership was verified against the signed-in GitHub identity;
+- access was restricted to the canonical repository;
+- the first GitHub scan persisted one project, one completed scan, 9 claims, and
+  51 evidence rows from 42 analyzed source files;
+- Project Truth, claim provenance, and a persisted Context Pack rendered from
+  the managed PostgreSQL data.
 
-- `HARIKOS_SESSION_SECRET`;
-- `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`;
-- `GITHUB_APP_ID`, `GITHUB_APP_SLUG`, and `GITHUB_APP_PRIVATE_KEY`;
-- `DATABASE_URL`.
+Production secrets are stored only in Supabase, GitHub, and Vercel. No secret or
+private-key material is stored in this repository. `.env.example` documents the
+required names without values.
+
+## Deferred boundary
+
+GitHub webhooks are intentionally deferred. Scans are user-triggered and always
+resolve a fresh, repository-scoped installation token; no webhook-dependent
+success path is shown.
 
 ## Verification commands
 
@@ -45,8 +54,9 @@ pnpm demo
 
 ## Delivery boundary
 
-The repository includes a Vercel monorepo build configuration for the Next.js
-application under `apps/web`. Production deployment and its live verification
-are tracked as release evidence rather than inferred from a local build.
+The repository includes the Vercel monorepo build configuration for the Next.js
+application under `apps/web`. Production verification covers rendered pages,
+authentication, GitHub authorization, PostgreSQL writes, scanning, truth
+retrieval, and Context Pack persistence rather than deployment status alone.
 
 Canonical production URL: <https://harikos-ai.vercel.app>

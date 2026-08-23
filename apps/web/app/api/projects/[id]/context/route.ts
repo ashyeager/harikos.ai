@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { saveCloudContextPack } from "../../../../../lib/cloud-projects";
 import { projectSnapshot } from "../../../../../lib/project-data";
-import { getWebSession } from "../../../../../lib/session";
+import { getAuthIdentity } from "../../../../../lib/auth";
 
 export const runtime = "nodejs";
 
@@ -23,7 +23,7 @@ export async function POST(
     }
     const pack = composeContextPack(snapshot, input.task);
     if (snapshot.mode === "github") {
-      const session = await getWebSession();
+      const session = await getAuthIdentity();
       if (!session) {
         return NextResponse.json({ error: "Authentication required." }, { status: 401 });
       }

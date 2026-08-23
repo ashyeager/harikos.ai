@@ -7,14 +7,14 @@ import { RepositorySelector } from "../../../components/repository-selector";
 import { listCloudProjects } from "../../../lib/cloud-projects";
 import { demoSnapshot } from "../../../lib/project-data";
 import { integrationStatus } from "../../../lib/config";
-import { getWebSession } from "../../../lib/session";
+import { getAuthIdentity } from "../../../lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   const snapshot = demoSnapshot();
   const status = integrationStatus();
-  const session = await getWebSession();
+  const session = await getAuthIdentity();
   const cloudProjects = session ? await listCloudProjects(session) : [];
   return (
     <AppShell snapshot={snapshot}>
@@ -23,8 +23,8 @@ export default async function ProjectsPage() {
         <article className="source-card featured-source">
           <span className="source-icon">⌘</span>
           <div><small>PRODUCTION SOURCE</small><h2>GitHub App</h2><p>Selected repository access with Contents: Read and Metadata: Read.</p></div>
-          {status.githubOAuth && status.githubApp && status.postgres ? (
-            <a className="button button-dark" href="/api/auth/github/start">Connect GitHub <span>→</span></a>
+          {status.supabaseAuth && status.githubApp && status.postgres ? (
+            <a className="button button-dark" href="/api/github/install/start">Install GitHub App <span>→</span></a>
           ) : (
             <Link className="button button-ghost" href="/app/settings">View required configuration</Link>
           )}

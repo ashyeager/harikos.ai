@@ -5,7 +5,7 @@ import {
 } from "@harikos/core";
 
 import { isLocalDemoEnabled, localRepositoryPath } from "./config";
-import { getWebSession } from "./session";
+import { getAuthIdentity } from "./auth";
 import { loadCloudSnapshot } from "./cloud-projects";
 
 export function demoSnapshot(): ProjectSnapshot {
@@ -20,6 +20,6 @@ export async function projectSnapshot(projectId: string): Promise<ProjectSnapsho
     const snapshot = await scanAndPersistLocalProject(localRepositoryPath());
     return { ...snapshot, projectId: "local-harikos" };
   }
-  const session = await getWebSession();
+  const session = await getAuthIdentity();
   return session ? loadCloudSnapshot(session, projectId) : undefined;
 }

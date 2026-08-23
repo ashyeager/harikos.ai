@@ -70,7 +70,14 @@ export function RepositorySelector() {
     return <div className="repository-loader"><i className="button-spinner" /> Checking authorized repositories…</div>;
   }
   if (repositories.length === 0) {
-    return message ? <p className="inline-error" role="alert">{message}</p> : null;
+    return (
+      <section className="panel repository-selector">
+        <div className="panel-heading"><div><span>GITHUB INSTALLATIONS</span><h2>Authorize a repository</h2></div></div>
+        <p>Install the read-only HARIKOS GitHub App, choose repositories, then return here to analyze them.</p>
+        <a className="button button-dark" href="/api/github/install/start">Install GitHub App <span>→</span></a>
+        {message ? <p className="inline-error" role="alert">{message}</p> : null}
+      </section>
+    );
   }
   return (
     <section className="panel repository-selector">

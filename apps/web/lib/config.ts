@@ -4,12 +4,14 @@ import { readCloudDatabaseConfig } from "@harikos/db";
 import { readGitHubAppConfig } from "@harikos/core";
 import { z } from "zod";
 
-export const githubOAuthConfigSchema = z.object({
+import { readSupabasePublicConfig } from "./supabase/config";
+
+export const githubAppOAuthConfigSchema = z.object({
   clientId: z.string().trim().min(1),
   clientSecret: z.string().trim().min(1),
 });
 
-export type GitHubOAuthConfig = z.infer<typeof githubOAuthConfigSchema>;
+export type GitHubAppOAuthConfig = z.infer<typeof githubAppOAuthConfigSchema>;
 
 export function applicationOrigin(
   requestUrl: string,
@@ -23,15 +25,15 @@ export function applicationOrigin(
   return url.origin;
 }
 
-export function readGitHubOAuthConfig(
+export function readGitHubAppOAuthConfig(
   environment: NodeJS.ProcessEnv = process.env,
-): GitHubOAuthConfig | undefined {
+): GitHubAppOAuthConfig | undefined {
   const clientId = environment.GITHUB_CLIENT_ID?.trim();
   const clientSecret = environment.GITHUB_CLIENT_SECRET?.trim();
   if (!clientId || !clientSecret) {
     return undefined;
   }
-  return githubOAuthConfigSchema.parse({ clientId, clientSecret });
+  return githubAppOAuthConfigSchema.parse({ clientId, clientSecret });
 }
 
 export function isLocalDemoEnabled(
@@ -50,12 +52,12 @@ export function localRepositoryPath(
 }
 
 export function integrationStatus(environment: NodeJS.ProcessEnv = process.env) {
-  const sessionSecretReady =
-    (environment.HARIKOS_SESSION_SECRET?.trim().length ?? 0) >= 32;
   return {
-    githubOAuth:
-      readGitHubOAuthConfig(environment) !== undefined && sessionSecretReady,
-    githubApp: readGitHubAppConfig(environment) !== undefined,
+    supabaseAuth: readSupabasePublicConfig(environment) !== undefined,
+    githubApp:
+      readGitHubAppConfig(environment) !== undefined &&
+      readGitHubAppOAuthConfig(environment) !== undefined &&
+      (environment.HARIKOS_SESSION_SECRET?.trim().length ?? 0) >= 32,
     postgres: readCloudDatabaseConfig(environment) !== undefined,
     localDemo: isLocalDemoEnabled(environment),
   };
