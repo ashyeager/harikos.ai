@@ -72,6 +72,13 @@ export const createClaimSchema = z.object({
   updatedAt: timestampSchema.optional(),
 });
 
+export const updateClaimSchema = z.object({
+  status: z.enum(CLAIM_STATUSES).optional(),
+  confidence: z.number().min(0).max(1).optional(),
+  validTo: nullableTimestampSchema,
+  updatedAt: timestampSchema.optional(),
+});
+
 export const createEvidenceSchema = z.object({
   id: idSchema.optional(),
   claimId: idSchema,
@@ -154,6 +161,7 @@ export type CreateProjectInput = z.input<typeof createProjectSchema>;
 export type CreateSourceInput = z.input<typeof createSourceSchema>;
 export type CreateEventInput = z.input<typeof createEventSchema>;
 export type CreateClaimInput = z.input<typeof createClaimSchema>;
+export type UpdateClaimInput = z.input<typeof updateClaimSchema>;
 export type CreateEvidenceInput = z.input<typeof createEvidenceSchema>;
 export type CreateContradictionInput = z.input<
   typeof createContradictionSchema
@@ -177,6 +185,12 @@ export interface ProjectRepository {
 export interface SourceRepository {
   create(input: CreateSourceInput): Source;
   findById(id: string): Source | undefined;
+  findByIdentity(
+    projectId: string,
+    type: Source["type"],
+    path: string | null,
+    contentHash: string,
+  ): Source | undefined;
   listByProject(projectId: string): Source[];
 }
 
@@ -189,6 +203,7 @@ export interface ClaimRepository {
   create(input: CreateClaimInput): Claim;
   findById(id: string): Claim | undefined;
   listByProject(projectId: string): Claim[];
+  update(id: string, input: UpdateClaimInput): Claim;
 }
 
 export interface EvidenceRepository {

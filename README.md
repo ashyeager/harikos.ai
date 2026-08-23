@@ -1,12 +1,20 @@
 # HARIKOS AI
 
-HARIKOS AI is a local-first project-truth layer for AI coding agents. It scans a Git repository, derives evidence-backed claims, preserves temporal history, and exposes the same state through a CLI, an MCP server, and a local web dashboard.
+HARIKOS AI is a cloud-first Project Truth layer for AI-built software. It
+collects bounded repository evidence, derives typed claims, preserves temporal
+history, surfaces contradictions, and prepares current context for coding
+agents.
+
+The production surface is a responsive Next.js application backed by a GitHub
+App and PostgreSQL/Supabase-ready persistence. SQLite and the CLI remain local
+supporting adapters for deterministic development and verification.
 
 ## Requirements
 
 - Node.js 20+
 - pnpm 11+
 - Git
+- optional GitHub App/OAuth and PostgreSQL credentials for cloud integration
 
 ## Install and verify
 
@@ -16,29 +24,50 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm test:e2e
 ```
 
-## Use in a repository
-
-From a Git repository:
+## Run the product
 
 ```bash
-pnpm --dir /path/to/harikos-ai exec harikos init
-pnpm --dir /path/to/harikos-ai exec harikos scan
-pnpm --dir /path/to/harikos-ai exec harikos truth
-pnpm --dir /path/to/harikos-ai exec harikos status
+pnpm dev:web
 ```
 
-The initialized repository receives `.harikos/config.json` and `.harikos/project.db`; `.harikos/` is added to its `.gitignore`.
+Open `http://localhost:3000`. Without external credentials, the product shows
+an honest controlled fixture and can scan this local repository. Copy
+`.env.example` to `.env.local` only when configuring the real GitHub and
+PostgreSQL boundaries.
 
-Run `harikos init` to print the exact local MCP configuration. Start the inspection dashboard with `harikos ui`.
+## Local CLI
 
-## Reproducible proof
+```bash
+pnpm exec harikos init --cwd .
+pnpm exec harikos scan --cwd .
+pnpm exec harikos truth --cwd .
+pnpm exec harikos context --cwd . --task "Modify authentication middleware"
+```
+
+Local state lives under `.harikos/` and is ignored by Git.
+
+## Reproducible flagship proof
 
 ```bash
 pnpm demo
 ```
 
-The demo creates a clean temporary Git repository, scans a Firebase implementation, records a decision, applies a Clerk migration, rescans, and verifies that Firebase is historical while Clerk is current.
+The demo creates a temporary Git repository, verifies Clerk as the original
+authentication provider, applies a Supabase migration, and proves that:
 
-The product specification and locked build scope live in [`docs/harikos_ai_prd.md`](docs/harikos_ai_prd.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), and [`docs/MVP.md`](docs/MVP.md).
+- Supabase Auth becomes `VERIFIED`;
+- Clerk becomes `SUPERSEDED`;
+- the stale README becomes an open contradiction;
+- generated agent context uses Supabase as current truth.
+
+## Canonical documents
+
+- [`docs/harikos_ai_prd.md`](docs/harikos_ai_prd.md)
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- [`docs/MVP.md`](docs/MVP.md)
+- [`docs/BUILD_STATE.md`](docs/BUILD_STATE.md)
+
+This repository is intentionally not deployed by the local build workflow.

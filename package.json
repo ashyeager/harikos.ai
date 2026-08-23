@@ -2,7 +2,7 @@
   "name": "harikos-ai",
   "version": "0.1.0",
   "private": true,
-  "description": "Local-first, evidence-backed project truth for AI coding agents.",
+  "description": "Cloud project truth for AI coding agents.",
   "type": "module",
   "packageManager": "pnpm@11.19.0",
   "engines": {
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm --filter @harikos/db build && pnpm --filter @harikos/core build && pnpm --filter @harikos/cli build && pnpm --filter @harikos/mcp build && pnpm --filter @harikos/web build",
     "build:phase1": "pnpm --filter \"@harikos/cli...\" run build",
-    "clean": "pnpm -r --if-present clean",
+    "clean": "pnpm -r --if-present run clean",
     "demo": "tsx scripts/demo-transition.ts",
     "dev:web": "pnpm --filter @harikos/web dev",
     "lint": "eslint . --max-warnings=0",
@@ -19,10 +19,12 @@
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run --configLoader runner",
     "test:watch": "vitest --configLoader runner",
-    "mcp:smoke": "tsx scripts/mcp-smoke.ts"
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@harikos/cli": "workspace:*",
+    "@harikos/core": "workspace:*",
+    "@playwright/test": "^1.62.1",
     "@rolldown/binding-wasm32-wasi": "1.2.5",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.2.0",

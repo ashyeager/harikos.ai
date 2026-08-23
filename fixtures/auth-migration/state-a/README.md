@@ -1,0 +1,3 @@
+# Fixture application
+
+Authentication = Clerk

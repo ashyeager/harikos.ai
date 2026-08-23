@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "dependencies": {
+    "@clerk/nextjs": "latest",
+    "next": "16.3.2",
+    "react": "19.2.8"
+  }
+}

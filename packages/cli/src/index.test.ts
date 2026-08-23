@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -70,5 +70,43 @@ describe("harikos init CLI", () => {
     expect(existsSync(join(repository, ".harikos", "project.db"))).toBe(
       true,
     );
+  });
+
+  it("scans truth and composes grounded context through real CLI commands", async () => {
+    const { runCli } = requireFromRoot(
+      join(process.cwd(), "packages", "cli", "dist", "index.js"),
+    );
+    const repository = createGitRepository();
+    writeFileSync(
+      join(repository, "package.json"),
+      JSON.stringify({ dependencies: { next: "16.3.2", "@supabase/ssr": "latest" } }),
+      "utf8",
+    );
+    writeFileSync(
+      join(repository, "middleware.ts"),
+      "import { createServerClient } from '@supabase/ssr';\nexport const auth = createServerClient;\n",
+      "utf8",
+    );
+    spawnSync("git", ["-C", repository, "add", "."], { windowsHide: true });
+    spawnSync(
+      "git",
+      ["-C", repository, "-c", "user.name=HARIKOS", "-c", "user.email=test@localhost", "commit", "--quiet", "-m", "fixture"],
+      { windowsHide: true },
+    );
+    let stdout = "";
+    const output: CliOutput = {
+      writeOut: (message) => {
+        stdout += message;
+      },
+      writeErr: () => undefined,
+    };
+
+    await runCli(["scan", "--cwd", repository], output);
+    await runCli(["context", "--cwd", repository, "--task", "update auth middleware"], output);
+
+    expect(stdout).toContain("Verified truths:");
+    expect(stdout).toContain("CURRENT PROJECT CONTEXT");
+    expect(stdout).toContain("Supabase Auth");
+    expect(stdout).not.toContain("Clerk");
   });
 });

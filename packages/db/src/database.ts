@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
-import { mkdirSync } from "node:fs";
-import { dirname } from "node:path";
+import { existsSync, mkdirSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import Database from "better-sqlite3";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import {
   drizzle,
   type BetterSQLite3Database,
@@ -24,6 +24,7 @@ import {
   createProjectSchema,
   createResolutionSchema,
   createSourceSchema,
+  updateClaimSchema,
   type AgentSessionRepository,
   type ClaimRepository,
   type ContextPackRepository,
@@ -40,9 +41,15 @@ import {
 import * as schema from "./schema.js";
 
 const timestampSchema = z.string().datetime({ offset: true });
-const defaultMigrationsFolder = fileURLToPath(
-  new URL("../drizzle/", import.meta.url),
-);
+function defaultMigrationsFolder(): string {
+  const moduleDirectory = dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    resolve(moduleDirectory, "../drizzle"),
+    resolve(process.cwd(), "packages/db/drizzle"),
+    resolve(process.cwd(), "../../packages/db/drizzle"),
+  ];
+  return candidates.find((candidate) => existsSync(candidate)) ?? candidates[0]!;
+}
 
 export interface OpenHarikosDatabaseOptions {
   databasePath: string;
@@ -205,6 +212,21 @@ class SqliteHarikosStore implements HarikosStore {
           .from(schema.sources)
           .where(eq(schema.sources.id, id))
           .get(),
+      findByIdentity: (projectId, type, path, contentHash) =>
+        this.db
+          .select()
+          .from(schema.sources)
+          .where(
+            and(
+              eq(schema.sources.projectId, projectId),
+              eq(schema.sources.type, type),
+              path === null
+                ? isNull(schema.sources.path)
+                : eq(schema.sources.path, path),
+              eq(schema.sources.contentHash, contentHash),
+            ),
+          )
+          .get(),
       listByProject: (projectId) =>
         this.db
           .select()
@@ -281,6 +303,28 @@ class SqliteHarikosStore implements HarikosStore {
           .where(eq(schema.claims.projectId, projectId))
           .orderBy(asc(schema.claims.createdAt))
           .all(),
+      update: (id, input) => {
+        const parsed = updateClaimSchema.parse(input);
+        const updated = this.db
+          .update(schema.claims)
+          .set({
+            ...(parsed.status !== undefined ? { status: parsed.status } : {}),
+            ...(parsed.confidence !== undefined
+              ? { confidence: parsed.confidence }
+              : {}),
+            ...(parsed.validTo !== undefined ? { validTo: parsed.validTo } : {}),
+            updatedAt: parsed.updatedAt ?? this.now(),
+          })
+          .where(eq(schema.claims.id, id))
+          .returning()
+          .get();
+
+        if (!updated) {
+          throw new PersistenceNotFoundError("Claim", id);
+        }
+
+        return updated;
+      },
     };
   }
 
@@ -508,7 +552,7 @@ export function openHarikosDatabase(
 
   try {
     migrate(db, {
-      migrationsFolder: options.migrationsFolder ?? defaultMigrationsFolder,
+    migrationsFolder: options.migrationsFolder ?? defaultMigrationsFolder(),
     });
   } catch (error) {
     client.close();

@@ -1,379 +1,755 @@
-# HARIKOS AI Architecture
+# HARIKOS AI — Architecture
 
-**Status:** Authoritative MVP architecture  
-**Canonical placement:** `docs/ARCHITECTURE.md`  
-**Product:** HARIKOS AI — the local-first, evidence-backed project-truth layer for AI coding agents
+**File:** `docs/ARCHITECTURE.md`
+**Status:** Canonical cloud-first MVP architecture
+**Date:** August 23, 2026
+**Product source of truth:** `docs/harikos_ai_prd.md`
 
-## 1. Architectural Objective
+## 1. Goal
 
-HARIKOS AI gives Codex, Claude Code, Cursor, Hermes, and other MCP-compatible agents the same verified understanding of a software project.
+HARIKOS AI is a cloud-first SaaS that connects to GitHub repositories, derives evidence-backed project claims, resolves them into temporal Project Truth, stores derived knowledge in PostgreSQL, and exposes it through the web product and later agent APIs/MCP.
 
-The core product is a **Truth Engine**, not a chatbot, vector database, or agent-specific memory plugin. It observes repository state, converts observations into typed evidence and candidate claims, reconciles those claims against existing project truth, preserves temporal history, and returns the minimum relevant context for a task.
+Localhost is development only.
+
+## 2. Superseded Architecture
+
+The old primary architecture:
 
 ```text
-Repository + Git + Docs + Tests + Human Decisions + Agent Events
-                              |
-                              v
-                    Scanner and Parsers
-                              |
-                  Sources, Events, Candidates
-                              |
-                              v
-                        Truth Engine
-                 verify / merge / contradict
-                 supersede / coexist / review
-                              |
-                              v
-                     Local Project State
-                       SQLite + Drizzle
-                              |
-               +--------------+--------------+
-               |              |              |
-              CLI            MCP          Web App
-          developer       coding agents     humans
+Local repo
+→ CLI / MCP / Web
+→ SQLite
 ```
 
-The CLI, MCP server, and web app are adapters over the same core services and database. Business rules must not be reimplemented in those surfaces.
+is no longer the main product architecture.
 
-## 2. Required Technology
+Keep useful Phase 1 code for parsers, truth logic, tests, fixtures, LocalRepositorySource, CLI diagnostics, and future local/self-hosted options.
 
-- TypeScript on Node.js 20+
-- pnpm workspaces; no monorepo framework is required
-- Next.js for the local web app
-- SQLite with Drizzle ORM and migrations
-- Zod at every untrusted or cross-package boundary
-- Commander for the CLI
-- Git CLI for repository history and change inspection
-- Official MCP TypeScript SDK
-- Vitest for unit and integration tests
-- Gemini for optional interpretation through schema-constrained structured outputs
-- Google AI Studio for prompt experiments, not as a runtime dependency
+## 3. High-Level System
 
-The MVP must work locally without a paid service. Gemini must be replaceable through a provider interface, and deterministic truth extraction must continue to work when no AI key is configured.
+```text
+                     GitHub
+                       │
+                GitHub App / Auth
+                       │
+                       ▼
+                HARIKOS Web/API
+                       │
+                 RepositorySource
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+ deterministic analyzers       AI provider
+          │                         │
+          └────────────┬────────────┘
+                       ▼
+                Candidate Claims
+                       │
+                    Evidence
+                       │
+                 Truth Resolver
+                       │
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+      VERIFIED     UNCERTAIN   CONTRADICTED
+          │
+          ▼
+      Temporal Truth
+          │
+       PostgreSQL
+          │
+     ┌────┴───────────┐
+     ▼                ▼
+ HARIKOS Web      Agent API/MCP
+```
 
-## 3. Monorepo Layout
+## 4. Principles
+
+1. Truth != Memory.
+2. Evidence for verified claims.
+3. Truth is temporal.
+4. Contradictions are explicit.
+5. Model output is not authority.
+6. Deterministic first.
+7. Repository access is abstracted.
+8. GitHub is the primary MVP repo source.
+9. PostgreSQL is main SaaS persistence.
+10. No permanent full repo clone by default.
+11. Web app is primary human surface.
+12. Agent APIs/MCP consume truth later.
+13. AI layer is provider-agnostic.
+14. Minimal useful context.
+15. Cloud-first now; local/self-hosted later if demanded.
+16. Avoid premature distributed infrastructure.
+
+## 5. Stack
+
+| Layer | Direction |
+|---|---|
+| Language | TypeScript |
+| Runtime | Node.js 20+ |
+| Package manager | pnpm |
+| Web | Next.js App Router |
+| UI | Tailwind + reusable components |
+| Auth | GitHub-oriented auth |
+| Repo integration | GitHub App + Octokit |
+| DB | PostgreSQL |
+| Managed DB | Supabase Postgres acceptable |
+| ORM | Reuse/adapt Drizzle |
+| Validation | Zod |
+| AI | Provider abstraction |
+| Tests | Vitest |
+| Browser QA | Playwright |
+| Hosting | Vercel |
+| Legacy DB | SQLite for tests/tools if useful |
+| MCP | Later agent interface |
+
+## 6. Monorepo Direction
+
+Preserve current structure where practical:
 
 ```text
 harikos-ai/
+├── AGENTS.md
+├── docs/
+│   ├── harikos_ai_prd.md
+│   ├── ARCHITECTURE.md
+│   ├── BUILD_STATE.md
+│   └── adr/
 ├── apps/
-│   └── web/                    # Local human inspection UI
+│   └── web/
 ├── packages/
 │   ├── core/
-│   │   └── src/
-│   │       ├── scanner/        # Source discovery, filtering, hashing
-│   │       ├── parsing/        # Deterministic parsers
-│   │       ├── claims/         # Claim schemas and normalization
-│   │       ├── truth/          # Resolution and authority policy
-│   │       ├── retrieval/      # Structured and FTS retrieval
-│   │       ├── context/        # Task-specific Context Packs
-│   │       └── ai/             # Provider-neutral AI boundary
-│   ├── db/                     # Drizzle schema, migrations, repositories
-│   ├── cli/                    # Commander commands
-│   └── mcp/                    # MCP server and tool adapters
-├── fixtures/
-│   └── demo-project/           # Firebase -> Clerk controlled fixture
-├── docs/
-│   ├── harikos_ai_prd.md       # Product source of truth
-│   ├── ARCHITECTURE.md         # This document
-│   └── MVP.md                  # Locked sprint scope
-├── AGENTS.md                   # Repository-working rules
-├── package.json
-└── pnpm-workspace.yaml
+│   ├── db/
+│   ├── cli/
+│   └── mcp/
+└── fixtures/
 ```
 
-Package dependencies flow inward:
+Do not rewrite working structure just to match documentation.
 
-```text
-apps/web  packages/cli  packages/mcp
-             |              |
-             +-------> packages/core
-                           |
-                           v
-                       packages/db
-```
+## 7. RepositorySource
 
-`core` owns domain behavior. `db` owns persistence implementation. Surfaces may compose core services, but must not contain truth-resolution rules or write canonical state directly.
+Truth logic must not depend directly on GitHub or filesystem.
 
-## 4. Local Project State
-
-Each initialized repository has a private local data directory:
-
-```text
-.harikos/
-├── config.json
-└── project.db
-```
-
-`.harikos/` is ignored by Git by default. Export and team-sync behavior are post-MVP concerns. A future `.harikosignore` file may add repository-specific scan exclusions.
-
-The initial relational model contains:
-
-- `projects`: registered repositories and scan state
-- `sources`: observed files, commits, tests, docs, manual input, or agent sessions
-- `events`: timestamped project changes or actions
-- `claims`: structured propositions with scope, status, confidence, validity, and epistemic type
-- `evidence`: claim-to-source links with location, excerpt, and strength
-- `contradictions`: incompatible or apparently incompatible claim pairs
-- `resolutions`: supersede, coexist, reject, merge, or human-override decisions
-- `memories`: decisions, failures, bugs, causes, constraints, preferences, outcomes, incidents, and notes
-- `agent_sessions`: bounded metadata about agent work
-- `outcomes`: results associated with sessions or claims
-- `context_packs`: generated task context and token estimates
-
-Required claim statuses are `candidate`, `current`, `uncertain`, `contradicted`, `historical`, `superseded`, and `rejected`.
-
-Required epistemic types are:
-
-- `observed`: directly present in a source
-- `derived`: produced by deterministic logic
-- `inferred`: produced by an LLM or non-deterministic heuristic
-- `declared`: explicitly stated by a developer or team
-
-Claims also carry an optional `scope`. For example, Next.js in `apps/web` and Astro in `apps/docs` may coexist rather than contradict one another.
-
-## 5. Core Interfaces
-
-Exact filenames may vary, but these boundaries must remain stable.
+Conceptual interface:
 
 ```ts
-type ClaimStatus =
-  | "candidate"
-  | "current"
-  | "uncertain"
-  | "contradicted"
-  | "historical"
-  | "superseded"
-  | "rejected";
-
-type EpistemicType = "observed" | "derived" | "inferred" | "declared";
-
-interface SourceEvidence {
-  sourceType: "file" | "manifest" | "config" | "git_commit" | "test_result" | "documentation" | "agent_session" | "manual";
-  path?: string;
-  contentHash: string;
-  observedAt: string;
-  excerpt?: string;
-  lineStart?: number;
-  lineEnd?: number;
-  metadata: Record<string, unknown>;
-}
-
-interface CandidateClaim {
-  subject: string;
-  predicate: string;
-  value: unknown;
-  scope?: string;
-  epistemicType: EpistemicType;
-  sourceIds: string[];
-  extractorConfidence?: number;
-}
-
-interface ResolutionResult {
-  accepted: string[];
-  strengthened: string[];
-  superseded: string[];
-  contradictions: string[];
-  reviewRequired: string[];
-}
-
-interface Scanner {
-  scan(projectPath: string): Promise<SourceEvidence[]>;
-}
-
-interface ClaimExtractor {
-  extract(sources: SourceEvidence[]): Promise<CandidateClaim[]>;
-}
-
-interface TruthEngine {
-  resolve(projectId: string, candidates: CandidateClaim[]): Promise<ResolutionResult>;
-}
-
-interface AiProvider {
-  extractClaims(input: unknown): Promise<unknown>;
-  composeContext(input: unknown): Promise<unknown>;
+interface RepositorySource {
+  getMetadata(): Promise<RepositoryMetadata>;
+  getTree(ref?: string): Promise<RepositoryTree>;
+  getFile(path: string, ref?: string): Promise<RepositoryFile>;
+  getFiles(paths: string[], ref?: string): Promise<RepositoryFile[]>;
+  getChangedFiles(base: string, head: string): Promise<ChangedFile[]>;
+  getCommit(ref?: string): Promise<RepositoryCommit>;
 }
 ```
 
-Unknown AI output is parsed by Zod after the provider returns it. Provider success never implies semantic acceptance.
-
-## 6. Scan and Processing Flow
-
-`harikos scan` performs this sequence:
-
-1. Resolve and validate the Git repository root.
-2. Load default exclusions, `.gitignore`, and optional HARIKOS exclusions.
-3. Never read live secrets, credentials, private keys, dependency caches, build output, or Git object storage.
-4. Discover high-information sources: manifests, lockfiles, selected configs, README/agent docs, recent Git history, relevant source paths, and test metadata.
-5. Hash every source; skip unchanged content.
-6. Persist new source observations and change events.
-7. Run deterministic parsers first.
-8. Send only selected, redacted excerpts to the configured AI provider when interpretation is necessary and explicitly enabled.
-9. Validate AI output with Zod and store it only as candidate/inferred information.
-10. Normalize candidates and run truth resolution.
-11. Persist evidence links, validity intervals, contradictions, and resolutions in one transaction where practical.
-12. Rebuild affected retrieval indexes and report a scan summary.
-
-The scanner must not dump an entire repository into Gemini. Initial deterministic extraction covers language, framework, ORM, database, authentication, deployment, queue, and major provider choices where recognizable.
-
-## 7. Truth Engine
-
-Truth resolution is deterministic policy assisted by evidence, not an LLM vote.
-
-For every candidate:
-
-1. Normalize subject, predicate, value, and scope.
-2. Find related current claims.
-3. If compatible, merge or strengthen evidence.
-4. If incompatible, create a contradiction before changing canonical state.
-5. Compare claim-type-aware source authority, recency, corroboration, execution evidence, scope, and explicit human input.
-6. Resolve as `supersede`, `coexist`, `reject`, `merge`, or `review required`.
-7. Preserve the losing or previous claim and its validity interval; never erase history to simplify the current answer.
-
-Initial authority guidance:
+Implementations:
 
 ```text
-passing tests or executable configuration
-  > active source implementation
-  > corroborated manifest/config evidence
-  > recent Git change
-  > approved architecture decision
-  > maintained documentation
-  > agent assertion
-  > old note or unsupported inference
+LocalRepositorySource
+GitHubRepositorySource
 ```
 
-This is claim-type-aware, not a universal fixed ranking. A manifest proves installation, not active use. A human declaration may establish intended architecture while source code establishes current implementation.
+Local adapter preserves Phase 1/testing. GitHub adapter powers SaaS.
 
-Confidence is computed from observable factors—authority, recency, corroboration, execution evidence, and penalties—not copied from model self-confidence.
+## 8. GitHub App
 
-Current implementation and intended state must remain distinct. A migration can truthfully represent:
+Use minimum permissions initially:
 
 ```text
-current auth: Firebase
-target auth: Clerk
-migration: in progress
+Contents: Read
+Metadata: Read
 ```
 
-## 8. Memory, Retrieval, and Context Packs
-
-Memory and truth are separate stores with separate authority.
-
-- Truth answers what HARIKOS currently believes about the project.
-- Memory preserves useful history such as decisions, failures, causes, constraints, and outcomes.
-- An agent-proposed memory may create candidate claims, but cannot directly become canonical truth.
-
-MVP retrieval order is:
-
-1. current scoped claims,
-2. recent related changes,
-3. relevant decisions and constraints,
-4. known failures and incidents,
-5. supporting memories,
-6. SQLite full-text fallback.
-
-Vector search is not required.
-
-A Context Pack is a small, explainable, task-specific projection containing the task, current truth, relevant decisions, known issues and failed approaches, recent changes, and relevant files. Superseded facts are excluded from current context unless the task explicitly asks for history or migration details.
-
-## 9. Product Surfaces
-
-### CLI
-
-Required commands:
-
-- `harikos init`
-- `harikos scan`
-- `harikos truth`
-- `harikos contradictions`
-- `harikos remember "..."`
-- `harikos status`
-- `harikos ui`
-
-CLI commands call core application services and support stable machine-readable JSON where useful in addition to human output.
-
-### MCP
-
-The local MCP server exposes exactly these MVP tools:
-
-- `get_project_truth`
-- `search_project_memory`
-- `get_recent_changes`
-- `get_decisions`
-- `get_context_pack`
-- `record_memory`
-
-All inputs and outputs are schema-validated. Read tools return provenance. `record_memory` creates a proposed memory/event; it does not rewrite truth.
-
-### Web App
-
-The local Next.js app reads the same project state through core services and provides:
-
-- project overview and scan health,
-- current truth table,
-- claim detail with evidence and validity,
-- unresolved contradictions,
-- temporal timeline,
-- categorized memory,
-- Context Pack preview.
-
-No auth, billing, teams, or remote sync are part of the MVP.
-
-## 10. AI Boundary
-
-Gemini may help with natural-language claim extraction, decision extraction, memory classification, contradiction explanation, and Context Pack composition.
-
-Every AI operation must:
-
-- be optional or have a deterministic degraded mode,
-- use a provider-neutral interface,
-- receive the smallest relevant source excerpt,
-- exclude secrets and ignored paths,
-- request structured output,
-- validate with Zod,
-- label results `inferred`,
-- preserve model/provider metadata for audit,
-- remain candidate information until the Truth Engine verifies it.
-
-Prompts prototyped in Google AI Studio must be versioned in the repository before they affect runtime behavior.
-
-## 11. Security and Privacy
-
-- Local SQLite is the default and system of record for the MVP.
-- `.env`, credentials, tokens, private keys, secret stores, `.git`, dependencies, and build output are denied by default.
-- `.env.example` may be inspected only as a schema-like file and must never be assumed secret-free.
-- Paths are resolved and constrained to the registered repository root.
-- Source excerpts sent to cloud AI are explicit, minimal, and visible in logs or audit records.
-- Logs must redact secrets and avoid storing whole-file content by default.
-- MCP writes are validated and restricted to HARIKOS state; the MVP MCP server does not execute project code or mutate the repository.
-- Uncertain AI output is never silently canonicalized.
-
-## 12. Future Cloud Path
-
-The cloud version must extend, not replace, the local architecture.
+Flow:
 
 ```text
-Local scanner and agent adapters
-             |
-      encrypted sync/outbox
-             |
-      HARIKOS Cloud API
-             |
-   Postgres + team policies
+authenticate
+→ authorize/install HARIKOS
+→ select repo
+→ analyze
 ```
 
-Prepare for this by keeping persistence behind repository interfaces, using stable IDs and timestamps, recording append-friendly events, and separating project-local identity from future user/team identity.
+Installation credentials remain server-side. Authorize project/repo access per user/workspace.
 
-Post-MVP capabilities may include encrypted sync, Postgres, accounts, teams, source-level access controls, conflict-aware replication, additional agent adapters, evaluation analytics, policy enforcement, and an Action Gateway. None may distort the local MVP or enter the first sprint without an explicit spec change.
+## 9. Authentication / Authorization
 
-## 13. Architectural Invariants
+Requirements:
 
-1. Truth is evidence-backed and temporal.
-2. Memory is not canonical truth.
-3. Deterministic parsing precedes AI inference.
-4. AI produces typed candidates, never unilateral truth.
-5. Contradictions are recorded, not hidden.
-6. Scope differences may coexist.
-7. Current implementation and intended architecture are distinct.
-8. All product surfaces share one core implementation.
-9. Local operation does not require cloud infrastructure or a paid API.
-10. Every answer can explain what HARIKOS believes and why.
+- secure sessions;
+- user/project ownership;
+- repository-installation ownership validation;
+- no service secrets client-side;
+- authorization on every project API;
+- prevent IDOR-style project access.
+
+## 10. Initial Scan Flow
+
+```text
+select repo
+→ create Project + Scan
+→ get repository tree
+→ filter
+→ rank high-signal files
+→ fetch selected files
+→ deterministic analysis
+→ AI interpretation where useful
+→ candidate claims
+→ evidence
+→ truth resolver
+→ current + historical truth
+→ PostgreSQL
+→ web UI
+```
+
+## 11. Filtering
+
+Ignore by default:
+
+- node_modules
+- .next
+- dist/build/coverage
+- .git
+- generated output
+- binaries/media unless relevant
+
+Never ingest live secrets:
+
+- `.env`
+- tokens
+- credentials
+- private keys
+- secret stores
+
+A future `.harikoignore` may provide project-level exclusions.
+
+## 12. High-Signal Files
+
+Prioritize for JS/TS MVP:
+
+- package.json
+- README
+- tsconfig
+- next/vite config
+- Dockerfile
+- .env.example
+- middleware
+- auth
+- API routes
+- DB schema/config
+- Prisma/Drizzle
+- Supabase/Clerk/Firebase config
+- deployment config
+- tests
+- CI
+- AGENTS.md / CLAUDE.md
+- architecture docs
+
+## 13. Deterministic Analyzers
+
+Build explicit analyzers/verifiers for:
+
+- framework;
+- language;
+- authentication;
+- database;
+- ORM;
+- deployment;
+- payments;
+- testing;
+- API routing;
+- common conventions.
+
+AI should not replace deterministic evidence.
+
+## 14. AI Boundary
+
+Conceptual interface:
+
+```ts
+interface AIProvider {
+  extractCandidateClaims(input: ClaimExtractionInput): Promise<CandidateClaim[]>;
+  explainTruth(input: ExplainTruthInput): Promise<TruthExplanation>;
+  explainContradiction(input: ContradictionInput): Promise<ContradictionExplanation>;
+  composeContextPack(input: ContextPackInput): Promise<ContextPackDraft>;
+}
+```
+
+Rules:
+
+- structured output;
+- Zod validation;
+- timeout/retry handling;
+- preserve provenance;
+- candidate until resolved;
+- provider swappable.
+
+## 15. Claim Model
+
+Concept:
+
+```text
+id
+project_id
+category
+subject
+predicate
+value
+scope
+status
+confidence
+valid_from
+valid_to
+first_seen_at
+last_verified_at
+supersedes_claim_id
+```
+
+Statuses:
+
+- candidate
+- verified
+- likely
+- uncertain
+- contradicted
+- stale
+- superseded
+- rejected
+
+## 16. Evidence Model
+
+Concept:
+
+```text
+id
+claim_id
+project_id
+source_type
+file_path
+commit_sha
+blob_hash/content_hash
+line_start
+line_end
+authority
+observed_at
+metadata
+```
+
+Prefer pointers over permanently stored full file content.
+
+## 17. Truth Resolver
+
+```text
+candidate
+→ normalize
+→ find related active truth
+→ verify evidence
+
+no active truth:
+  VERIFIED / LIKELY / UNCERTAIN
+
+active truth exists:
+  compatible → strengthen evidence
+  incompatible → contradiction
+               → authority + recency + scope
+               → supersede / coexist / uncertain
+```
+
+Never delete history silently.
+
+## 18. Temporal Truth
+
+Example:
+
+```text
+Clerk
+valid_from: 2026-07-10
+valid_to: 2026-08-23
+status: superseded
+
+Supabase Auth
+valid_from: 2026-08-23
+valid_to: null
+status: verified
+```
+
+Current-context retrieval excludes superseded truth unless history is relevant.
+
+## 19. Contradictions
+
+Represent contradictions explicitly.
+
+Cases include:
+
+- stale docs;
+- migration coexistence;
+- different scopes;
+- intended vs current state;
+- ambiguous evidence;
+- extraction error.
+
+Do not force false single answers.
+
+## 20. Memory
+
+Memory types:
+
+- decision;
+- failed_attempt;
+- bug;
+- root_cause;
+- constraint;
+- incident;
+- outcome;
+- historical_note.
+
+Agent-written memories enter as proposals/events, not automatic truth.
+
+## 21. Context Packs
+
+Selection order:
+
+```text
+task
+→ current verified truth
+→ recent related changes
+→ constraints
+→ decisions
+→ known failures
+→ relevant historical memory
+```
+
+Return compact, explainable context.
+
+## 22. PostgreSQL
+
+Main SaaS database.
+
+Primary concepts:
+
+```text
+users
+projects
+repositories
+repository_installations
+scans
+claims
+evidence
+contradictions
+memories
+project_changes
+context_packs
+```
+
+Reuse Drizzle if practical.
+
+SQLite can stay for Phase 1/tests/local tooling but is not the primary SaaS DB.
+
+## 23. API Boundary
+
+Frontend should not directly import DB/truth internals.
+
+Conceptual endpoints/actions:
+
+```text
+GET  /api/projects
+POST /api/projects
+GET  /api/projects/:id
+POST /api/projects/:id/scan
+GET  /api/projects/:id/truth
+GET  /api/projects/:id/changes
+GET  /api/projects/:id/truth/:claimId
+POST /api/projects/:id/context
+```
+
+Framework-native actions are fine if boundaries remain clear.
+
+## 24. Product Routes
+
+```text
+/
+login
+/app/dashboard
+/app/projects
+/app/project/[id]
+/app/project/[id]/truth
+/app/project/[id]/changes
+/app/project/[id]/understand
+/app/project/[id]/context
+/app/settings
+```
+
+One app + one Vercel deployment initially.
+
+## 25. Scan Progress
+
+Semantic stages:
+
+- Found framework
+- Mapped authentication
+- Found database
+- Found deployment
+- Found API structure
+- Detected conventions
+- Building Project Truth
+
+Avoid exposing internal chunk/vector counts.
+
+## 26. Incremental Reverification
+
+After initial MVP scan works:
+
+```text
+GitHub push webhook
+→ verify signature
+→ identify project
+→ compare SHAs
+→ changed files
+→ affected evidence/claims
+→ re-fetch relevant files
+→ rerun analyzers
+→ resolve truth
+→ persist ProjectChange
+```
+
+Prefer selective reverification over full rescans.
+
+## 27. Project Changes
+
+Persist meaningful semantic events:
+
+```text
+Authentication changed
+Clerk → Supabase
+```
+
+Reference:
+
+- old/new claim;
+- commit;
+- evidence;
+- contradiction;
+- timestamp.
+
+## 28. Source Retention
+
+Default goal:
+
+- no permanent full clone;
+- no permanent arbitrary source warehouse;
+- fetch when needed;
+- derive structured knowledge;
+- persist pointers/hashes/history.
+
+If source excerpts must be stored later, make retention explicit.
+
+## 29. Security
+
+Required:
+
+- secrets server-side;
+- webhook signature verification;
+- GitHub installation validation;
+- project ownership authorization;
+- Zod validation;
+- safe rendering;
+- no arbitrary command execution;
+- no live `.env` ingestion;
+- no service-role key in browser;
+- RLS where appropriate;
+- rate limits/basic abuse controls where needed.
+
+## 30. AI Privacy Boundary
+
+If source is sent to AI providers:
+
+- send only relevant excerpts;
+- exclude secrets;
+- disclose provider use;
+- do not claim zero retention unless true;
+- never train on customer code unless explicitly supported/authorized.
+
+## 31. Performance
+
+Web:
+
+- server components by default where appropriate;
+- minimize client JS;
+- lazy-load heavy visuals;
+- optimize media;
+- reduced-motion support.
+
+Analysis:
+
+- content hashes;
+- skip unchanged files;
+- bounded file selection;
+- selective reverification;
+- cache deterministic outputs where safe.
+
+## 32. Motion / 3D
+
+Motion communicates state/progress/change.
+
+Hierarchy:
+
+```text
+CSS/native
+→ Motion
+→ GSAP
+→ Rive/Lottie
+→ React Three Fiber
+```
+
+3D belongs mainly on marketing/hero surfaces and must have static/reduced-motion fallbacks.
+
+## 33. Testing
+
+Unit:
+
+- parsers;
+- normalization;
+- authority;
+- truth resolution;
+- contradiction;
+- supersession;
+- context selection.
+
+Fixtures:
+
+- Firebase → Clerk;
+- Clerk → Supabase;
+- Drizzle → Prisma;
+- stale README;
+- installed-but-unused package;
+- migration coexistence;
+- agent hallucination.
+
+Integration:
+
+- RepositorySource;
+- GitHub adapter;
+- DB;
+- scan lifecycle;
+- authorization.
+
+Browser:
+
+- landing;
+- auth/onboarding;
+- repo select;
+- scan;
+- dashboard;
+- truth detail;
+- changes;
+- understand;
+- context pack.
+
+## 34. Flagship Test
+
+Initial:
+
+```text
+Clerk active
+README says Clerk
+```
+
+After migration:
+
+```text
+Supabase active
+README still says Clerk
+```
+
+Expected:
+
+```text
+Supabase VERIFIED
+Clerk SUPERSEDED
+README CONTRADICTION
+```
+
+Context for auth work must use Supabase.
+
+## 35. Local Development
+
+Current iteration target:
+
+```text
+http://localhost:3000
+```
+
+Local development may use:
+
+- LocalRepositorySource;
+- fixtures;
+- dev GitHub App;
+- dev Postgres/Supabase.
+
+The product architecture remains cloud SaaS.
+
+## 36. Deployment
+
+Production target:
+
+> Vercel
+
+Initially:
+
+```text
+harikos.ai
+```
+
+hosts both marketing and authenticated product.
+
+Later split only if needed:
+
+```text
+harikos.ai
+app.harikos.ai
+api.harikos.ai
+mcp.harikos.ai
+```
+
+## 37. MCP / CLI
+
+MCP remains a future agent integration layer.
+
+CLI remains useful for diagnostics, tests, legacy Phase 1, and possible future local mode.
+
+Neither is the primary MVP user experience.
+
+## 38. Non-Goals
+
+Do not add now:
+
+- Kubernetes;
+- Kafka;
+- microservice explosion;
+- Neo4j;
+- Elasticsearch;
+- large vector infra;
+- premature Redis;
+- enterprise SSO;
+- multi-region;
+- self-hosted deployment.
+
+## 39. Architecture Success
+
+Architecture succeeds when:
+
+1. app runs locally;
+2. web UI is the primary product surface;
+3. repo flows through `RepositorySource`;
+4. real Truth Engine produces claims;
+5. evidence is persisted/visible;
+6. PostgreSQL stores SaaS state;
+7. stale facts can be superseded;
+8. contradictions are representable;
+9. history remains available;
+10. Context Packs use current truth;
+11. frontend/backend boundaries stay clean;
+12. one Vercel deployment is possible;
+13. GitHub becomes the production repo source without rewriting core truth logic.

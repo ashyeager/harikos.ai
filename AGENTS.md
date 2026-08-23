@@ -1,227 +1,431 @@
-# HARIKOS AI Repository Instructions
+# AGENTS.md — HARIKOS AI Repository Instructions
 
-These instructions apply to Codex, Claude Code, Cursor agents, Hermes, and any human or automated contributor working in this repository.
+These instructions apply to Codex, Claude Code, Cursor agents, Hermes, and other coding agents working in this repository.
 
-## 1. Read Before Changing Code
+## 1. Read First
 
-Read these files in order before implementation:
+Before significant product or architecture work, read:
 
 1. `docs/harikos_ai_prd.md`
 2. `docs/ARCHITECTURE.md`
-3. `docs/MVP.md`
-4. the nearest package-level README or instructions for the files being changed
 
-The PRD defines the product. `ARCHITECTURE.md` defines system boundaries and invariants. `MVP.md` defines the current build scope. This file defines how work is performed.
+These are authoritative.
 
-If the documents conflict, stop and identify the conflict. Do not quietly choose a new product direction.
+If `docs/MVP.md` or older docs still describe local-first, SQLite-first, CLI/MCP-first, no auth, no GitHub App, or “cloud later,” treat those sections as **legacy/superseded** unless explicitly updated after August 23, 2026.
 
-## 2. Product Boundary
+## 2. Product Definition
 
-HARIKOS AI is a local-first, persistent, evidence-backed project-truth and context layer for AI coding agents.
+HARIKOS AI is:
 
-It is not a generic memory database, RAG wrapper, chatbot, notes app, IDE clone, or cloud SaaS shell.
+> **The truth layer for AI-built software.**
 
-The required loop is:
+It is a cloud-first web SaaS that connects to repositories, derives evidence-backed Project Truth, tracks when truth changes, explains the project to the builder, and provides current task-specific context to coding agents.
 
-```text
-observe repository evidence
-  -> derive typed candidates
-  -> verify and reconcile
-  -> preserve temporal truth
-  -> deliver relevant context through CLI, MCP, and web
-```
+It is not primarily:
 
-Protect this loop over surface area or visual polish.
+- a local CLI;
+- generic repo chat;
+- a vector DB;
+- generic memory;
+- an MCP server;
+- a Claude-only/Codex-only plugin;
+- an open-source project.
 
-## 3. Architecture Rules
+CLI/MCP/local tooling can remain supporting/future interfaces.
 
-- Preserve the pnpm monorepo and package boundaries in `ARCHITECTURE.md`.
-- Keep truth, retrieval, and context behavior in `packages/core`.
-- Keep Drizzle schema, migrations, and persistence adapters in `packages/db`.
-- Keep CLI, MCP, and web as adapters over shared core services.
-- Never copy truth-resolution logic into an interface.
-- Keep all MVP data local in SQLite under the registered project state directory.
-- Keep persistence behind interfaces that can support a future cloud adapter without adding cloud code now.
-- Avoid circular dependencies and deep imports across package internals.
-- Do not change architecture, package layout, status semantics, or public contracts merely to make one implementation easier.
-
-## 4. Scope Discipline
-
-Implement only the active task and the required supporting work in `MVP.md`.
-
-Do not add:
-
-- speculative cloud infrastructure,
-- auth, billing, teams, or remote sync,
-- vector databases or graph databases,
-- extra MCP tools,
-- unrelated integrations,
-- generic chat features,
-- broad abstractions with no current caller,
-- UI redesigns unrelated to the proof,
-- compatibility layers for hypothetical users.
-
-Do not leave fake buttons, mocked production paths, invented metrics, or unsupported product claims. If a capability is a demo or fixture, label it honestly.
-
-## 5. Dependency Policy
-
-- Use the locked stack: TypeScript, Node, pnpm, Next.js, SQLite, Drizzle, Zod, Commander, Git, MCP, Vitest, and Gemini structured outputs where justified.
-- Prefer platform APIs and existing workspace dependencies.
-- Add a dependency only when it removes meaningful complexity and has a current, tested use.
-- Before adding one, check whether the capability already exists in the repo.
-- Record the reason in the change summary.
-- Do not add overlapping libraries, monorepo frameworks, infrastructure services, or convenience packages for trivial code.
-- Remove unused dependencies before declaring completion.
-
-## 6. Deterministic First, AI Second
-
-Use deterministic parsing whenever a fact can be established from manifests, configuration, active imports, source code, Git, or tests.
-
-Never ask Gemini to determine a fact already available reliably from code.
-
-Use AI only for interpretation such as natural-language decisions, ambiguous architecture implications, memory classification, contradiction explanation, or Context Pack composition.
-
-Every AI integration must:
-
-1. use the provider abstraction,
-2. send only the minimum necessary, non-secret excerpt,
-3. request structured output,
-4. validate the response with Zod,
-5. label the result as inferred,
-6. preserve provenance and provider metadata,
-7. submit it to normal truth resolution as a candidate,
-8. handle missing keys, malformed output, refusal, timeout, and provider failure without corrupting state.
-
-Schema-valid does not mean semantically true. The model never owns canonical truth.
-
-## 7. Truth and Memory Must Stay Separate
-
-Truth is a structured, evidence-backed proposition that HARIKOS currently accepts for a scope and validity interval.
-
-Memory is useful historical context: a decision, failed attempt, bug, cause, constraint, preference, outcome, incident, or note.
-
-Therefore:
-
-- `record_memory` and `harikos remember` create memories or candidate information only.
-- An agent assertion is not authoritative because an agent wrote it.
-- A human declaration may define intent but must not be mislabeled as current implementation.
-- Never overwrite or delete old truth to create a cleaner current answer; close its validity interval and preserve history.
-- Never hide a real disagreement; create a contradiction and resolve it explicitly.
-- Treat scope differences as possible coexistence, not automatic conflict.
-- Distinguish observed, derived, inferred, and declared claims.
-- Confidence must come from evidence, corroboration, recency, authority, and execution signals—not model confidence alone.
-
-## 8. Scanner and Security Rules
-
-- Resolve the Git root before scanning and keep all paths inside it.
-- Deny `.env`, credentials, tokens, private keys, secret stores, `.git`, dependency directories, caches, and generated output by default.
-- Treat `.env.example` cautiously; it may reveal names and structure but must not be assumed harmless.
-- Honor Git ignores and HARIKOS-specific ignore rules.
-- Hash sources and skip unchanged content.
-- Do not send a whole repository or whole large file to a cloud model.
-- Redact sensitive values from logs, errors, fixtures, snapshots, and model requests.
-- Keep local databases and runtime state out of Git.
-- Do not let MVP MCP tools execute project code or mutate repository files.
-- Never commit secrets, local database contents, or real private project material as fixtures.
-
-## 9. TypeScript and Interface Quality
-
-- Use strict TypeScript; do not use `any` to bypass design problems.
-- Define Zod schemas at trust boundaries and infer TypeScript types from them where practical.
-- Use explicit domain names: `SourceEvidence`, `CandidateClaim`, `ResolutionResult`, `ContextPack`.
-- Prefer small pure functions in parsing, normalization, scoring, and resolution logic.
-- Make time, scope, status, and provenance explicit rather than hiding them in JSON blobs.
-- Use stable IDs and UTC timestamps.
-- Make writes idempotent where rescans or retries can repeat.
-- Use database transactions for multi-record truth changes.
-- Return typed errors with actionable messages; do not swallow failures.
-- Keep terminal and MCP JSON output stable enough for tests.
-
-## 10. Test Requirements
-
-Every behavior change requires tests at the lowest useful level plus integration coverage for affected boundaries.
-
-Required coverage includes:
-
-- source discovery, exclusions, hashing, and unchanged-source skipping,
-- deterministic parsers,
-- claim normalization and scoped identity,
-- authority/confidence scoring,
-- compatible evidence merging,
-- contradiction creation and resolution,
-- temporal supersession,
-- current implementation vs intended state,
-- stale documentation vs active source,
-- installed-but-unused dependency,
-- transitional coexistence,
-- agent hallucination rejection,
-- memory/truth separation,
-- Gemini malformed-output and no-key behavior,
-- CLI command behavior,
-- MCP input/output schemas,
-- Firebase-to-Clerk end-to-end fixture.
-
-Before completion, run from the repository root:
+## 3. MVP Loop
 
 ```text
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
+repository
+→ inspect high-signal state
+→ derive claims
+→ attach evidence
+→ resolve Project Truth
+→ render truth
+→ detect stale/superseded truth
+→ show contradictions/drift
+→ generate task-specific Context Pack
 ```
 
-Also run the actual CLI/MCP/web flow affected by the change. Passing mocked tests alone is insufficient for an integration task.
+Flagship test:
 
-## 11. Working Method
+```text
+Clerk
+→ repo migrates
+→ Supabase
 
-1. Inspect the current worktree and relevant code before editing.
-2. Restate the requested outcome and identify the smallest affected packages.
-3. Check the canonical documents and existing tests.
-4. Implement the smallest complete vertical behavior.
-5. Add or update tests with the implementation.
-6. Run focused checks, then the full required checks.
-7. Verify CLI, MCP, and web agree whenever shared truth state changes.
-8. Remove dead code, debugging output, temporary files, and unused dependencies.
-9. Report what changed, what was verified, and any remaining limitation truthfully.
+HARIKOS:
+Supabase = VERIFIED
+Clerk = SUPERSEDED
+stale README = CONTRADICTION
+```
 
-Do not stop at a plan when implementation was requested. Do not claim completion from code inspection alone.
+## 4. Core Invariants
 
-## 12. Deviations and Decisions
+### Truth != Memory
+Historical memory is not automatically current truth.
 
-Do not casually deviate from the PRD, architecture, or MVP.
+### Evidence
+Important verified claims require meaningful evidence.
 
-If a deviation is genuinely necessary:
+### Temporal Truth
+Preserve history. Use validity/supersession.
 
-1. explain the blocking evidence,
-2. state the proposed change and affected invariant,
-3. compare the smallest viable alternatives,
-4. obtain human approval when product scope or architecture materially changes,
-5. add `docs/decisions/YYYY-MM-DD-<slug>.md`,
-6. record context, decision, rationale, alternatives, consequences, and rollback path,
-7. update the canonical document in the same change,
-8. add tests that lock the new behavior.
+### Contradictions
+Do not silently flatten conflicts.
 
-Minor implementation details that preserve all contracts do not require an ADR, but they still belong in the change summary.
+### LLM Output
+Model claims are candidates until resolved.
 
-## 13. Completion Checklist
+### Deterministic First
+Do not use AI for facts source/config/Git/tests can establish reliably.
 
-Before saying a task is complete, confirm:
+### Repository Abstraction
+Truth logic must not directly depend on GitHub or filesystem. Maintain `RepositorySource`-style boundaries.
 
-- [ ] PRD, architecture, MVP, and relevant package instructions were read.
-- [ ] The change stays inside the requested scope.
-- [ ] Core rules remain in core; adapters contain no duplicate truth logic.
-- [ ] Deterministic extraction is used before AI.
-- [ ] All untrusted and AI outputs are Zod-validated.
-- [ ] New claims include status, scope, epistemic type, evidence, and validity where applicable.
-- [ ] Memory has not been promoted directly to truth.
-- [ ] Contradictions and historical state are preserved.
-- [ ] Secrets and ignored sources are not scanned, logged, or transmitted.
-- [ ] Rescans and retries are idempotent.
-- [ ] Focused tests and the required full checks pass.
-- [ ] The affected real flow was exercised, not only mocked.
-- [ ] CLI, MCP, and web show consistent state.
-- [ ] No unused dependencies, dead code, debug output, or temporary artifacts remain.
-- [ ] Any approved deviation is documented and canonical docs are updated.
-- [ ] The final report distinguishes verified behavior from assumptions or deferred work.
+### Cloud-First
+Localhost is development, not the product model.
 
-The quality bar is simple: every coding agent should receive the same current, evidence-backed project truth, and a developer should be able to inspect why HARIKOS believes it.
+### PostgreSQL
+Main SaaS persistence is PostgreSQL. SQLite may remain for tests/legacy/local tools.
+
+### Agent-Neutral
+Do not lock the engine to one provider/agent.
+
+### Minimal Context
+Do not dump entire project memory into agents.
+
+## 5. Technology Direction
+
+Use existing stack where compatible:
+
+- TypeScript
+- Node.js
+- pnpm
+- Next.js
+- Tailwind/reusable components
+- PostgreSQL / Supabase Postgres
+- Drizzle where practical
+- Zod
+- GitHub App / Octokit
+- provider-agnostic AI
+- Vitest
+- Playwright
+- Vercel
+
+Phase 1 tools may remain where useful:
+
+- SQLite
+- Commander CLI
+- MCP TypeScript SDK
+- local scanner
+
+## 6. Preserve Phase 1
+
+Prefer to reuse/adapt:
+
+- parsers;
+- scanner logic;
+- claim/evidence models;
+- truth resolver;
+- contradictions;
+- supersession;
+- memory;
+- context;
+- evaluation fixtures;
+- tests;
+- AI provider abstraction.
+
+Typical migration:
+
+```text
+local scanner
+→ RepositorySource
+→ LocalRepositorySource + GitHubRepositorySource
+
+SQLite-only
+→ PostgreSQL main SaaS DB
+
+CLI-first
+→ web-first
+
+local MCP-first
+→ later agent integration
+```
+
+## 7. Product Surface
+
+Public:
+
+```text
+/
+login
+```
+
+Authenticated:
+
+```text
+/app/dashboard
+/app/projects
+/app/project/[id]
+/app/project/[id]/truth
+/app/project/[id]/changes
+/app/project/[id]/understand
+/app/project/[id]/context
+/app/settings
+```
+
+Keep one Next.js app and one eventual Vercel deployment initially.
+
+## 8. UX Standard
+
+HARIKOS should be premium, fast, understandable, accessible, responsive, and interactive.
+
+Motion should communicate state, progress, or change.
+
+Avoid generic AI visuals, useless animation, or heavy 3D that harms usability.
+
+3D/video are optional marketing tools, not core product dependencies.
+
+## 9. GitHub Rules
+
+Production MVP should use a GitHub App.
+
+Prefer initial permissions:
+
+```text
+Contents: Read
+Metadata: Read
+```
+
+Never ask normal users to paste PATs.
+
+Never expose GitHub secrets client-side.
+
+Authorize every project/repository action to the current user/workspace.
+
+## 10. Data Policy
+
+Default:
+
+```text
+GitHub
+→ fetch relevant source temporarily
+→ analyze
+→ derive Project Truth
+→ discard unnecessary raw source
+→ persist claims/evidence pointers/history
+```
+
+Never ingest live `.env` secrets, tokens, keys, or credentials.
+
+Do not claim privacy properties the implementation does not actually provide.
+
+## 11. Dependency Policy
+
+Before adding a dependency:
+
+1. check built-in/framework capability;
+2. check existing dependencies;
+3. prefer maintained focused packages;
+4. consider security/performance;
+5. avoid packages for trivial utilities.
+
+Do not add infrastructure for hypothetical scale.
+
+## 12. Scope Control
+
+Do not prioritize unless explicitly requested:
+
+- billing;
+- enterprise SSO;
+- complex team RBAC;
+- GitLab/Bitbucket;
+- Jira/Linear/Slack;
+- mobile/desktop;
+- self-hosting;
+- Kubernetes;
+- Kafka;
+- Neo4j;
+- Elasticsearch;
+- large vector systems;
+- microservices;
+- autonomous action gateway.
+
+Current focus:
+
+```text
+repo
+→ truth
+→ evidence
+→ drift
+→ explanation
+→ context
+```
+
+## 13. Vertical Slices
+
+Prefer:
+
+> one real repository → real truth → DB → UI
+
+over:
+
+> many mocked screens or giant infrastructure.
+
+Leave the repo runnable/testable after meaningful steps.
+
+## 14. Database Rules
+
+Main SaaS DB:
+
+> PostgreSQL
+
+Core concepts:
+
+```text
+User
+Project
+Repository
+Scan
+Claim
+Evidence
+Contradiction
+Memory
+ProjectChange
+ContextPack
+```
+
+Do not collapse Claim and Memory.
+
+Do not delete SQLite if it remains useful to tests/Phase 1.
+
+## 15. AI Rules
+
+Model output should:
+
+- be structured where practical;
+- be validated;
+- preserve provenance;
+- remain candidate until resolved;
+- never silently overwrite truth.
+
+AI interprets evidence; it does not manufacture authority.
+
+## 16. Security
+
+Never:
+
+- commit secrets;
+- expose service-role keys client-side;
+- log credentials;
+- trust project IDs without authorization;
+- skip webhook verification;
+- render unsafe repository HTML;
+- execute arbitrary repo code without a safe explicit design.
+
+Maintain `.env.example`.
+
+## 17. Git Safety
+
+Before risky changes:
+
+- inspect `git status`;
+- inspect branch;
+- preserve uncommitted work.
+
+Never without explicit approval:
+
+```bash
+git reset --hard
+git clean -fd
+git push --force
+```
+
+Do not push or deploy unless explicitly instructed.
+
+## 18. Tests
+
+At milestones run relevant:
+
+- typecheck;
+- lint;
+- unit tests;
+- integration tests;
+- production build;
+- browser/Playwright checks.
+
+Important fixtures:
+
+- Firebase → Clerk;
+- Clerk → Supabase;
+- Drizzle → Prisma;
+- stale README;
+- installed-but-unused package;
+- migration coexistence;
+- agent hallucination.
+
+## 19. Repository Context
+
+Maintain when present:
+
+```text
+docs/harikos_ai_prd.md
+docs/ARCHITECTURE.md
+docs/BUILD_STATE.md
+docs/adr/
+```
+
+`AGENTS.md` is a map, not the complete product spec.
+
+Update `BUILD_STATE.md` after meaningful milestones if it exists.
+
+Use ADRs for major decisions only.
+
+## 20. Builder-With-Intent
+
+For significant architecture changes, briefly explain:
+
+- what changed;
+- why;
+- important files;
+- data flow;
+- trade-offs.
+
+Keep code understandable.
+
+## 21. Current Priority
+
+```text
+1. stabilize existing repo/frontend
+2. localhost working
+3. preserve/adapt Phase 1
+4. clean web/backend boundaries
+5. RepositorySource
+6. GitHub integration
+7. PostgreSQL persistence
+8. real repository → Project Truth
+9. evidence in UI
+10. supersession/contradiction test
+11. Context Pack
+12. UX/security/browser/performance QA
+13. deploy only when explicitly instructed
+```
+
+## 22. North Star
+
+```text
+Connect GitHub.
+
+HARIKOS understands the project.
+
+HARIKOS knows why each important fact is true.
+
+When the repository changes,
+HARIKOS changes its understanding.
+
+The builder understands the project better.
+
+The coding agent receives current context
+instead of stale assumptions.
+```
