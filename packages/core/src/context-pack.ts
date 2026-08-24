@@ -64,6 +64,7 @@ export function composeContextPack(
   snapshot: ProjectSnapshot,
   task: string,
   clock: () => Date = () => new Date(),
+  memories: Array<{ type: string; content: string; status?: string }> = [],
 ): ContextPack {
   const normalizedTask = task.trim();
   if (!normalizedTask) {
@@ -85,6 +86,17 @@ export function composeContextPack(
     ...new Set(truths.flatMap((claim) => claim.evidence.map((item) => item.path))),
   ].slice(0, 12);
   const text = formatContextText(snapshot, normalizedTask, truths, constraints);
+  const taskMemoryWords = taskWords(normalizedTask);
+  const relevantMemories = memories
+    .filter((memory) => memory.status !== "archived" && memory.status !== "superseded")
+    .filter((memory) => {
+      const haystack = `${memory.type} ${memory.content}`.toLowerCase();
+      return [...taskMemoryWords].some((word) => haystack.includes(word)) || ["constraint", "decision", "failed_attempt", "outcome"].includes(memory.type);
+    })
+    .slice(0, 8);
+  const memoryText = relevantMemories.length
+    ? `\n\nMEMORY\n${relevantMemories.map((memory) => `- ${memory.type}: ${memory.content}`).join("\n")}`
+    : "";
   return contextPackSchema.parse({
     task: normalizedTask,
     generatedAt: clock().toISOString(),
@@ -94,7 +106,7 @@ export function composeContextPack(
     constraints,
     relevantFiles,
     tokenEstimate: Math.ceil(text.length / 4),
-    text,
+    text: `${text}${memoryText}`,
   });
 }
 

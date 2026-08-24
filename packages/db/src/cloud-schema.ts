@@ -34,7 +34,7 @@ export const cloudEpistemicType = harikosCloud.enum("epistemic_type", [
 export const cloudUsers = harikosCloud.table("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   supabaseUserId: text("supabase_user_id").notNull().unique(),
-  githubUserId: text("github_user_id").notNull().unique(),
+  githubUserId: text("github_user_id").unique(),
   login: text("login").notNull(),
   displayName: text("display_name"),
   avatarUrl: text("avatar_url"),
@@ -294,6 +294,35 @@ export const cloudAgentConnections = harikosCloud.table(
   (table) => [index("agent_connections_project_idx").on(table.projectId)],
 );
 
+export const cloudAgentSessions = harikosCloud.table(
+  "agent_sessions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    projectId: uuid("project_id").notNull().references(() => cloudProjects.id, { onDelete: "cascade" }),
+    agentConnectionId: uuid("agent_connection_id").notNull().references(() => cloudAgentConnections.id, { onDelete: "cascade" }),
+    task: text("task"),
+    status: text("status").notNull().default("active"),
+    metadata: jsonb("metadata").notNull().default({}),
+    startedAt: timestamp("started_at", { withTimezone: true }).defaultNow().notNull(),
+    endedAt: timestamp("ended_at", { withTimezone: true }),
+  },
+  (table) => [index("agent_sessions_project_idx").on(table.projectId)],
+);
+
+export const cloudOutcomes = harikosCloud.table(
+  "outcomes",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    projectId: uuid("project_id").notNull().references(() => cloudProjects.id, { onDelete: "cascade" }),
+    sessionId: uuid("session_id").notNull().references(() => cloudAgentSessions.id, { onDelete: "cascade" }),
+    summary: text("summary").notNull(),
+    status: text("status").notNull(),
+    metadata: jsonb("metadata").notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index("outcomes_project_idx").on(table.projectId)],
+);
+
 export const cloudSchema = {
   users: cloudUsers,
   projects: cloudProjects,
@@ -308,4 +337,6 @@ export const cloudSchema = {
   contextPacks: cloudContextPacks,
   agentConnections: cloudAgentConnections,
   subscriptions: cloudSubscriptions,
+  agentSessions: cloudAgentSessions,
+  outcomes: cloudOutcomes,
 };

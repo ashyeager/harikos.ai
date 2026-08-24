@@ -3,6 +3,8 @@ ALTER TABLE "harikos"."memories"
   ADD COLUMN IF NOT EXISTS "agent" text,
   ADD COLUMN IF NOT EXISTS "session_id" uuid;
 
+ALTER TABLE "harikos"."users" ALTER COLUMN "github_user_id" DROP NOT NULL;
+
 CREATE TABLE IF NOT EXISTS "harikos"."agent_connections" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "project_id" uuid NOT NULL REFERENCES "harikos"."projects"("id") ON DELETE CASCADE,
@@ -30,3 +32,28 @@ CREATE TABLE IF NOT EXISTS "harikos"."subscriptions" (
 );
 CREATE INDEX IF NOT EXISTS "subscriptions_user_idx" ON "harikos"."subscriptions" ("user_id");
 ALTER TABLE "harikos"."subscriptions" ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE IF NOT EXISTS "harikos"."agent_sessions" (
+  "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "project_id" uuid NOT NULL REFERENCES "harikos"."projects"("id") ON DELETE CASCADE,
+  "agent_connection_id" uuid NOT NULL REFERENCES "harikos"."agent_connections"("id") ON DELETE CASCADE,
+  "task" text,
+  "status" text NOT NULL DEFAULT 'active',
+  "metadata" jsonb NOT NULL DEFAULT '{}'::jsonb,
+  "started_at" timestamptz NOT NULL DEFAULT now(),
+  "ended_at" timestamptz
+);
+CREATE INDEX IF NOT EXISTS "agent_sessions_project_idx" ON "harikos"."agent_sessions" ("project_id");
+ALTER TABLE "harikos"."agent_sessions" ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE IF NOT EXISTS "harikos"."outcomes" (
+  "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "project_id" uuid NOT NULL REFERENCES "harikos"."projects"("id") ON DELETE CASCADE,
+  "session_id" uuid NOT NULL REFERENCES "harikos"."agent_sessions"("id") ON DELETE CASCADE,
+  "summary" text NOT NULL,
+  "status" text NOT NULL,
+  "metadata" jsonb NOT NULL DEFAULT '{}'::jsonb,
+  "created_at" timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS "outcomes_project_idx" ON "harikos"."outcomes" ("project_id");
+ALTER TABLE "harikos"."outcomes" ENABLE ROW LEVEL SECURITY;

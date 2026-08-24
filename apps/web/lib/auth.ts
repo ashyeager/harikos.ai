@@ -14,7 +14,7 @@ const claimsSchema = z.object({
 
 export const authIdentitySchema = z.object({
   id: z.string().min(1),
-  githubUserId: z.string().min(1),
+  githubUserId: z.string().min(1).nullable(),
   login: z.string().min(1),
   email: z.string().email().nullable(),
   displayName: z.string().min(1).nullable(),
@@ -39,11 +39,12 @@ export function identityFromClaims(value: unknown): AuthIdentity | undefined {
   const login =
     optionalString(metadata.user_name) ??
     optionalString(metadata.preferred_username) ??
-    optionalString(metadata.name);
-  if (!githubUserId || !login || (provider !== "github" && provider !== "google")) return undefined;
+    optionalString(metadata.name) ??
+    result.data.email?.split("@")[0];
+  if (!login || (provider !== "github" && provider !== "google")) return undefined;
   return authIdentitySchema.parse({
     id: result.data.sub,
-    githubUserId,
+    githubUserId: githubUserId ?? null,
     login,
     email: result.data.email ?? optionalString(metadata.email) ?? null,
     displayName:

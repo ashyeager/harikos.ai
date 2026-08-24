@@ -29,4 +29,18 @@ describe("Supabase identity boundary", () => {
   it("rejects claims without GitHub provider identity", () => {
     expect(identityFromClaims({ sub: "user", user_metadata: {} })).toBeUndefined();
   });
+
+  it("accepts a Google identity without a GitHub repository identity", () => {
+    expect(identityFromClaims({
+      sub: "google-user",
+      email: "google@example.com",
+      app_metadata: { provider: "google" },
+      user_metadata: { name: "Google Builder" },
+    })).toMatchObject({
+      id: "google-user",
+      githubUserId: null,
+      login: "Google Builder",
+      provider: "google",
+    });
+  });
 });

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { authenticateAgentToken, createAgentMemory, createCloudMemorySchema, loadCloudSnapshotForAgent, listAgentMemories } from "../../../../lib/cloud-projects";
+import { authenticateAgentToken, beginAgentSession, createAgentMemory, createCloudMemorySchema, finishAgentSession, loadCloudSnapshotForAgent, listAgentMemories, recordAgentOutcome, outcomeSchema } from "../../../../lib/cloud-projects";
 import { getAuthIdentity } from "../../../../lib/auth";
 
 export const runtime = "nodejs";
@@ -18,9 +18,26 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
     if (!auth || auth.projectId !== projectId) return NextResponse.json({ error: "Agent token is invalid or revoked." }, { status: 401 });
     const body = (await request.json()) as { id?: unknown; method?: string; params?: { task?: string } };
     if (body.method === "initialize") return rpc(body.id, { protocolVersion: "2025-06-18", capabilities: { tools: {} }, serverInfo: { name: "harikos", version: "0.1.0" } });
-    if (body.method === "tools/list") return rpc(body.id, { tools: [{ name: "get_project_truth", description: "Read current evidence-backed project Truth.", inputSchema: { type: "object" } }, { name: "search_project_memory", description: "Search persisted project Memory.", inputSchema: { type: "object", properties: { query: { type: "string" } } } }, { name: "get_context_pack", description: "Prepare current Truth context for a task.", inputSchema: { type: "object", properties: { task: { type: "string" } }, required: ["task"] } }, { name: "record_memory", description: "Persist a project decision, attempt, constraint, or outcome.", inputSchema: { type: "object", properties: { type: { type: "string" }, content: { type: "string" } }, required: ["type", "content"] } }] });
+    if (body.method === "tools/list") return rpc(body.id, { tools: ["get_project_truth", "search_project_memory", "get_recent_changes", "get_context_pack", "record_memory", "record_outcome", "check_assumption", "begin_agent_session", "end_agent_session"].map((name) => ({ name, description: `HARIKOS ${name}`, inputSchema: { type: "object" } })) });
     if (body.method === "tools/call") {
-      const name = (body.params as { name?: string } | undefined)?.name;
+      const params = body.params as { name?: string; arguments?: Record<string, unknown> } | undefined;
+      const name = params?.name;
+      const args = params?.arguments ?? {};
+      if (name === "begin_agent_session") {
+        const session = await beginAgentSession(projectId, auth.connectionId, typeof args.task === "string" ? args.task : undefined);
+        return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(session) }] });
+      }
+      if (name === "end_agent_session") {
+        if (typeof args.sessionId !== "string") return rpc(body.id, { isError: true, content: [{ type: "text", text: "sessionId is required" }] });
+        const status = args.status === "failed" || args.status === "abandoned" ? args.status : "completed";
+        const session = await finishAgentSession(projectId, auth.connectionId, args.sessionId, status);
+        return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(session) }] });
+      }
+      if (name === "record_outcome") {
+        if (typeof args.sessionId !== "string") return rpc(body.id, { isError: true, content: [{ type: "text", text: "sessionId is required" }] });
+        const outcome = await recordAgentOutcome(projectId, auth.connectionId, args.sessionId, outcomeSchema.parse({ summary: args.summary, status: args.status, metadata: args.metadata }));
+        return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(outcome) }] });
+      }
       const snapshot = await loadCloudSnapshotForAgent(projectId);
       if (!snapshot) return rpc(body.id, { isError: true, content: [{ type: "text", text: "Project has no completed scan." }] });
       if (name === "get_project_truth") return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(snapshot.truths.filter((claim) => ["verified", "likely"].includes(claim.status))) }] });
@@ -30,15 +47,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
         return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(memories.filter((memory) => !query || memory.content.toLowerCase().includes(query) || memory.type.includes(query))) }] });
       }
       if (name === "record_memory") {
-        const args = (body.params as { arguments?: { type?: string; content?: string } } | undefined)?.arguments;
-        const memory = await createAgentMemory(projectId, createCloudMemorySchema.parse({ type: args?.type, content: args?.content, agent: "remote-agent" }));
+        const memory = await createAgentMemory(projectId, createCloudMemorySchema.parse({ type: args.type, content: args.content, agent: "remote-agent", sessionId: args.sessionId }));
         return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(memory) }] });
       }
+      if (name === "get_recent_changes") return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(snapshot.changes.slice(-10)) }] });
+      if (name === "check_assumption") {
+        const statement = typeof args.statement === "string" ? args.statement.toLowerCase() : "";
+        const matches = snapshot.truths.filter((claim) => statement.includes(claim.subject.toLowerCase()) || statement.includes(claim.value.toLowerCase()));
+        const contradicted = matches.some((claim) => claim.status === "superseded" || !statement.includes(claim.value.toLowerCase()));
+        return rpc(body.id, { content: [{ type: "text", text: JSON.stringify({ status: matches.length === 0 ? "UNVERIFIED" : contradicted ? "CONTRADICTED" : "SUPPORTED", matches }) }] });
+      }
       if (name === "get_context_pack") {
-        const task = (body.params as { arguments?: { task?: string } } | undefined)?.arguments?.task;
+        const task = typeof args.task === "string" ? args.task : undefined;
         if (!task) return rpc(body.id, { isError: true, content: [{ type: "text", text: "task is required" }] });
         const { composeContextPack } = await import("@harikos/core");
-        return rpc(body.id, { content: [{ type: "text", text: composeContextPack(snapshot, task).text }] });
+        const memories = await listAgentMemories(projectId);
+        return rpc(body.id, { content: [{ type: "text", text: composeContextPack(snapshot, task, () => new Date(), memories).text }] });
       }
       return rpc(body.id, { isError: true, content: [{ type: "text", text: "Unknown tool." }] });
     }

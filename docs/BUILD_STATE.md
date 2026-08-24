@@ -11,21 +11,21 @@ Updated: August 24, 2026
 - Provider-neutral `RepositorySource` with local and GitHub implementations.
 - Bounded deterministic repository scanning with secret/path filtering.
 - Truth resolution with evidence, confidence, temporal validity, contradictions, and supersession.
-- Cloud PostgreSQL persistence for users, projects, repositories, scans, claims, evidence, contradictions, changes, memories, context packs, and agent connections.
+- Cloud PostgreSQL persistence for users, projects, repositories, scans, claims, evidence, contradictions, changes, memories, context packs, agent connections, agent sessions, outcomes, and subscription records is migration-backed; live target verification requires configured credentials.
 - Ownership-filtered cloud project queries and server-only database access.
 - Human project overview, Truth, claim detail, Changes, Understand, Context, Projects, and Settings routes.
 - Local SQLite persistence, CLI diagnostics, flagship Clerk-to-Supabase fixture, unit tests, build, and browser test configuration.
-- Google OAuth initiation is implemented as a separate Supabase Auth provider path; external provider dashboard setup is required.
+- Google OAuth initiation and provider-aware identity parsing are implemented as a separate Supabase Auth path; external provider dashboard setup is required.
 - Centralized Free/Pro entitlement defaults exist; server-side usage enforcement is still partial.
 
 ## PARTIAL
 
-- Cloud Memory CRUD and a project Memory UI now persist real records for GitHub projects; search is currently type filtering and agent write-back is not connected.
-- Context generation is real and persisted for GitHub projects, but currently derives from the existing snapshot and does not yet include cloud Memory.
+- Cloud Memory CRUD/UI, agent Memory search/write-back, and Memory-to-Context retrieval are implemented; live persistence requires the configured Supabase database.
+- Context generation combines current Truth with active relevant Memory for browser and MCP requests.
 - Dashboard and project surfaces still use the clearly labeled fixture as a default visual shell in some routes.
-- Scan status persistence exists, but scans are user-triggered and there is no webhook-driven incremental reverification.
-- Remote HTTP MCP transport, project-scoped hashed bearer tokens, token revocation, and Truth/Context read tools exist; agent sessions, Memory/Outcome write-back, and the MCP SDK package implementation remain incomplete.
-- Stripe server routes for Checkout, signed subscription webhooks, and Customer Portal exist; entitlement persistence and server-side Free/Pro limits are not yet wired into project/agent/memory operations.
+- Scan status persistence exists; manual scans and signed GitHub push webhook bounded rescans are implemented; live webhook delivery requires GitHub App dashboard configuration.
+- Remote HTTP MCP transport, project-scoped hashed bearer tokens, token revocation, Truth/Memory/Context/Changes/assumption tools, AgentSession lifecycle, and Outcome/Memory write-back are implemented without browser-session dependency.
+- Stripe server routes for Checkout, signed subscription webhooks, Customer Portal, subscription persistence, and centralized entitlement definitions exist; live Stripe configuration and broad server-side usage enforcement remain deferred.
 - User/profile persistence exists through cloud user upsert, but there is no separate profile/settings model.
 
 ## MOCKED
@@ -35,10 +35,8 @@ Updated: August 24, 2026
 
 ## BLOCKED
 
-- Stripe Checkout, signed webhook entitlement updates, Customer Portal, and centralized Free/Pro enforcement are not implemented.
-- Stripe routes are CONFIG_REQUIRED until Stripe credentials and webhook dashboard configuration exist; webhook-derived subscription state is persisted when configured.
-- Agent handoff is blocked: MCP Memory/Outcome writes and session persistence are not implemented.
-- Automatic GitHub webhook drift processing is not implemented.
+- Live Supabase acceptance flow and negative ownership test cannot run without the existing project's credentials in this environment.
+- Live Stripe payment/webhook verification is deferred by mission scope.
 
 ## CONFIG REQUIRED
 
@@ -51,13 +49,12 @@ Updated: August 24, 2026
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
 - `DATABASE_URL` or `POSTGRES_URL`
-- Stripe variables are not yet consumed by the application.
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_PRO_PRICE_ID`
 
 ## NEXT
 
-1. Integrate cloud Memory into Context and add MCP Memory/Outcome/session write-back.
-2. Persist webhook-derived billing state and enforce centralized Free/Pro entitlements.
-3. Replace fixture defaults in authenticated dashboard paths with real empty states and real counts.
+1. Configure the existing Supabase project and apply/verify cloud migrations.
+2. Run the real Google/GitHub, GitHub App, scan, Memory, MCP handoff, and webhook acceptance flows.
+3. Perform the dedicated frontend/UI/UX overhaul after this functional lock.

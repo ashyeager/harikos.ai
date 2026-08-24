@@ -8,6 +8,8 @@ import {
   cloudProjectChanges,
   cloudMemories,
   cloudAgentConnections,
+  cloudAgentSessions,
+  cloudOutcomes,
   cloudProjects,
   cloudRepositories,
   cloudRepositoryInstallations,
@@ -83,6 +85,16 @@ export const createAgentConnectionSchema = z.object({
   name: z.string().trim().min(1).max(100),
 });
 
+export const agentSessionSchema = z.object({
+  task: z.string().trim().min(1).max(2_000).optional(),
+});
+
+export const outcomeSchema = z.object({
+  summary: z.string().trim().min(1).max(10_000),
+  status: z.enum(["success", "failed", "partial"]),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+
 function hashAgentToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
@@ -145,7 +157,7 @@ async function ensureCloudUser(
       avatarUrl: identity.avatarUrl,
     })
     .onConflictDoUpdate({
-      target: cloudUsers.githubUserId,
+      target: cloudUsers.supabaseUserId,
       set: {
         supabaseUserId: identity.id,
         login: identity.login,
@@ -431,7 +443,7 @@ async function loadPreviousTruths(
 }
 
 export async function scanCloudProject(
-  identity: AuthIdentity,
+  identity: AuthIdentity | undefined,
   projectId: string,
 ): Promise<ProjectSnapshot> {
   const connection = await openConfiguredCloudDatabase();
@@ -603,6 +615,20 @@ export async function scanCloudProject(
   } finally {
     await connection.close();
   }
+}
+
+export async function findCloudProjectByRepositoryId(repositoryId: string): Promise<string | undefined> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const [project] = await connection.db.select({ id: cloudProjects.id }).from(cloudProjects)
+      .innerJoin(cloudRepositories, eq(cloudProjects.id, cloudRepositories.projectId))
+      .where(eq(cloudRepositories.githubRepositoryId, repositoryId));
+    return project?.id;
+  } finally { await connection.close(); }
+}
+
+export async function scanCloudProjectFromWebhook(projectId: string): Promise<ProjectSnapshot> {
+  return scanCloudProject(undefined, projectId);
 }
 
 export async function saveCloudContextPack(
@@ -826,6 +852,43 @@ export async function authenticateAgentToken(token: string): Promise<{ projectId
   } finally {
     await connection.close();
   }
+}
+
+export async function beginAgentSession(projectId: string, connectionId: string, task?: string) {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const [session] = await connection.db.insert(cloudAgentSessions).values({
+      projectId,
+      agentConnectionId: connectionId,
+      task: task ?? null,
+      status: "active",
+      metadata: {},
+    }).returning();
+    if (!session) throw new Error("Could not start agent session.");
+    return session;
+  } finally { await connection.close(); }
+}
+
+export async function finishAgentSession(projectId: string, connectionId: string, sessionId: string, status: "completed" | "failed" | "abandoned") {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const [session] = await connection.db.update(cloudAgentSessions).set({ status, endedAt: new Date() }).where(and(eq(cloudAgentSessions.id, sessionId), eq(cloudAgentSessions.projectId, projectId), eq(cloudAgentSessions.agentConnectionId, connectionId))).returning();
+    if (!session) throw new Error("Agent session not found.");
+    return session;
+  } finally { await connection.close(); }
+}
+
+export async function recordAgentOutcome(projectId: string, connectionId: string, sessionId: string, input: z.input<typeof outcomeSchema>) {
+  const parsed = outcomeSchema.parse(input);
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const [session] = await connection.db.select().from(cloudAgentSessions).where(and(eq(cloudAgentSessions.id, sessionId), eq(cloudAgentSessions.projectId, projectId), eq(cloudAgentSessions.agentConnectionId, connectionId)));
+    if (!session) throw new Error("Agent session not found.");
+    const [outcome] = await connection.db.insert(cloudOutcomes).values({ projectId, sessionId, summary: parsed.summary, status: parsed.status, metadata: parsed.metadata }).returning();
+    if (!outcome) throw new Error("Could not persist outcome.");
+    await connection.db.insert(cloudMemories).values({ projectId, type: "outcome", content: parsed.summary, status: "active", importance: parsed.status === "success" ? 0.7 : 0.8, agent: "remote-agent", sessionId });
+    return outcome;
+  } finally { await connection.close(); }
 }
 
 async function loadCloudSnapshotInternal(

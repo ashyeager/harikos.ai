@@ -11,7 +11,7 @@
 
 ## GitHub App
 
-Configure the existing HARIKOS GitHub App with Contents: Read and Metadata: Read. Set `GITHUB_APP_ID`, `GITHUB_APP_SLUG`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and a 32+ character `HARIKOS_SESSION_SECRET`. The GitHub App callback is `/api/github/install/callback`; the login provider remains separate from repository authorization.
+Configure the existing HARIKOS GitHub App with Contents: Read and Metadata: Read. Set `GITHUB_APP_ID`, `GITHUB_APP_SLUG`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and a 32+ character `HARIKOS_SESSION_SECRET`. The GitHub App callback is `/api/github/install/callback`; the login provider remains separate from repository authorization. For push reverification, set `GITHUB_WEBHOOK_SECRET` and register `https://<production-domain>/api/github/webhook` for the `push` event.
 
 ## Stripe
 

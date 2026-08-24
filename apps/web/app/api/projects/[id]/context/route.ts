@@ -2,7 +2,7 @@ import { composeContextPack } from "@harikos/core";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { saveCloudContextPack } from "../../../../../lib/cloud-projects";
+import { listCloudMemories, saveCloudContextPack } from "../../../../../lib/cloud-projects";
 import { projectSnapshot } from "../../../../../lib/project-data";
 import { getAuthIdentity } from "../../../../../lib/auth";
 
@@ -27,7 +27,10 @@ export async function POST(
       if (!session) {
         return NextResponse.json({ error: "Authentication required." }, { status: 401 });
       }
-      await saveCloudContextPack(session, id, pack);
+      const memories = await listCloudMemories(session, id);
+      const enrichedPack = composeContextPack(snapshot, input.task, () => new Date(), memories);
+      await saveCloudContextPack(session, id, enrichedPack);
+      return NextResponse.json(enrichedPack);
     }
     return NextResponse.json(pack);
   } catch (error) {

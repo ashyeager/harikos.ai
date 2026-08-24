@@ -1,14 +1,14 @@
 # OSS Intelligence Audit
 
-Audit status: reference-level review before adding third-party intelligence dependencies.
+Audit status: baseline integrations completed without importing third-party source.
 
 | System | Decision | Current HARIKOS equivalent | Reason |
 |---|---|---|---|
-| Tree-sitter | DEFER | Deterministic TypeScript/JavaScript analyzers | Structural parsing could improve symbols, but adding native parser packages needs a measured language/latency benefit first. |
-| Aider repo-map | ADAPT LATER | Scanner priority ranking and bounded Context Packs | Token-budgeted symbol ranking is useful; adapt the algorithm behind HARIKOS interfaces rather than importing the coding assistant. |
+| Tree-sitter | REFERENCE | Deterministic TypeScript/JavaScript analyzers | Structural parsing remains a candidate for a later measured improvement; no native parser dependency is required for the current Vercel baseline. |
+| Aider repo-map | ADAPTED | Scanner priority ranking and bounded Context Packs | HARIKOS adapts the useful principles of high-signal file ranking, relevance scoring, and bounded context selection without importing the coding assistant. |
 | CodeGraph | REJECT FOR MVP | RepositorySource plus bounded rescans | A persistent graph/worker does not fit the Vercel MVP boundary yet. Revisit for selective reverification after baseline benchmarks. |
-| projectmem | ADAPT | Structured Memory, AgentSession, Outcome model | Its event/history concepts match the product, but HARIKOS Truth remains independently evidence-authoritative. |
-| Qarinah | REFERENCE ONLY | Context Pack and evidence provenance | Useful conceptual overlap; no dependency is justified before measuring retrieval quality and license/maintenance fit. |
+| projectmem | ADAPTED | Structured Memory, AgentSession, Outcome model | HARIKOS uses the event/history pattern for attempts, failures, decisions, and outcomes; Truth remains independently evidence-authoritative. |
+| Qarinah | ADAPTED | Context Pack, provenance, supersession-aware retrieval | HARIKOS applies the useful cross-agent context and provenance concepts while retaining its own domain model. |
 | Mem0 | REJECT FOR MVP | PostgreSQL structured Memory and text filtering | A vector or extra service would add infrastructure without evidence of better project handoff for the current MVP. |
 
 ## Required verification before integration
@@ -17,4 +17,4 @@ For any future dependency, inspect the exact upstream commit/tag, current licens
 
 ## Current conclusion
 
-No OSS package is added by this pass. The existing deterministic analyzer, Truth Resolver, structured Memory model, and Context engine remain the authoritative baseline. Benchmark first; augment only where a measurable reduction in stale claims, context size, analysis latency, or agent rediscovery is demonstrated.
+No third-party source is copied into this repository. Aider-style bounded ranking, projectmem-style structured history, and Qarinah-style provenance/context separation are adapted as internal implementations. Tree-sitter and CodeGraph remain references because a native parser or persistent graph would add deployment/runtime cost without a measured MVP benefit; Mem0 is rejected because it would duplicate structured Memory and add unnecessary infrastructure.
