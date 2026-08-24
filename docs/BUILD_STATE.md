@@ -1,62 +1,56 @@
 # HARIKOS AI Build State
 
-Updated: August 23, 2026
+Updated: August 24, 2026
 
-## Verified locally
+## REAL
 
-- cloud-first canonical PRD, architecture, MVP, and implementation ADR;
-- local and GitHub `RepositorySource` adapters with secret/path controls;
-- deterministic high-signal scanning and active-import detection;
-- evidence-backed claims, confidence, contradictions, supersession, and stale-state handling;
-- task-specific Context Packs and evidence-grounded project explanations;
-- SQLite persistence retained for local tools;
-- Supabase PostgreSQL schema, migrations, ownership-filtered project queries, and RLS-enabled server-only tables;
-- Supabase Auth with GitHub identity and refreshed SSR cookies;
-- signed GitHub installation state plus repository-scoped, short-lived, read-only GitHub App tokens;
-- landing, login, projects, overview, truth, claim detail, changes, understand, context, and settings routes;
-- typed APIs, supporting CLI, and reproducible Clerk-to-Supabase fixture;
-- desktop/mobile browser flow, responsive layout, runtime/console checks, and Playwright coverage.
+- V3 product, architecture, and agent instructions migrated to canonical paths.
+- Supabase Auth GitHub identity, callback, SSR session cookies, protected app routes, and logout.
+- GitHub App installation flow with signed state, installation ownership checks, and read-only short-lived installation tokens.
+- GitHub repository listing and repository-scoped authorization.
+- Provider-neutral `RepositorySource` with local and GitHub implementations.
+- Bounded deterministic repository scanning with secret/path filtering.
+- Truth resolution with evidence, confidence, temporal validity, contradictions, and supersession.
+- Cloud PostgreSQL persistence for users, projects, repositories, scans, claims, evidence, contradictions, changes, memories, context packs, and agent connections.
+- Ownership-filtered cloud project queries and server-only database access.
+- Human project overview, Truth, claim detail, Changes, Understand, Context, Projects, and Settings routes.
+- Local SQLite persistence, CLI diagnostics, flagship Clerk-to-Supabase fixture, unit tests, build, and browser test configuration.
 
-## Verified in production
+## PARTIAL
 
-Production at <https://harikos-ai.vercel.app> was exercised end to end with the
-canonical private repository `ashyeager/harikos.ai`:
+- Cloud Memory CRUD and a project Memory UI now persist real records for GitHub projects; search is currently type filtering and agent write-back is not connected.
+- Context generation is real and persisted for GitHub projects, but currently derives from the existing snapshot and does not yet include cloud Memory.
+- Dashboard and project surfaces still use the clearly labeled fixture as a default visual shell in some routes.
+- Scan status persistence exists, but scans are user-triggered and there is no webhook-driven incremental reverification.
+- Remote HTTP MCP transport, project-scoped hashed bearer tokens, token revocation, and Truth/Context read tools exist; agent sessions, Memory/Outcome write-back, and the MCP SDK package implementation remain incomplete.
+- User/profile persistence exists through cloud user upsert, but there is no separate profile/settings model.
 
-- GitHub sign-in completed through Supabase Auth;
-- the public GitHub App was installed with only Contents: Read and Metadata: Read;
-- installation ownership was verified against the signed-in GitHub identity;
-- access was restricted to the canonical repository;
-- the first GitHub scan persisted one project, one completed scan, 9 claims, and
-  51 evidence rows from 42 analyzed source files;
-- Project Truth, claim provenance, and a persisted Context Pack rendered from
-  the managed PostgreSQL data.
+## MOCKED
 
-Production secrets are stored only in Supabase, GitHub, and Vercel. No secret or
-private-key material is stored in this repository. `.env.example` documents the
-required names without values.
+- The isolated flagship fixture is used for local/demo product routes and is explicitly labeled as a fixture.
+- No production success path intentionally fabricates repository, scan, memory, agent, customer, or billing state.
 
-## Deferred boundary
+## BLOCKED
 
-GitHub webhooks are intentionally deferred. Scans are user-triggered and always
-resolve a fresh, repository-scoped installation token; no webhook-dependent
-success path is shown.
+- Stripe Checkout, signed webhook entitlement updates, Customer Portal, and centralized Free/Pro enforcement are not implemented.
+- Agent handoff is blocked: MCP Memory/Outcome writes and session persistence are not implemented.
+- Automatic GitHub webhook drift processing is not implemented.
 
-## Verification commands
+## CONFIG REQUIRED
 
-```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm test:e2e
-pnpm demo
-```
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `HARIKOS_SESSION_SECRET`
+- `GITHUB_APP_ID`
+- `GITHUB_APP_SLUG`
+- `GITHUB_APP_PRIVATE_KEY`
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+- `DATABASE_URL` or `POSTGRES_URL`
+- Stripe variables are not yet consumed by the application.
 
-## Delivery boundary
+## NEXT
 
-The repository includes the Vercel monorepo build configuration for the Next.js
-application under `apps/web`. Production verification covers rendered pages,
-authentication, GitHub authorization, PostgreSQL writes, scanning, truth
-retrieval, and Context Pack persistence rather than deployment status alone.
-
-Canonical production URL: <https://harikos-ai.vercel.app>
+1. Integrate cloud Memory into Context and add MCP Memory/Outcome/session write-back.
+2. Enforce centralized Free/Pro entitlements and add Stripe Checkout, webhooks, and Customer Portal.
+3. Replace fixture defaults in authenticated dashboard paths with real empty states and real counts.

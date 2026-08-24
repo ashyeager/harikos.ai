@@ -55,10 +55,13 @@ export const RESOLUTION_TYPES = [
 
 export const MEMORY_TYPES = [
   "decision",
+  "attempt",
   "failed_attempt",
+  "fix",
   "bug",
   "root_cause",
   "constraint",
+  "discovery",
   "preference",
   "outcome",
   "note",

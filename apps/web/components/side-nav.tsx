@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 const items = [
   ["Overview", "◫", ""],
   ["Project Truth", "◎", "/truth"],
+  ["Memory", "▣", "/memory"],
+  ["Agents", "⌘", "/agents"],
   ["Changes", "↻", "/changes"],
   ["Understand", "?", "/understand"],
   ["Before you build", "↗", "/context"],

@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 
 import {
   cloudClaims,
@@ -6,6 +6,8 @@ import {
   cloudContradictions,
   cloudEvidence,
   cloudProjectChanges,
+  cloudMemories,
+  cloudAgentConnections,
   cloudProjects,
   cloudRepositories,
   cloudRepositoryInstallations,
@@ -16,6 +18,7 @@ import {
   eq,
   openCloudDatabase,
   readCloudDatabaseConfig,
+  isNull,
 } from "@harikos/db";
 import {
   analyzeRepository,
@@ -45,6 +48,44 @@ export const createCloudProjectSchema = z.object({
 });
 
 export type CreateCloudProjectInput = z.infer<typeof createCloudProjectSchema>;
+
+export const createCloudMemorySchema = z.object({
+  type: z.enum(["decision", "attempt", "failed_attempt", "fix", "bug", "root_cause", "constraint", "discovery", "outcome", "incident", "note"]),
+  content: z.string().trim().min(1).max(10_000),
+  importance: z.number().min(0).max(1).default(0.5),
+  agent: z.string().trim().min(1).max(100).optional(),
+  sessionId: z.string().uuid().optional(),
+});
+
+export type CloudMemory = {
+  id: string;
+  projectId: string;
+  type: string;
+  content: string;
+  status: string;
+  importance: number;
+  agent: string | null;
+  sessionId: string | null;
+  createdAt: string;
+};
+
+export type AgentConnection = {
+  id: string;
+  projectId: string;
+  name: string;
+  tokenPrefix: string;
+  revokedAt: string | null;
+  lastUsedAt: string | null;
+  createdAt: string;
+};
+
+export const createAgentConnectionSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+});
+
+function hashAgentToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
 
 export class RepositoryAuthorizationError extends Error {
   constructor(message: string) {
@@ -305,7 +346,7 @@ export async function listAuthorizedRepositories(identity: AuthIdentity) {
   }
 }
 
-async function authorizedProject(connection: Awaited<ReturnType<typeof openCloudDatabase>>, identity: AuthIdentity, projectId: string) {
+async function authorizedProject(connection: Awaited<ReturnType<typeof openCloudDatabase>>, identity: AuthIdentity | undefined, projectId: string) {
   const [record] = await connection.db
     .select({
       id: cloudProjects.id,
@@ -328,7 +369,7 @@ async function authorizedProject(connection: Awaited<ReturnType<typeof openCloud
     .where(
       and(
         eq(cloudProjects.id, projectId),
-        eq(cloudUsers.supabaseUserId, identity.id),
+        identity ? eq(cloudUsers.supabaseUserId, identity.id) : undefined,
       ),
     );
   if (!record) {
@@ -583,8 +624,212 @@ export async function saveCloudContextPack(
   }
 }
 
-export async function loadCloudSnapshot(
+export async function listCloudMemories(
   identity: AuthIdentity,
+  projectId: string,
+  type?: string,
+): Promise<CloudMemory[]> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    await authorizedProject(connection, identity, projectId);
+    const rows = await connection.db
+      .select()
+      .from(cloudMemories)
+      .where(eq(cloudMemories.projectId, projectId))
+      .orderBy(desc(cloudMemories.createdAt));
+    return rows
+      .filter((memory) => !type || memory.type === type)
+      .map((memory) => ({
+        id: memory.id,
+        projectId: memory.projectId,
+        type: memory.type,
+        content: memory.content,
+        status: memory.status,
+        importance: memory.importance,
+        agent: memory.agent,
+        sessionId: memory.sessionId,
+        createdAt: memory.createdAt.toISOString(),
+      }));
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function listAgentMemories(projectId: string): Promise<CloudMemory[]> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const rows = await connection.db.select().from(cloudMemories)
+      .where(eq(cloudMemories.projectId, projectId)).orderBy(desc(cloudMemories.createdAt));
+    return rows.map((memory) => ({
+      id: memory.id,
+      projectId: memory.projectId,
+      type: memory.type,
+      content: memory.content,
+      status: memory.status,
+      importance: memory.importance,
+      agent: memory.agent,
+      sessionId: memory.sessionId,
+      createdAt: memory.createdAt.toISOString(),
+    }));
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function createCloudMemory(
+  identity: AuthIdentity,
+  projectId: string,
+  input: z.input<typeof createCloudMemorySchema>,
+): Promise<CloudMemory> {
+  const parsed = createCloudMemorySchema.parse(input);
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    await authorizedProject(connection, identity, projectId);
+    const [memory] = await connection.db.insert(cloudMemories).values({
+      projectId,
+      type: parsed.type,
+      content: parsed.content,
+      status: "active",
+      importance: parsed.importance,
+      agent: parsed.agent ?? null,
+      sessionId: parsed.sessionId ?? null,
+    }).returning();
+    if (!memory) throw new Error("Could not persist memory.");
+    return {
+      id: memory.id,
+      projectId: memory.projectId,
+      type: memory.type,
+      content: memory.content,
+      status: memory.status,
+      importance: memory.importance,
+      agent: memory.agent,
+      sessionId: memory.sessionId,
+      createdAt: memory.createdAt.toISOString(),
+    };
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function createAgentMemory(
+  projectId: string,
+  input: z.input<typeof createCloudMemorySchema>,
+): Promise<CloudMemory> {
+  const parsed = createCloudMemorySchema.parse(input);
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const [memory] = await connection.db.insert(cloudMemories).values({
+      projectId,
+      type: parsed.type,
+      content: parsed.content,
+      status: "active",
+      importance: parsed.importance,
+      agent: parsed.agent ?? "agent",
+      sessionId: parsed.sessionId ?? null,
+    }).returning();
+    if (!memory) throw new Error("Could not persist memory.");
+    return {
+      id: memory.id,
+      projectId: memory.projectId,
+      type: memory.type,
+      content: memory.content,
+      status: memory.status,
+      importance: memory.importance,
+      agent: memory.agent,
+      sessionId: memory.sessionId,
+      createdAt: memory.createdAt.toISOString(),
+    };
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function createAgentConnection(
+  identity: AuthIdentity,
+  projectId: string,
+  name: string,
+): Promise<{ connection: AgentConnection; token: string }> {
+  const parsed = createAgentConnectionSchema.parse({ name });
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    await authorizedProject(connection, identity, projectId);
+    const token = `harikos_${randomBytes(32).toString("base64url")}`;
+    const [record] = await connection.db.insert(cloudAgentConnections).values({
+      projectId,
+      name: parsed.name,
+      tokenHash: hashAgentToken(token),
+      tokenPrefix: token.slice(0, 16),
+    }).returning();
+    if (!record) throw new Error("Could not create agent connection.");
+    return {
+      token,
+      connection: {
+        id: record.id,
+        projectId: record.projectId,
+        name: record.name,
+        tokenPrefix: record.tokenPrefix,
+        revokedAt: null,
+        lastUsedAt: null,
+        createdAt: record.createdAt.toISOString(),
+      },
+    };
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function listAgentConnections(
+  identity: AuthIdentity,
+  projectId: string,
+): Promise<AgentConnection[]> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    await authorizedProject(connection, identity, projectId);
+    const records = await connection.db.select().from(cloudAgentConnections)
+      .where(eq(cloudAgentConnections.projectId, projectId));
+    return records.map((record) => ({
+      id: record.id,
+      projectId: record.projectId,
+      name: record.name,
+      tokenPrefix: record.tokenPrefix,
+      revokedAt: record.revokedAt?.toISOString() ?? null,
+      lastUsedAt: record.lastUsedAt?.toISOString() ?? null,
+      createdAt: record.createdAt.toISOString(),
+    }));
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function revokeAgentConnection(identity: AuthIdentity, projectId: string, connectionId: string): Promise<void> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    await authorizedProject(connection, identity, projectId);
+    await connection.db.update(cloudAgentConnections)
+      .set({ revokedAt: new Date() })
+      .where(and(eq(cloudAgentConnections.id, connectionId), eq(cloudAgentConnections.projectId, projectId)));
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function authenticateAgentToken(token: string): Promise<{ projectId: string; connectionId: string } | undefined> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const [record] = await connection.db.select({
+      id: cloudAgentConnections.id,
+      projectId: cloudAgentConnections.projectId,
+    }).from(cloudAgentConnections).where(and(eq(cloudAgentConnections.tokenHash, hashAgentToken(token)), isNull(cloudAgentConnections.revokedAt)));
+    if (!record) return undefined;
+    await connection.db.update(cloudAgentConnections).set({ lastUsedAt: new Date() }).where(eq(cloudAgentConnections.id, record.id));
+    return { projectId: record.projectId, connectionId: record.id };
+  } finally {
+    await connection.close();
+  }
+}
+
+async function loadCloudSnapshotInternal(
+  identity: AuthIdentity | undefined,
   projectId: string,
 ): Promise<ProjectSnapshot | undefined> {
   const config = readCloudDatabaseConfig();
@@ -642,4 +887,15 @@ export async function loadCloudSnapshot(
   } finally {
     await connection.close();
   }
+}
+
+export async function loadCloudSnapshot(
+  identity: AuthIdentity,
+  projectId: string,
+): Promise<ProjectSnapshot | undefined> {
+  return loadCloudSnapshotInternal(identity, projectId);
+}
+
+export async function loadCloudSnapshotForAgent(projectId: string): Promise<ProjectSnapshot | undefined> {
+  return loadCloudSnapshotInternal(undefined, projectId);
 }

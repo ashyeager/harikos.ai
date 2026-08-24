@@ -135,7 +135,10 @@ CREATE TABLE IF NOT EXISTS "harikos"."memories" (
   "content" text NOT NULL,
   "status" text NOT NULL,
   "importance" real NOT NULL CHECK ("importance" >= 0 AND "importance" <= 1),
-  "created_at" timestamptz NOT NULL DEFAULT now()
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "source_id" uuid,
+  "agent" text,
+  "session_id" uuid
 );
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "memories_project_idx"

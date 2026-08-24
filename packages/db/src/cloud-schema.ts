@@ -221,6 +221,9 @@ export const cloudMemories = harikosCloud.table(
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
+    sourceId: uuid("source_id"),
+    agent: text("agent"),
+    sessionId: uuid("session_id"),
   },
   (table) => [index("memories_project_idx").on(table.projectId)],
 );
@@ -264,6 +267,21 @@ export const cloudContextPacks = harikosCloud.table(
   (table) => [index("context_packs_project_idx").on(table.projectId)],
 );
 
+export const cloudAgentConnections = harikosCloud.table(
+  "agent_connections",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    projectId: uuid("project_id").notNull().references(() => cloudProjects.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    tokenHash: text("token_hash").notNull().unique(),
+    tokenPrefix: text("token_prefix").notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index("agent_connections_project_idx").on(table.projectId)],
+);
+
 export const cloudSchema = {
   users: cloudUsers,
   projects: cloudProjects,
@@ -276,4 +294,5 @@ export const cloudSchema = {
   memories: cloudMemories,
   projectChanges: cloudProjectChanges,
   contextPacks: cloudContextPacks,
+  agentConnections: cloudAgentConnections,
 };
