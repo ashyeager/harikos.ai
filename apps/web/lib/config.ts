@@ -13,6 +13,15 @@ export const githubAppOAuthConfigSchema = z.object({
 
 export type GitHubAppOAuthConfig = z.infer<typeof githubAppOAuthConfigSchema>;
 
+function isUsableSecret(value: string | undefined): value is string {
+  const normalized = value?.trim();
+  return Boolean(
+    normalized &&
+    normalized !== "[Sensitive]" &&
+    !/^<[^>]+>$/u.test(normalized),
+  );
+}
+
 export function applicationOrigin(
   requestUrl: string,
   environment: NodeJS.ProcessEnv = process.env,
@@ -30,7 +39,7 @@ export function readGitHubAppOAuthConfig(
 ): GitHubAppOAuthConfig | undefined {
   const clientId = environment.GITHUB_CLIENT_ID?.trim();
   const clientSecret = environment.GITHUB_CLIENT_SECRET?.trim();
-  if (!clientId || !clientSecret) {
+  if (!isUsableSecret(clientId) || !isUsableSecret(clientSecret)) {
     return undefined;
   }
   return githubAppOAuthConfigSchema.parse({ clientId, clientSecret });
@@ -57,7 +66,8 @@ export function integrationStatus(environment: NodeJS.ProcessEnv = process.env) 
     githubApp:
       readGitHubAppConfig(environment) !== undefined &&
       readGitHubAppOAuthConfig(environment) !== undefined &&
-      (environment.HARIKOS_SESSION_SECRET?.trim().length ?? 0) >= 32,
+      isUsableSecret(environment.HARIKOS_SESSION_SECRET) &&
+      environment.HARIKOS_SESSION_SECRET.trim().length >= 32,
     postgres: readCloudDatabaseConfig(environment) !== undefined,
     localDemo: isLocalDemoEnabled(environment),
     stripe: Boolean(environment.STRIPE_SECRET_KEY?.trim() && environment.STRIPE_PRO_PRICE_ID?.trim()),

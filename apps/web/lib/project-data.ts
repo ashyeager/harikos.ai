@@ -13,7 +13,7 @@ export function demoSnapshot(): ProjectSnapshot {
 }
 
 export async function projectSnapshot(projectId: string): Promise<ProjectSnapshot | undefined> {
-  if (projectId === "demo-project-truth") {
+  if (projectId === "demo-project-truth" && isLocalDemoEnabled()) {
     return demoSnapshot();
   }
   if (projectId === "local-harikos" && isLocalDemoEnabled()) {

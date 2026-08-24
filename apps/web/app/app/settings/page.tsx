@@ -1,7 +1,6 @@
 import { AppShell } from "../../../components/app-shell";
 import { PageHeader } from "../../../components/page-header";
 import { integrationStatus } from "../../../lib/config";
-import { demoSnapshot } from "../../../lib/project-data";
 import { getAuthIdentity } from "../../../lib/auth";
 
 const variables = [
@@ -11,16 +10,15 @@ const variables = [
 ] as const;
 
 export default async function SettingsPage() {
-  const snapshot = demoSnapshot();
   const status = integrationStatus();
   const identity = await getAuthIdentity();
   return (
-    <AppShell snapshot={snapshot}>
+    <AppShell>
       <PageHeader eyebrow="SYSTEM CONFIGURATION" title="Settings" copy="Operational integration status. HARIKOS never invents credentials or reports an unavailable boundary as connected." />
       {identity ? (
         <section className="panel security-settings">
           <div className="panel-heading"><div><span>ACCOUNT</span><h2>{identity.login}</h2></div></div>
-          <div className="security-setting-row"><span>Identity provider</span><strong>Supabase Auth · GitHub</strong><b>VERIFIED</b></div>
+          <div className="security-setting-row"><span>Identity provider</span><strong>Supabase Auth · {identity.provider}</strong><b>VERIFIED</b></div>
           <div className="security-setting-row"><span>Repository access</span><strong><a href="https://github.com/settings/installations">Manage GitHub App installations</a></strong><b>READ ONLY</b></div>
           <form action="/api/auth/logout" method="post"><button className="button button-ghost" type="submit">Sign out</button></form>
         </section>

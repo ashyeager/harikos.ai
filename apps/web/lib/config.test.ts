@@ -25,4 +25,18 @@ describe("web integration configuration", () => {
       }),
     ).toMatchObject({ supabaseAuth: false, localDemo: false });
   });
+
+  it("does not treat Vercel sensitive placeholders as configured secrets", () => {
+    expect(
+      integrationStatus({
+        NODE_ENV: "production",
+        GITHUB_APP_ID: "123",
+        GITHUB_APP_SLUG: "harikos",
+        GITHUB_APP_PRIVATE_KEY: "[Sensitive]",
+        GITHUB_CLIENT_ID: "client",
+        GITHUB_CLIENT_SECRET: "[Sensitive]",
+        HARIKOS_SESSION_SECRET: "[Sensitive]",
+      }),
+    ).toMatchObject({ githubApp: false });
+  });
 });

@@ -13,3 +13,4 @@ playwright-report/
 !.env.example
 
 .vercel
+supabase/.temp/

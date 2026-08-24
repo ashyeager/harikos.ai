@@ -34,8 +34,9 @@ export function identityFromClaims(value: unknown): AuthIdentity | undefined {
   const metadata = result.data.user_metadata;
   const provider = optionalString(result.data.app_metadata.provider) ??
     (optionalString(metadata.provider_id) ? "github" : undefined);
-  const githubUserId =
-    optionalString(metadata.provider_id) ?? optionalString(metadata.sub);
+  const githubUserId = provider === "github"
+    ? optionalString(metadata.provider_id) ?? optionalString(metadata.sub)
+    : undefined;
   const login =
     optionalString(metadata.user_name) ??
     optionalString(metadata.preferred_username) ??

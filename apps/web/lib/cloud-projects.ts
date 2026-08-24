@@ -160,6 +160,7 @@ async function ensureCloudUser(
       target: cloudUsers.supabaseUserId,
       set: {
         supabaseUserId: identity.id,
+        githubUserId: identity.githubUserId,
         login: identity.login,
         displayName: identity.displayName,
         avatarUrl: identity.avatarUrl,
@@ -168,6 +169,15 @@ async function ensureCloudUser(
     .returning();
   if (!user) throw new Error("Could not persist the authenticated user.");
   return user;
+}
+
+export async function syncCloudUser(identity: AuthIdentity): Promise<void> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    await ensureCloudUser(connection, identity);
+  } finally {
+    await connection.close();
+  }
 }
 
 export async function saveCloudInstallation(

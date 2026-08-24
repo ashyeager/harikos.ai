@@ -10,7 +10,7 @@ function rpc(id: unknown, result: unknown) {
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ projectId: string }> }) {
-  const token = request.headers.get("authorization")?.match(/^Bearer\\s+(.+)$/iu)?.[1];
+  const token = request.headers.get("authorization")?.match(/^Bearer\s+(.+)$/iu)?.[1];
   if (!token) return NextResponse.json({ error: "Bearer token required." }, { status: 401 });
   const { projectId } = await params;
   try {
@@ -67,7 +67,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
       return rpc(body.id, { isError: true, content: [{ type: "text", text: "Unknown tool." }] });
     }
     return rpc(body.id, {});
-  } catch {
+  } catch (error) {
+    const cause = error instanceof Error ? error.cause : undefined;
+    const code =
+      cause && typeof cause === "object" && "code" in cause
+        ? String(cause.code)
+        : "unclassified";
+    console.error("[mcp] request failed", {
+      name: error instanceof Error ? error.name : "UnknownError",
+      code,
+    });
     return NextResponse.json({ error: "MCP request failed." }, { status: 500 });
   }
 }

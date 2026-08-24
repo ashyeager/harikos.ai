@@ -4,57 +4,47 @@ Updated: August 24, 2026
 
 ## REAL
 
-- V3 product, architecture, and agent instructions migrated to canonical paths.
-- Supabase Auth GitHub identity, callback, SSR session cookies, protected app routes, and logout.
-- GitHub App installation flow with signed state, installation ownership checks, and read-only short-lived installation tokens.
-- GitHub repository listing and repository-scoped authorization.
-- Provider-neutral `RepositorySource` with local and GitHub implementations.
-- Bounded deterministic repository scanning with secret/path filtering.
-- Truth resolution with evidence, confidence, temporal validity, contradictions, and supersession.
-- Cloud PostgreSQL persistence for users, projects, repositories, scans, claims, evidence, contradictions, changes, memories, context packs, agent connections, agent sessions, outcomes, and subscription records is migration-backed; live target verification requires configured credentials.
-- Ownership-filtered cloud project queries and server-only database access.
-- Human project overview, Truth, claim detail, Changes, Understand, Context, Projects, and Settings routes.
-- Local SQLite persistence, CLI diagnostics, flagship Clerk-to-Supabase fixture, unit tests, build, and browser test configuration.
-- Google OAuth initiation and provider-aware identity parsing are implemented as a separate Supabase Auth path; external provider dashboard setup is required.
-- Centralized Free/Pro entitlement defaults exist; server-side usage enforcement is still partial.
-
-## PARTIAL
-
-- Cloud Memory CRUD/UI, agent Memory search/write-back, and Memory-to-Context retrieval are implemented; live persistence requires the configured Supabase database.
-- Context generation combines current Truth with active relevant Memory for browser and MCP requests.
-- Dashboard and project surfaces still use the clearly labeled fixture as a default visual shell in some routes.
-- Scan status persistence exists; manual scans and signed GitHub push webhook bounded rescans are implemented; live webhook delivery requires GitHub App dashboard configuration.
-- Remote HTTP MCP transport, project-scoped hashed bearer tokens, token revocation, Truth/Memory/Context/Changes/assumption tools, AgentSession lifecycle, and Outcome/Memory write-back are implemented without browser-session dependency.
-- Stripe server routes for Checkout, signed subscription webhooks, Customer Portal, subscription persistence, and centralized entitlement definitions exist; live Stripe configuration and broad server-side usage enforcement remain deferred.
-- User/profile persistence exists through cloud user upsert, but there is no separate profile/settings model.
-
-## MOCKED
-
-- The isolated flagship fixture is used for local/demo product routes and is explicitly labeled as a fixture.
-- No production success path intentionally fabricates repository, scan, memory, agent, customer, or billing state.
-
-## BLOCKED
-
-- Live Supabase acceptance flow and negative ownership test cannot run without the existing project's credentials in this environment.
-- Live Stripe payment/webhook verification is deferred by mission scope.
+- The repository is linked to the existing Supabase project `harikos.ai` (`nnhepyqxcffhsgzexxjt`). No new project was created.
+- Both cloud migrations are recorded remotely. The live `harikos` schema has all 15 expected tables, all required Memory/AgentSession/Outcome metadata columns, and the two-entry Drizzle journal.
+- Every private `harikos` table has RLS enabled. `anon` and `authenticated` have no direct table grants; application writes use the server connection plus explicit ownership checks.
+- Supabase Auth callback/session resolution, protected routes, logout, provider-aware identity parsing, and profile/user-row synchronization are implemented. The login page now checks live provider availability and fails closed when no supported provider is enabled.
+- Production routes render real cloud data or honest loading/empty/configuration/error states. The flagship fixture is limited to explicit local-demo mode.
+- A real authorized scan of `ashyeager/HARIKOS-AI` analyzed 37 bounded sources and persisted five Truth claims with eight Evidence records in Supabase.
+- The Clerk-to-Supabase regression verifies Supabase Auth as current, Clerk as superseded, stale documentation as non-current, and excludes Clerk from current Context.
+- Real Supabase acceptance passed for project ownership isolation, Memory fresh-read persistence, AgentConnection token hashing/revocation, AgentSession lifecycle, Outcome write-back, Context persistence, and cross-agent handoff.
+- Remote MCP acceptance passed over the actual HTTP route for initialization, tool discovery, Truth, Context, Memory and Outcome write-back, valid/invalid/revoked tokens, and wrong-project rejection.
+- The signed GitHub push handler rejects invalid signatures and safely handles signed non-push and malformed push events. Repository lookup, bounded rescanning, and ProjectChange persistence are implemented.
+- The existing GitHub App is installed on `ashyeager` with read-only code/metadata access and all-repository authorization. Its public configuration, installation, and permission boundary were verified in GitHub.
+- Vercel Production uses the correct Supabase project and the canonical `harikos-ai.vercel.app` alias points at the current `harikos-ai-web` deployment.
+- Local SQLite/CLI adapters, deterministic scanners, Truth Resolver, contradiction/supersession semantics, and existing Stripe code remain preserved.
 
 ## CONFIG REQUIRED
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-- `HARIKOS_SESSION_SECRET`
-- `GITHUB_APP_ID`
-- `GITHUB_APP_SLUG`
-- `GITHUB_APP_PRIVATE_KEY`
-- `GITHUB_CLIENT_ID`
-- `GITHUB_CLIENT_SECRET`
-- `DATABASE_URL` or `POSTGRES_URL`
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_PRO_PRICE_ID`
+- Create/configure a standard GitHub OAuth App and a Google OAuth client for Supabase Auth. Both providers are disabled remotely. Supabase's GitHub social provider does not accept the existing repository GitHub App as a substitute.
+- Local GitHub App private key and webhook secret are missing or placeholder-only. Vercel reports the existing App credentials as present, but App-JWT installation-token/repository-listing verification still requires a usable private key in an acceptance environment.
+- Register and deliver the existing GitHub App push webhook to `/api/github/webhook`; the App webhook is currently inactive and blank, so only the handler boundary is acceptance-tested.
+- Remove the additional, unused GitHub App client secret created during the Supabase compatibility test after confirming the original production secret remains healthy.
+- Rotate/disable the legacy Supabase `service_role` key that was exposed during CLI inspection. HARIKOS does not use it in the corrected local configuration.
+
+## DEFERRED
+
+- Live Stripe configuration and payment/webhook acceptance are outside this pass.
+- The dedicated frontend/UI/UX pass follows the non-Stripe functional lock.
+
+## ACCEPTANCE COMMANDS
+
+```text
+pnpm verify:cloud:schema
+$env:HARIKOS_ACCEPTANCE_GITHUB_TOKEN = gh auth token
+pnpm dev:web
+pnpm verify:cloud:functional
+```
+
+The functional verifier creates isolated synthetic ownership/session records around a real GitHub repository scan and removes them before exit.
 
 ## NEXT
 
-1. Configure the existing Supabase project and apply/verify cloud migrations.
-2. Run the real Google/GitHub, GitHub App, scan, Memory, MCP handoff, and webhook acceptance flows.
-3. Perform the dedicated frontend/UI/UX overhaul after this functional lock.
+1. Create the separate GitHub OAuth App and Google OAuth client, then finish both Supabase provider configurations.
+2. Verify the existing GitHub App installation/repository token flow and register live webhook delivery.
+3. Re-run the browser login/session/logout acceptance loop.
+4. Begin the frontend/UI/UX pass only after the remaining configuration gates are closed.

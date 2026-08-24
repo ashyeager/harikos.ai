@@ -7,11 +7,15 @@
 3. Set Supabase Authentication > URL Configuration > Site URL to `https://<production-domain>` and add `https://<production-domain>/auth/callback` plus `http://localhost:3000/auth/callback` to Redirect URLs.
 4. Enable Google and GitHub providers in Authentication > Providers. Use each provider's client credentials and the Supabase callback URL shown in the dashboard.
 5. Set `DATABASE_URL` or `POSTGRES_URL` to the existing project's server-side Postgres connection string.
-6. Apply migrations with `pnpm db:migrate:cloud`. Inspect the target and migration history before applying it.
+6. Keep the ignored root `.env.local` configured. `pnpm dev:web`, `pnpm db:migrate:cloud`, and the `verify:*` scripts load it explicitly.
+7. Inspect the linked target and remote migration history before applying migrations with `pnpm db:migrate:cloud`.
+8. Verify the deployed schema and access boundary with `pnpm verify:cloud:schema`.
 
 ## GitHub App
 
 Configure the existing HARIKOS GitHub App with Contents: Read and Metadata: Read. Set `GITHUB_APP_ID`, `GITHUB_APP_SLUG`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and a 32+ character `HARIKOS_SESSION_SECRET`. The GitHub App callback is `/api/github/install/callback`; the login provider remains separate from repository authorization. For push reverification, set `GITHUB_WEBHOOK_SECRET` and register `https://<production-domain>/api/github/webhook` for the `push` event.
+
+Use `pnpm verify:github-app` to verify App authentication without printing credentials. For the full cloud acceptance, start `pnpm dev:web`, set `HARIKOS_ACCEPTANCE_GITHUB_TOKEN` to an authorized CLI/user token for the real test repository, and run `pnpm verify:cloud:functional`.
 
 ## Stripe
 

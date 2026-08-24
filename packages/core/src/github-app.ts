@@ -3,9 +3,12 @@ import { createSign } from "node:crypto";
 import { z } from "zod";
 
 export const githubAppConfigSchema = z.object({
-  appId: z.string().trim().min(1),
-  privateKey: z.string().trim().min(1),
-  slug: z.string().trim().min(1),
+  appId: z.string().trim().regex(/^\d+$/u),
+  privateKey: z.string().trim().refine(
+    (value) => value.startsWith("-----BEGIN ") && value.includes(" PRIVATE KEY-----"),
+    { message: "A PEM encoded GitHub App private key is required." },
+  ),
+  slug: z.string().trim().regex(/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/u),
 });
 
 export type GitHubAppConfig = z.infer<typeof githubAppConfigSchema>;
@@ -58,7 +61,8 @@ export function readGitHubAppConfig(
   if (!appId || !privateKey || !slug) {
     return undefined;
   }
-  return githubAppConfigSchema.parse({ appId, privateKey, slug });
+  const parsed = githubAppConfigSchema.safeParse({ appId, privateKey, slug });
+  return parsed.success ? parsed.data : undefined;
 }
 
 export function createGitHubAppJwt(

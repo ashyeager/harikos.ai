@@ -5,12 +5,15 @@ import { redirect } from "next/navigation";
 import { Brand } from "../../components/brand";
 import { integrationStatus } from "../../lib/config";
 import { getAuthIdentity } from "../../lib/auth";
+import { readSupabaseProviderStatus } from "../../lib/supabase/config";
 
 export const metadata: Metadata = { title: "Connect GitHub" };
 
 export default async function LoginPage() {
-  const status = integrationStatus();
   if (await getAuthIdentity()) redirect("/app/projects");
+  const status = integrationStatus();
+  const providers = await readSupabaseProviderStatus();
+  const hasProvider = providers.github || providers.google;
   return (
     <main className="auth-page">
       <header className="auth-nav"><Brand /><Link href="/">Back to overview</Link></header>
@@ -29,15 +32,17 @@ export default async function LoginPage() {
           <div className="connect-mark" aria-hidden="true">⌘</div>
           <h2>Continue with GitHub</h2>
           <p>Authenticate, install the HARIKOS GitHub App on selected repositories, then choose what to analyze.</p>
-          {status.supabaseAuth ? (
+          {status.supabaseAuth && hasProvider ? (
             <div className="auth-provider-buttons">
-              <a className="button button-dark full-button" href="/api/auth/github/start">Continue with GitHub <span>→</span></a>
-              <a className="button button-ghost full-button" href="/api/auth/google/start">Continue with Google <span>→</span></a>
+              {providers.github ? <a className="button button-dark full-button" href="/api/auth/github/start">Continue with GitHub <span>→</span></a> : null}
+              {providers.google ? <a className="button button-ghost full-button" href="/api/auth/google/start">Continue with Google <span>→</span></a> : null}
             </div>
           ) : (
             <div className="config-notice">
               <span>CONFIGURATION NEEDED</span>
-              Connect Supabase Auth to enable the real GitHub sign-in flow.
+              {status.supabaseAuth
+                ? "Enable a supported OAuth provider in the existing Supabase project."
+                : "Connect Supabase Auth to enable the real sign-in flow."}
             </div>
           )}
           <small>By continuing, you authorize only the repositories you select.</small>

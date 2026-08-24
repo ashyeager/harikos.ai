@@ -35,7 +35,7 @@ describe("Supabase identity boundary", () => {
       sub: "google-user",
       email: "google@example.com",
       app_metadata: { provider: "google" },
-      user_metadata: { name: "Google Builder" },
+      user_metadata: { name: "Google Builder", sub: "google-provider-id" },
     })).toMatchObject({
       id: "google-user",
       githubUserId: null,

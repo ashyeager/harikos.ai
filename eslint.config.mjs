@@ -5,6 +5,7 @@ export default tseslint.config(
     ignores: [
       "**/dist/**",
       "**/.next/**",
+      "**/.vercel/**",
       "**/node_modules/**",
       ".harikos/**",
       ".tmp/**",

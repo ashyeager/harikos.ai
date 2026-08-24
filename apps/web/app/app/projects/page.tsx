@@ -12,12 +12,12 @@ import { getAuthIdentity } from "../../../lib/auth";
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
-  const snapshot = demoSnapshot();
   const status = integrationStatus();
+  const snapshot = status.localDemo ? demoSnapshot() : undefined;
   const session = await getAuthIdentity();
   const cloudProjects = session ? await listCloudProjects(session) : [];
   return (
-    <AppShell snapshot={snapshot}>
+    <AppShell>
       <PageHeader eyebrow="REPOSITORIES" title="Choose what HARIKOS should understand." copy="Connect with least-privilege GitHub access or analyze the current local repository for the Stage 1 proof." />
       <section className="project-source-grid">
         <article className="source-card featured-source">
@@ -39,12 +39,12 @@ export default async function ProjectsPage() {
       </section>
       <section className="connected-projects panel">
         <div className="panel-heading"><div><span>AVAILABLE NOW</span><h2>Projects</h2></div></div>
-        <Link className="project-row" href={`/app/project/${snapshot.projectId}`}>
+        {snapshot ? <Link className="project-row" href={`/app/project/${snapshot.projectId}`}>
           <span className="repo-avatar">AC</span>
           <span><strong>{snapshot.repository.name}</strong><small>Controlled Clerk → Supabase fixture · clearly labeled demo</small></span>
           <span className="project-metrics"><b>{snapshot.truths.filter((claim) => claim.status === "verified").length}</b> verified</span>
           <b>Open →</b>
-        </Link>
+        </Link> : null}
         {cloudProjects.map((project) => (
           <Link className="project-row" href={`/app/project/${project.id}`} key={project.id}>
             <span className="repo-avatar">{project.repository.slice(0, 2).toUpperCase()}</span>

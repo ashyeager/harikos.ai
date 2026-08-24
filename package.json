@@ -14,14 +14,17 @@
     "build:phase1": "pnpm --filter \"@harikos/cli...\" run build",
     "clean": "pnpm -r --if-present run clean",
     "demo": "tsx scripts/demo-transition.ts",
-    "db:migrate:cloud": "pnpm --filter @harikos/db build && tsx scripts/migrate-cloud.ts",
-    "dev:web": "pnpm --filter @harikos/web dev",
+    "db:migrate:cloud": "pnpm --filter @harikos/db build && node --env-file=.env.local --import tsx scripts/migrate-cloud.ts",
+    "dev:web": "node scripts/dev-web.mjs",
     "lint": "eslint . --max-warnings=0",
     "pretest": "pnpm run build:phase1",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run --configLoader runner",
     "test:watch": "vitest --configLoader runner",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify:cloud:functional": "node --env-file=.env.local --import tsx scripts/verify-cloud-functional.ts",
+    "verify:cloud:schema": "node --env-file=.env.local --import tsx scripts/verify-cloud-schema.ts",
+    "verify:github-app": "node --env-file=.env.local --import tsx scripts/verify-github-app.ts"
   },
   "devDependencies": {
     "@harikos/cli": "workspace:*",
