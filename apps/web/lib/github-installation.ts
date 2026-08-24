@@ -29,6 +29,13 @@ const userInstallationsSchema = z.object({
   installations: z.array(z.object({ id: z.number().int().positive() })),
 });
 
+export class GitHubInstallationRequiredError extends Error {
+  constructor() {
+    super("Install the HARIKOS GitHub App before connecting repositories.");
+    this.name = "GitHubInstallationRequiredError";
+  }
+}
+
 function stateSecret(environment: NodeJS.ProcessEnv = process.env): string {
   const value = environment.HARIKOS_SESSION_SECRET?.trim();
   if (!value || value.length < 32) {
@@ -106,11 +113,12 @@ async function githubUserRequest(
 
 export async function completeGitHubInstallation(
   identity: AuthIdentity,
-  input: { code: string; installationId: string; state: string },
+  input: { code: string; installationId?: string; state: string },
   fetcher: typeof fetch = fetch,
+  installationLookup: typeof getGitHubInstallation = getGitHubInstallation,
 ): Promise<GitHubInstallation> {
   verifyInstallationState(input.state, identity.id);
-  if (!/^\d+$/u.test(input.installationId)) {
+  if (input.installationId && !/^\d+$/u.test(input.installationId)) {
     throw new Error("GitHub returned an invalid installation ID.");
   }
   const oauth = readGitHubAppOAuthConfig();
@@ -141,15 +149,18 @@ export async function completeGitHubInstallation(
       fetcher,
     ).then((value) => userInstallationsSchema.parse(value)),
   ]);
-  if (
-    (identity.provider === "github" && String(githubUser.id) !== identity.githubUserId) ||
-    !installations.installations.some(
-      (installation) => String(installation.id) === input.installationId,
-    )
-  ) {
+  if (identity.provider === "github" && String(githubUser.id) !== identity.githubUserId) {
     throw new Error("The GitHub installation does not belong to this signed-in user.");
   }
-  const installation = await getGitHubInstallation(app, input.installationId, fetcher);
+  const installationId = input.installationId ??
+    installations.installations[0]?.id.toString();
+  if (!installationId) throw new GitHubInstallationRequiredError();
+  if (!installations.installations.some(
+    (installation) => String(installation.id) === installationId,
+  )) {
+    throw new Error("The GitHub installation does not belong to this signed-in user.");
+  }
+  const installation = await installationLookup(app, installationId, fetcher);
   if (installation.suspended_at) {
     throw new Error("The GitHub App installation is suspended.");
   }
