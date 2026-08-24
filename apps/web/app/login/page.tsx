@@ -30,7 +30,10 @@ export default async function LoginPage() {
           <h2>Continue with GitHub</h2>
           <p>Authenticate, install the HARIKOS GitHub App on selected repositories, then choose what to analyze.</p>
           {status.supabaseAuth ? (
-            <a className="button button-dark full-button" href="/api/auth/github/start">Continue with GitHub <span>→</span></a>
+            <div className="auth-provider-buttons">
+              <a className="button button-dark full-button" href="/api/auth/github/start">Continue with GitHub <span>→</span></a>
+              <a className="button button-ghost full-button" href="/api/auth/google/start">Continue with Google <span>→</span></a>
+            </div>
           ) : (
             <div className="config-notice">
               <span>CONFIGURATION NEEDED</span>

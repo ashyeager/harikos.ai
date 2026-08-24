@@ -142,7 +142,7 @@ export async function completeGitHubInstallation(
     ).then((value) => userInstallationsSchema.parse(value)),
   ]);
   if (
-    String(githubUser.id) !== identity.githubUserId ||
+    (identity.provider === "github" && String(githubUser.id) !== identity.githubUserId) ||
     !installations.installations.some(
       (installation) => String(installation.id) === input.installationId,
     )

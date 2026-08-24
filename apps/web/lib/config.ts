@@ -60,5 +60,6 @@ export function integrationStatus(environment: NodeJS.ProcessEnv = process.env) 
       (environment.HARIKOS_SESSION_SECRET?.trim().length ?? 0) >= 32,
     postgres: readCloudDatabaseConfig(environment) !== undefined,
     localDemo: isLocalDemoEnabled(environment),
+    stripe: Boolean(environment.STRIPE_SECRET_KEY?.trim() && environment.STRIPE_PRO_PRICE_ID?.trim()),
   };
 }

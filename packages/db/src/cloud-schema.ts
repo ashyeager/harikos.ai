@@ -43,6 +43,18 @@ export const cloudUsers = harikosCloud.table("users", {
     .notNull(),
 });
 
+export const cloudSubscriptions = harikosCloud.table("subscriptions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => cloudUsers.id, { onDelete: "cascade" }),
+  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
+  stripeSubscriptionId: text("stripe_subscription_id").unique(),
+  stripePriceId: text("stripe_price_id"),
+  status: text("status").notNull(),
+  currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [index("subscriptions_user_idx").on(table.userId)]);
+
 export const cloudRepositoryInstallations = harikosCloud.table(
   "repository_installations",
   {
@@ -295,4 +307,5 @@ export const cloudSchema = {
   projectChanges: cloudProjectChanges,
   contextPacks: cloudContextPacks,
   agentConnections: cloudAgentConnections,
+  subscriptions: cloudSubscriptions,
 };

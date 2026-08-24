@@ -9,6 +9,7 @@ const claimsSchema = z.object({
   sub: z.string().min(1),
   email: z.string().email().optional(),
   user_metadata: z.record(z.string(), z.unknown()).default({}),
+  app_metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const authIdentitySchema = z.object({
@@ -18,6 +19,7 @@ export const authIdentitySchema = z.object({
   email: z.string().email().nullable(),
   displayName: z.string().min(1).nullable(),
   avatarUrl: z.string().url().nullable(),
+  provider: z.enum(["github", "google", "other"]),
 });
 
 export type AuthIdentity = z.infer<typeof authIdentitySchema>;
@@ -30,13 +32,15 @@ export function identityFromClaims(value: unknown): AuthIdentity | undefined {
   const result = claimsSchema.safeParse(value);
   if (!result.success) return undefined;
   const metadata = result.data.user_metadata;
+  const provider = optionalString(result.data.app_metadata.provider) ??
+    (optionalString(metadata.provider_id) ? "github" : undefined);
   const githubUserId =
     optionalString(metadata.provider_id) ?? optionalString(metadata.sub);
   const login =
     optionalString(metadata.user_name) ??
     optionalString(metadata.preferred_username) ??
     optionalString(metadata.name);
-  if (!githubUserId || !login) return undefined;
+  if (!githubUserId || !login || (provider !== "github" && provider !== "google")) return undefined;
   return authIdentitySchema.parse({
     id: result.data.sub,
     githubUserId,
@@ -48,6 +52,7 @@ export function identityFromClaims(value: unknown): AuthIdentity | undefined {
       optionalString(metadata.avatar_url) ??
       optionalString(metadata.picture) ??
       null,
+    provider: provider === "github" || provider === "google" ? provider : "other",
   });
 }
 

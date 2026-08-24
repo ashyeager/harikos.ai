@@ -16,3 +16,17 @@ CREATE TABLE IF NOT EXISTS "harikos"."agent_connections" (
 CREATE INDEX IF NOT EXISTS "agent_connections_project_idx"
   ON "harikos"."agent_connections" ("project_id");
 ALTER TABLE "harikos"."agent_connections" ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE IF NOT EXISTS "harikos"."subscriptions" (
+  "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "user_id" uuid NOT NULL REFERENCES "harikos"."users"("id") ON DELETE CASCADE,
+  "stripe_customer_id" text NOT NULL UNIQUE,
+  "stripe_subscription_id" text UNIQUE,
+  "stripe_price_id" text,
+  "status" text NOT NULL,
+  "current_period_end" timestamptz,
+  "cancel_at_period_end" boolean NOT NULL DEFAULT false,
+  "updated_at" timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS "subscriptions_user_idx" ON "harikos"."subscriptions" ("user_id");
+ALTER TABLE "harikos"."subscriptions" ENABLE ROW LEVEL SECURITY;

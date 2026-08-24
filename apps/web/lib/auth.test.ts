@@ -22,6 +22,7 @@ describe("Supabase identity boundary", () => {
       email: "builder@example.com",
       displayName: "Project Builder",
       avatarUrl: "https://avatars.example.com/builder.png",
+      provider: "github",
     });
   });
 
