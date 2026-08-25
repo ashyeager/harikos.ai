@@ -1,7 +1,4 @@
-import { cache } from "react";
-
 import { z } from "zod";
-
 import { readSupabasePublicConfig } from "./supabase/config";
 import { createSupabaseServerClient } from "./supabase/server";
 
@@ -31,18 +28,23 @@ function optionalString(value: unknown): string | undefined {
 export function identityFromClaims(value: unknown): AuthIdentity | undefined {
   const result = claimsSchema.safeParse(value);
   if (!result.success) return undefined;
+
   const metadata = result.data.user_metadata;
   const provider = optionalString(result.data.app_metadata.provider) ??
     (optionalString(metadata.provider_id) ? "github" : undefined);
+
   const githubUserId = provider === "github"
     ? optionalString(metadata.provider_id) ?? optionalString(metadata.sub)
     : undefined;
+
   const login =
     optionalString(metadata.user_name) ??
     optionalString(metadata.preferred_username) ??
     optionalString(metadata.name) ??
     result.data.email?.split("@")[0];
+
   if (!login || (provider !== "github" && provider !== "google")) return undefined;
+
   return authIdentitySchema.parse({
     id: result.data.sub,
     githubUserId: githubUserId ?? null,
@@ -58,12 +60,10 @@ export function identityFromClaims(value: unknown): AuthIdentity | undefined {
   });
 }
 
-export const getAuthIdentity = cache(
-  async (): Promise<AuthIdentity | undefined> => {
-    if (!readSupabasePublicConfig()) return undefined;
-    const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase.auth.getClaims();
-    if (error || !data?.claims) return undefined;
-    return identityFromClaims(data.claims);
-  },
-);
+export const getAuthIdentity = async (): Promise<AuthIdentity | undefined> => {
+  if (!readSupabasePublicConfig()) return undefined;
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.getClaims();
+  if (error || !data?.claims) return undefined;
+  return identityFromClaims(data.claims);
+};

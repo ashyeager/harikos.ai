@@ -3,21 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000 -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "clean": "node -e \"require('node:fs').rmSync('.next',{recursive:true,force:true});require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true})\""
   },
   "dependencies": {
-    "@harikos/core": "workspace:*",
-    "@harikos/db": "workspace:*",
+    "@harikos/core": "*",
+    "@harikos/db": "*",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
+    "clsx": "^2.1.1",
+    "framer-motion": "^13.1.1",
+    "lucide-react": "^1.34.0",
     "next": "^16.3.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "stripe": "^22.5.0",
-    "zod": "^4.4.3"
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.185.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

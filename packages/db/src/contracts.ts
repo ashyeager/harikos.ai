@@ -26,7 +26,7 @@ const idSchema = z.string().min(1);
 const nonEmptyStringSchema = z.string().trim().min(1);
 const timestampSchema = z.string().datetime({ offset: true });
 const nullableTimestampSchema = timestampSchema.nullable().optional();
-const jsonSchema = z.json();
+const jsonSchema = z.any();
 
 export const createProjectSchema = z.object({
   id: idSchema.optional(),

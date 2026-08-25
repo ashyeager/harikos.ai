@@ -1,7 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-
+import { CommandPalette } from "../components/command-palette";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: "#050505",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -15,7 +19,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html data-scroll-behavior="smooth" lang="en">
-      <body>{children}</body>
+      <body className="bg-ink text-white font-sans antialiased min-h-screen selection:bg-cyan/30 selection:text-white">
+        {children}
+        <CommandPalette />
+      </body>
     </html>
   );
 }
