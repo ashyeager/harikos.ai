@@ -8,5 +8,5 @@ export default async function ProductLayout({ children }: { children: ReactNode 
   const identity = await getAuthIdentity();
   if (!identity) redirect("/login");
   await syncCloudUser(identity);
-  return children;
+  return <>{children}</>;
 }

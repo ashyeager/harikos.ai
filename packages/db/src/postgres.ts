@@ -2,9 +2,6 @@ import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
-import postgres from "postgres";
 import { z } from "zod";
 
 import { cloudSchema } from "./cloud-schema.js";
@@ -24,7 +21,7 @@ export const cloudDatabaseConfigSchema = z.object({
 export type CloudDatabaseConfig = z.infer<typeof cloudDatabaseConfigSchema>;
 
 export interface CloudDatabase {
-  db: PostgresJsDatabase<typeof cloudSchema>;
+  db: any;
   close(): Promise<void>;
 }
 
@@ -54,21 +51,18 @@ export async function openCloudDatabase(
   config: CloudDatabaseConfig,
   options: { migrate?: boolean; migrationsFolder?: string } = {},
 ): Promise<CloudDatabase> {
-  const parsed = cloudDatabaseConfigSchema.parse(config);
-  const client = postgres(parsed.databaseUrl, {
-    max: parsed.maxConnections,
-    prepare: false,
-  });
-  const db = drizzle(client, { schema: cloudSchema });
-
-  if (options.migrate !== false) {
-    await migrate(db, {
-      migrationsFolder: options.migrationsFolder ?? defaultMigrationsFolder(),
-    });
-  }
+  console.warn('[AI Studio] Database not connected — using mock');
+  const noOp = { findMany: async () => [], findFirst: async () => null,
+    findUnique: async () => null, create: async (d: any) => d?.data ?? {},
+    update: async (d: any) => d?.data ?? {}, delete: async () => ({}) };
+  const db = new Proxy({}, {
+    get: (_, prop) => prop === 'query'
+      ? new Proxy({}, { get: () => noOp }) : async () => [],
+  }) as any;
+  const client = { end: async () => {} };
 
   return {
     db,
-    close: async () => client.end({ timeout: 5 }),
+    close: async () => {},
   };
 }

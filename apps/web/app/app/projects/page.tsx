@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 import { AppShell } from "../../../components/app-shell";
 import { PageHeader } from "../../../components/page-header";
 import { ScanLocalButton } from "../../../components/scan-local-button";
@@ -8,6 +7,8 @@ import { listCloudProjects } from "../../../lib/cloud-projects";
 import { demoSnapshot } from "../../../lib/project-data";
 import { integrationStatus } from "../../../lib/config";
 import { getAuthIdentity } from "../../../lib/auth";
+import { Github, FolderGit2, FolderOpen, ArrowRight, CheckCircle2, ShieldAlert } from "lucide-react";
+import { cn } from "../../../lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function ProjectsPage() {
   const snapshot = status.localDemo ? demoSnapshot() : undefined;
   const session = await getAuthIdentity();
   const cloudProjects = session ? await listCloudProjects(session) : [];
+
   return (
     <AppShell>
       <PageHeader eyebrow="REPOSITORIES" title="Choose what HARIKOS should understand." copy="Connect with least-privilege GitHub access or, when explicitly enabled for development, analyze the local verification workspace." />
@@ -54,6 +56,7 @@ export default async function ProjectsPage() {
           </Link>
         ))}
       </section>
+
       <RepositorySelector />
     </AppShell>
   );
