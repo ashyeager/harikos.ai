@@ -18,7 +18,7 @@ export default async function ProjectsPage() {
   const cloudProjects = session ? await listCloudProjects(session) : [];
   return (
     <AppShell>
-      <PageHeader eyebrow="REPOSITORIES" title="Choose what HARIKOS should understand." copy="Connect with least-privilege GitHub access or analyze the current local repository for the Stage 1 proof." />
+      <PageHeader eyebrow="REPOSITORIES" title="Choose what HARIKOS should understand." copy="Connect with least-privilege GitHub access or, when explicitly enabled for development, analyze the local verification workspace." />
       <section className="project-source-grid">
         <article className="source-card featured-source">
           <span className="source-icon">⌘</span>
@@ -32,7 +32,7 @@ export default async function ProjectsPage() {
         </article>
         <article className="source-card">
           <span className="source-icon cyan-icon">⌁</span>
-          <div><small>LOCAL PROOF SOURCE</small><h2>HARIKOS-AI workspace</h2><p>Run the real bounded scanner against this repository and persist truth to local SQLite.</p></div>
+          <div><small>DEVELOPMENT-ONLY SOURCE</small><h2>HARIKOS-AI workspace</h2><p>Run the bounded scanner against this repository and persist an isolated local verification snapshot.</p></div>
           {status.localDemo ? <ScanLocalButton /> : <span className="disabled-message">Local scanning is disabled in production.</span>}
           <div className="source-status"><i className="ready" />Deterministic · no AI key required</div>
         </article>

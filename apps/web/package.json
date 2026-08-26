@@ -11,16 +11,19 @@
   "dependencies": {
     "@harikos/core": "workspace:*",
     "@harikos/db": "workspace:*",
+    "@react-three/fiber": "^9.7.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "next": "^16.3.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "stripe": "^22.5.0",
+    "three": "0.184.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
+    "@types/three": "^0.184.0",
     "tailwindcss": "^4.3.3"
   }
 }

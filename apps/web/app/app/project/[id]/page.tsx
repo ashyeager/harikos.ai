@@ -29,8 +29,8 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
           </div>
         )}
       />
-      <div className="overview-status-bar">
-        <div><i /><span><strong>Project Truth is current</strong><small>Last scan {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
+      <div className={`overview-status-bar ${openContradictions.length ? "has-attention" : ""}`}>
+        <div><i /><span><strong>{openContradictions.length ? "Scan complete; review open drift" : "Last scan complete"}</strong><small>Scanned {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
         <div><span>FILES ANALYZED</span><strong>{snapshot.sourceCount}</strong></div>
         <div><span>VERIFIED</span><strong>{current.filter((claim) => claim.status === "verified").length}</strong></div>
         <div><span>DRIFT</span><strong>{openContradictions.length}</strong></div>

@@ -1,32 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Brand } from "../../components/brand";
+import { MarketingShell } from "../../components/marketing/marketing-shell";
 
-export const metadata: Metadata = { title: "Privacy" };
+export const metadata: Metadata = { title: "Privacy", description: "How HARIKOS handles account, repository, project-brain, and agent-connection data." };
 
-export default function PrivacyPage() {
-  return (
-    <main className="auth-page">
-      <header className="auth-nav">
-        <Brand />
-        <Link href="/">Back to overview</Link>
-      </header>
-      <section className="auth-panel">
-        <div className="auth-copy">
-          <span className="eyebrow">PRIVACY</span>
-          <h1>Your account.<br />Your repositories.</h1>
-          <p>HARIKOS uses account and repository data only to provide the project-brain service you request.</p>
-        </div>
-        <div className="connect-card">
-          <h2>Privacy notice</h2>
-          <p>Supabase Auth receives identity information from Google or GitHub so HARIKOS can authenticate you and associate your projects with your account.</p>
-          <p>When you connect the HARIKOS GitHub App, HARIKOS can read only the repositories you authorize and the read-only contents and metadata permitted by that installation.</p>
-          <p>HARIKOS stores project records, scans, evidence-backed claims, memories, contexts, and connection history needed to provide the service. OAuth credentials and GitHub App credentials are handled server-side.</p>
-          <p>HARIKOS does not sell personal data. You can revoke repository access from your GitHub App installation settings and sign out to end the current HARIKOS session.</p>
-          <small>Effective August 24, 2026.</small>
-        </div>
-      </section>
-    </main>
-  );
-}
+const sections = [
+  ["IDENTITY", "Supabase Auth receives identity information from Google or GitHub so HARIKOS can authenticate you and associate projects with your account."],
+  ["REPOSITORY ACCESS", "The HARIKOS GitHub App can read only repositories you authorize, within its configured read-only Contents and Metadata permissions."],
+  ["PROJECT DATA", "HARIKOS stores project records, scans, evidence-backed claims, memories, Context Packs, agent connections, sessions, and outcomes needed to provide the service."],
+  ["CREDENTIALS", "OAuth, database, GitHub App, billing, and agent-token secrets are handled through server-side boundaries. Existing agent token plaintext is not displayed again after creation."],
+  ["YOUR CONTROL", "You can revoke repository access in GitHub, revoke agent connections in HARIKOS, and sign out to end the active session."],
+] as const;
+
+export default function PrivacyPage() { return <MarketingShell><main className="legal-page"><header><span className="eyebrow"><i />LEGAL / PRIVACY</span><h1>Your account.<br /><span>Your repositories.</span></h1><p>This notice explains the product data HARIKOS needs to provide a shared project brain. It does not claim certifications or retention guarantees beyond the implemented service.</p><small>EFFECTIVE / AUGUST 24, 2026</small></header><section>{sections.map(([title, copy], index) => <article key={title}><span>0{index + 1}</span><div><h2>{title}</h2><p>{copy}</p></div></article>)}<footer><p>HARIKOS does not sell personal data.</p><Link href="/security">Inspect the security model <span>&nearr;</span></Link></footer></section></main></MarketingShell>; }
