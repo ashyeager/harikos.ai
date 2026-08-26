@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "../lib/utils";
-import { LayoutDashboard, CheckCircle2, History, Cpu, FileClock, Search, BookOpen } from "lucide-react";
 
 const items = [["Overview", "OV", ""], ["Project Truth", "TR", "/truth"], ["Memory", "ME", "/memory"], ["Changes", "CH", "/changes"], ["Agents", "AG", "/agents"], ["Context", "CX", "/context"], ["Understand", "UN", "/understand"]] as const;
 

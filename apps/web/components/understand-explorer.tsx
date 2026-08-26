@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, TerminalSquare, Database, FileText, ArrowRight, MessageSquare, Code2, GitMerge } from "lucide-react";
+import { ArrowRight, CheckCircle2, Code2, Database, FileText, GitMerge, MessageSquare, Shield, Sparkles, TerminalSquare } from "lucide-react";
 import { cn } from "../lib/utils";
 
 const suggestions = [
@@ -10,8 +10,6 @@ const suggestions = [
   { text: "What changed recently?", icon: GitMerge },
   { text: "Explain the deployment process.", icon: TerminalSquare },
 ];
-
-import { Shield } from "lucide-react";
 
 export function UnderstandExplorer({ projectId }: { projectId: string }) {
   const [question, setQuestion] = useState(suggestions[0].text);

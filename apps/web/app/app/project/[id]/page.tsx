@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Activity, ArrowRight, FileWarning, Layers } from "lucide-react";
 import { AppShell } from "../../../../components/app-shell";
 import { PageHeader } from "../../../../components/page-header";
 import { RescanProjectButton } from "../../../../components/rescan-project-button";
 import { StatusBadge } from "../../../../components/status-badge";
 import { TruthCard } from "../../../../components/truth-card";
 import { projectSnapshot } from "../../../../lib/project-data";
-import { Activity, Code, Layers, FileWarning, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +17,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
 
   const current = snapshot.truths.filter((claim) => claim.status === "verified" || claim.status === "likely");
   const openContradictions = snapshot.contradictions.filter((item) => item.status === "open");
+  const verifiedCount = current.filter((claim) => claim.status === "verified").length;
 
   return (
     <AppShell snapshot={snapshot}>
@@ -36,42 +37,8 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
       <div className={`overview-status-bar ${openContradictions.length ? "has-attention" : ""}`}>
         <div><i /><span><strong>{openContradictions.length ? "Scan complete; review open drift" : "Last scan complete"}</strong><small>Scanned {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
         <div><span>FILES ANALYZED</span><strong>{snapshot.sourceCount}</strong></div>
-        <div><span>VERIFIED</span><strong>{current.filter((claim) => claim.status === "verified").length}</strong></div>
+        <div><span>VERIFIED</span><strong>{verifiedCount}</strong></div>
         <div><span>DRIFT</span><strong>{openContradictions.length}</strong></div>
-      </div>
-      <section className="truth-card-grid overview-cards">
-        {current.slice(0, 6).map((claim) => <TruthCard claim={claim} projectId={snapshot.projectId} key={claim.id} />)}
-      </section>
-      <section className="dashboard-grid">
-        <div className="panel evidence-health">
-          <div className="panel-heading"><div><span>EVIDENCE COVERAGE</span><h2>Why HARIKOS believes it</h2></div></div>
-          {current.slice(0, 5).map((claim) => (
-            <div className="evidence-health-row" key={claim.id}>
-              <span>{claim.subject}</span><i><b style={{ width: `${Math.round(claim.confidence * 100)}%` }} /></i><strong>{claim.evidence.length} sources</strong>
-            </div>
-          ))}
-        </div>
-        <div className="bg-ink p-5 flex flex-col justify-center">
-          <div className="flex items-center gap-2 mb-3">
-            <Code size={12} className="text-muted" />
-            <span className="font-mono text-[9px] tracking-widest text-muted uppercase">ANALYZED</span>
-          </div>
-          <strong className="text-2xl font-bold text-white">{snapshot.sourceCount} <span className="text-xs font-normal text-muted">files</span></strong>
-        </div>
-        <div className="bg-ink p-5 flex flex-col justify-center">
-          <div className="flex items-center gap-2 mb-3">
-            <Layers size={12} className="text-muted" />
-            <span className="font-mono text-[9px] tracking-widest text-muted uppercase">VERIFIED TRUTHS</span>
-          </div>
-          <strong className="text-2xl font-bold text-cyan">{current.filter((claim) => claim.status === "verified").length}</strong>
-        </div>
-        <div className="bg-ink p-5 flex flex-col justify-center">
-          <div className="flex items-center gap-2 mb-3">
-            <FileWarning size={12} className="text-muted" />
-            <span className="font-mono text-[9px] tracking-widest text-muted uppercase">OPEN DRIFT</span>
-          </div>
-          <strong className="text-2xl font-bold text-orange">{openContradictions.length}</strong>
-        </div>
       </div>
 
       <div className="flex items-center justify-between mb-4">
@@ -83,16 +50,21 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
           View All &rarr;
         </Link>
       </div>
-      
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-        {current.slice(0, 6).map((claim) => (
-          <TruthCard claim={claim} projectId={snapshot.projectId} key={claim.id} />
-        ))}
-      </section>
+
+      {current.length ? (
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+          {current.slice(0, 6).map((claim) => (
+            <TruthCard claim={claim} projectId={snapshot.projectId} key={claim.id} />
+          ))}
+        </section>
+      ) : (
+        <section className="bg-ink border border-line rounded-sm p-10 text-center mb-12">
+          <p className="text-sm text-white mb-2">No current Truth yet.</p>
+          <p className="text-[11px] text-muted">A completed scan will show evidence-backed claims here. History stays on Memory; this surface is current state only.</p>
+        </section>
+      )}
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        
-        {/* EVIDENCE COVERAGE */}
         <div className="bg-ink border border-line flex flex-col rounded-sm overflow-hidden">
           <div className="p-5 border-b border-line flex items-center justify-between bg-ink-soft">
             <div className="flex items-center gap-2">
@@ -103,18 +75,20 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
           </div>
           <div className="flex flex-col flex-1 divide-y divide-line p-5 justify-center gap-1">
             {current.slice(0, 5).map((claim) => (
-              <div className="flex items-center gap-4 py-2 group" key={claim.id}>
+              <Link className="flex items-center gap-4 py-2 group" href={`/app/project/${snapshot.projectId}/truth/${encodeURIComponent(claim.id)}`} key={claim.id}>
                 <span className="w-24 truncate text-[11px] text-muted capitalize group-hover:text-white transition-colors" title={claim.subject}>{claim.subject}</span>
                 <div className="flex-1 h-1 bg-line rounded-full overflow-hidden">
                   <div className="h-full bg-cyan rounded-full transition-all" style={{ width: `${Math.round(claim.confidence * 100)}%` }}></div>
                 </div>
                 <strong className="w-16 text-right font-mono text-[9px] text-muted group-hover:text-cyan transition-colors">{claim.evidence.length} sources</strong>
-              </div>
+              </Link>
             ))}
+            {current.length === 0 ? (
+              <p className="text-sm text-muted py-8 text-center">No evidence rows until the first completed scan.</p>
+            ) : null}
           </div>
         </div>
 
-        {/* SEMANTIC CHANGE */}
         <div className="bg-ink border border-line flex flex-col rounded-sm overflow-hidden">
           <div className="p-5 border-b border-line flex items-center justify-between bg-ink-soft">
             <div className="flex items-center gap-2">

@@ -3,7 +3,7 @@ import { AppShell } from "../../../../../components/app-shell";
 import { PageHeader } from "../../../../../components/page-header";
 import { StatusBadge } from "../../../../../components/status-badge";
 import { projectSnapshot } from "../../../../../lib/project-data";
-import { FileWarning, GitCommit, GitBranch, ArrowRight, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { FileWarning, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { cn } from "../../../../../lib/utils";
 
 export const dynamic = "force-dynamic";

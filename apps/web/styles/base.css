@@ -33,8 +33,8 @@
 }
 
 * { box-sizing: border-box; }
-html { background: var(--ink-950); color-scheme: dark; scroll-behavior: smooth; }
-body { margin: 0; background: var(--ink-950); color: var(--paper); font-family: var(--font-sans); text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+html { background: var(--ink-950); color-scheme: dark; overflow-x: clip; scroll-behavior: smooth; }
+body { margin: 0; background: var(--ink-950); color: var(--paper); font-family: var(--font-sans); overflow-x: clip; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 body, button, input, textarea, select { font: inherit; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { color: inherit; }

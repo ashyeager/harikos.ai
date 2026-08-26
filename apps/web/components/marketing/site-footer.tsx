@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Brand } from "../brand";
 
 const columns = [
-  ["Product", [["Truth", "/truth"], ["Memory", "/memory"], ["Context", "/context"], ["Agents", "/agents"], ["Pricing", "/pricing"]]],
+  ["Product", [["Overview", "/product"], ["Truth", "/truth"], ["Memory", "/memory"], ["Context", "/context"], ["Agents", "/agents"], ["Pricing", "/pricing"]]],
   ["Developers", [["MCP", "/developers"], ["How it works", "/how-it-works"], ["Security", "/security"]]],
   ["Company", [["About", "/about"], ["Sign in", "/login"]]],
   ["Legal", [["Privacy", "/privacy"], ["Terms", "/terms"]]],
@@ -28,9 +28,9 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="site-footer-bottom">
-        <span>© 2026 HARIKOS AI</span>
+        <span>HARIKOS AI — A HARIKOS product.</span>
         <span>One project. One current understanding.</span>
-        <a href="https://harikos.vercel.app/" rel="noreferrer" target="_blank">A HARIKOS product <b>↗</b></a>
+        <a href="https://harikos.vercel.app/" rel="noreferrer" target="_blank">HARIKOS <b>→</b></a>
       </div>
     </footer>
   );

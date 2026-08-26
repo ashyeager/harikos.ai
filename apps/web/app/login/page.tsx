@@ -6,7 +6,6 @@ import { ProjectBrain } from "../../components/marketing/project-brain";
 import { getAuthIdentity } from "../../lib/auth";
 import { integrationStatus } from "../../lib/config";
 import { readSupabaseProviderStatus } from "../../lib/supabase/config";
-import { Github, FileCode2, Database, Shield, Lock, ArrowRight, Check } from "lucide-react";
 
 export const metadata: Metadata = { title: "Sign in", description: "Sign in to connect a repository and build a shared HARIKOS Project Brain." };
 

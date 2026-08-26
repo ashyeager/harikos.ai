@@ -3,8 +3,6 @@
 import { useState } from "react";
 
 import type { AgentConnection } from "../lib/cloud-projects";
-import { Cpu, Key, Copy, CheckCircle2, ShieldAlert, Plus, Trash2, PowerOff, Shield, Terminal } from "lucide-react";
-import { cn } from "../lib/utils";
 
 type PendingAction = "create" | string;
 

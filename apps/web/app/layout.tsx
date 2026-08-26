@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { CommandPalette } from "../components/command-palette";
 import "./globals.css";
 import "../styles/app.css";
 
@@ -35,7 +34,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html data-scroll-behavior="smooth" lang="en">
       <body className="bg-ink text-white font-sans antialiased min-h-screen selection:bg-cyan/30 selection:text-white">
         {children}
-        <CommandPalette />
       </body>
     </html>
   );

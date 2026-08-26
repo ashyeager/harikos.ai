@@ -1,7 +1,7 @@
 import type { ProjectTruthClaim } from "@harikos/core";
 import Link from "next/link";
 import { StatusBadge } from "./status-badge";
-import { Database, FileCode, SearchCode, GitBranch } from "lucide-react";
+import { Database, FileCode, GitBranch } from "lucide-react";
 
 export function TruthCard({
   claim,

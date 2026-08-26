@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 const globalItems = [["Dashboard", "/app/dashboard", "GD"], ["Projects", "/app/projects", "GP"], ["Profile", "/app/settings/profile", "SP"], ["Billing", "/app/settings/billing", "SB"], ["Security", "/app/settings/security", "SS"]] as const;
 
-export function CommandPalette({ projectId }: { projectId: string | undefined }) {
+export function CommandPalette({ projectId }: { projectId?: string }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   useEffect(() => {

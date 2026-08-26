@@ -3,9 +3,13 @@ import { existsSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-class Database { constructor(public databasePath?: string) {} pragma() {} close() {} prepare() { return { get: () => null, all: () => [], run: () => ({ changes: 0 }) }; } }
-namespace Database { export type Database = any; }
+import Database from "better-sqlite3";
 import { and, asc, eq, isNull } from "drizzle-orm";
+import {
+  drizzle,
+  type BetterSQLite3Database,
+} from "drizzle-orm/better-sqlite3";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import { z } from "zod";
 
 import {
@@ -63,7 +67,7 @@ export class PersistenceNotFoundError extends Error {
   }
 }
 
-type HarikosDrizzleDatabase = any;
+type HarikosDrizzleDatabase = BetterSQLite3Database<typeof schema>;
 
 class SqliteHarikosStore implements HarikosStore {
   readonly projects: ProjectRepository;
@@ -532,9 +536,34 @@ class SqliteHarikosStore implements HarikosStore {
 export function openHarikosDatabase(
   options: OpenHarikosDatabaseOptions,
 ): HarikosStore {
-  return new Proxy({}, {
-    get: () => new Proxy({}, {
-      get: () => (...args: any[]) => null
-    })
-  }) as any;
+  const databasePath = options.databasePath.trim();
+  if (!databasePath) {
+    throw new Error("A database path is required.");
+  }
+
+  mkdirSync(dirname(databasePath), { recursive: true });
+
+  const client = new Database(databasePath);
+  client.pragma("foreign_keys = ON");
+  client.pragma("journal_mode = WAL");
+  client.pragma("busy_timeout = 5000");
+
+  const db = drizzle(client, { schema });
+
+  try {
+    migrate(db, {
+      migrationsFolder: options.migrationsFolder ?? defaultMigrationsFolder(),
+    });
+  } catch (error) {
+    client.close();
+    throw error;
+  }
+
+  const clock = options.clock ?? (() => new Date());
+  return new SqliteHarikosStore(
+    client,
+    db,
+    () => clock().toISOString(),
+    options.idFactory ?? randomUUID,
+  );
 }

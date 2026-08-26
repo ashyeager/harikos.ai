@@ -7,8 +7,6 @@ import { listCloudProjects } from "../../../lib/cloud-projects";
 import { demoSnapshot } from "../../../lib/project-data";
 import { integrationStatus } from "../../../lib/config";
 import { getAuthIdentity } from "../../../lib/auth";
-import { Github, FolderGit2, FolderOpen, ArrowRight, CheckCircle2, ShieldAlert } from "lucide-react";
-import { cn } from "../../../lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +53,9 @@ export default async function ProjectsPage() {
             <b>Open →</b>
           </Link>
         ))}
+        {!snapshot && cloudProjects.length === 0 ? (
+          <p className="empty-projects">No connected projects yet. Install the GitHub App and choose a repository above.</p>
+        ) : null}
       </section>
 
       <RepositorySelector />
