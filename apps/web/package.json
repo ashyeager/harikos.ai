@@ -9,8 +9,8 @@
     "clean": "node -e \"require('node:fs').rmSync('.next',{recursive:true,force:true});require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true})\""
   },
   "dependencies": {
-    "@harikos/core": "workspace:*",
-    "@harikos/db": "workspace:*",
+    "@harikos/core": "*",
+    "@harikos/db": "*",
     "@react-three/fiber": "^9.7.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",

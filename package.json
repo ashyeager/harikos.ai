@@ -8,15 +8,15 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "build:web": "npm run build --workspaces --if-present",
-    "build:phase1": "npm run build --workspaces --if-present",
+    "build": "tsc -b packages/db packages/core packages/mcp packages/cli && npm run build --workspace=apps/web",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:phase1": "tsc -b packages/db packages/core packages/mcp packages/cli",
     "clean": "npm run clean --workspaces --if-present",
     "demo": "tsx scripts/demo-transition.ts",
     "db:migrate:cloud": "npm run build -w packages/db && node --env-file=.env.local --import tsx scripts/migrate-cloud.ts",
     "dev:web": "node scripts/dev-web.mjs",
     "lint": "eslint . --max-warnings=0",
-    "pretest": "pnpm run build:phase1",
+    "pretest": "npm run build:phase1",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run --configLoader runner",
     "test:watch": "vitest --configLoader runner",
@@ -27,9 +27,9 @@
     "dev": "npm run dev --workspace=apps/web"
   },
   "devDependencies": {
-    "@harikos/cli": "workspace:*",
-    "@harikos/core": "workspace:*",
-    "@harikos/db": "workspace:*",
+    "@harikos/cli": "*",
+    "@harikos/core": "*",
+    "@harikos/db": "*",
     "@playwright/test": "^1.62.1",
     "@rolldown/binding-wasm32-wasi": "1.2.5",
     "@types/better-sqlite3": "^9.6.0",
