@@ -15,7 +15,7 @@ export declare const repositoryMetadataSchema: z.ZodObject<{
     owner?: string;
     defaultBranch?: string;
     headSha?: string;
-    visibility?: "public" | "private" | "local";
+    visibility?: "local" | "private" | "public";
     webUrl?: string;
     sourceType?: "local" | "github";
 }, {
@@ -24,7 +24,7 @@ export declare const repositoryMetadataSchema: z.ZodObject<{
     owner?: string;
     defaultBranch?: string;
     headSha?: string;
-    visibility?: "public" | "private" | "local";
+    visibility?: "local" | "private" | "public";
     webUrl?: string;
     sourceType?: "local" | "github";
 }>;
@@ -307,9 +307,9 @@ export declare const projectTruthClaimSchema: z.ZodObject<Omit<{
         authority?: number;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
-    id?: string;
     status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
     value?: string;
+    id?: string;
     category?: string;
     subject?: string;
     predicate?: string;
@@ -334,9 +334,9 @@ export declare const projectTruthClaimSchema: z.ZodObject<Omit<{
     lastVerifiedAt?: string;
     supersedesClaimId?: string;
 }, {
-    id?: string;
     status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
     value?: string;
+    id?: string;
     category?: string;
     subject?: string;
     predicate?: string;
@@ -370,21 +370,21 @@ export declare const truthContradictionSchema: z.ZodObject<{
     resolution: z.ZodNullable<z.ZodString>;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id?: string;
     status?: "open" | "resolved";
+    createdAt?: string;
+    id?: string;
     claimAId?: string;
     claimBId?: string;
     reason?: string;
     resolution?: string;
-    createdAt?: string;
 }, {
-    id?: string;
     status?: "open" | "resolved";
+    createdAt?: string;
+    id?: string;
     claimAId?: string;
     claimBId?: string;
     reason?: string;
     resolution?: string;
-    createdAt?: string;
 }>;
 export declare const projectChangeSchema: z.ZodObject<{
     id: z.ZodString;
@@ -395,18 +395,18 @@ export declare const projectChangeSchema: z.ZodObject<{
     commitSha: z.ZodString;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    createdAt?: string;
     id?: string;
     commitSha?: string;
     category?: string;
-    createdAt?: string;
     summary?: string;
     previousValue?: string;
     currentValue?: string;
 }, {
+    createdAt?: string;
     id?: string;
     commitSha?: string;
     category?: string;
-    createdAt?: string;
     summary?: string;
     previousValue?: string;
     currentValue?: string;
@@ -428,7 +428,7 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         owner?: string;
         defaultBranch?: string;
         headSha?: string;
-        visibility?: "public" | "private" | "local";
+        visibility?: "local" | "private" | "public";
         webUrl?: string;
         sourceType?: "local" | "github";
     }, {
@@ -437,7 +437,7 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         owner?: string;
         defaultBranch?: string;
         headSha?: string;
-        visibility?: "public" | "private" | "local";
+        visibility?: "local" | "private" | "public";
         webUrl?: string;
         sourceType?: "local" | "github";
     }>;
@@ -523,9 +523,9 @@ export declare const projectSnapshotSchema: z.ZodObject<{
             authority?: number;
         }>, "many">;
     }, "strip", z.ZodTypeAny, {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -550,9 +550,9 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         lastVerifiedAt?: string;
         supersedesClaimId?: string;
     }, {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -586,21 +586,21 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         resolution: z.ZodNullable<z.ZodString>;
         createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        id?: string;
         status?: "open" | "resolved";
+        createdAt?: string;
+        id?: string;
         claimAId?: string;
         claimBId?: string;
         reason?: string;
         resolution?: string;
-        createdAt?: string;
     }, {
-        id?: string;
         status?: "open" | "resolved";
+        createdAt?: string;
+        id?: string;
         claimAId?: string;
         claimBId?: string;
         reason?: string;
         resolution?: string;
-        createdAt?: string;
     }>, "many">;
     changes: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
@@ -611,18 +611,18 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         commitSha: z.ZodString;
         createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
     }, {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
@@ -636,16 +636,16 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         owner?: string;
         defaultBranch?: string;
         headSha?: string;
-        visibility?: "public" | "private" | "local";
+        visibility?: "local" | "private" | "public";
         webUrl?: string;
         sourceType?: "local" | "github";
     };
     scannedAt?: string;
     sourceCount?: number;
     truths?: {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -671,19 +671,19 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         supersedesClaimId?: string;
     }[];
     contradictions?: {
-        id?: string;
         status?: "open" | "resolved";
+        createdAt?: string;
+        id?: string;
         claimAId?: string;
         claimBId?: string;
         reason?: string;
         resolution?: string;
-        createdAt?: string;
     }[];
     changes?: {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
@@ -697,16 +697,16 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         owner?: string;
         defaultBranch?: string;
         headSha?: string;
-        visibility?: "public" | "private" | "local";
+        visibility?: "local" | "private" | "public";
         webUrl?: string;
         sourceType?: "local" | "github";
     };
     scannedAt?: string;
     sourceCount?: number;
     truths?: {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -732,19 +732,19 @@ export declare const projectSnapshotSchema: z.ZodObject<{
         supersedesClaimId?: string;
     }[];
     contradictions?: {
-        id?: string;
         status?: "open" | "resolved";
+        createdAt?: string;
+        id?: string;
         claimAId?: string;
         claimBId?: string;
         reason?: string;
         resolution?: string;
-        createdAt?: string;
     }[];
     changes?: {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
@@ -835,9 +835,9 @@ export declare const contextPackSchema: z.ZodObject<{
             authority?: number;
         }>, "many">;
     }, "strip", z.ZodTypeAny, {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -862,9 +862,9 @@ export declare const contextPackSchema: z.ZodObject<{
         lastVerifiedAt?: string;
         supersedesClaimId?: string;
     }, {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -898,18 +898,18 @@ export declare const contextPackSchema: z.ZodObject<{
         commitSha: z.ZodString;
         createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
     }, {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
@@ -919,10 +919,11 @@ export declare const contextPackSchema: z.ZodObject<{
     tokenEstimate: z.ZodNumber;
     text: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    projectName?: string;
     truths?: {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -949,12 +950,11 @@ export declare const contextPackSchema: z.ZodObject<{
     }[];
     task?: string;
     generatedAt?: string;
-    projectName?: string;
     recentChanges?: {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
@@ -964,10 +964,11 @@ export declare const contextPackSchema: z.ZodObject<{
     tokenEstimate?: number;
     text?: string;
 }, {
+    projectName?: string;
     truths?: {
-        id?: string;
         status?: "verified" | "likely" | "uncertain" | "contradicted" | "stale" | "superseded" | "rejected";
         value?: string;
+        id?: string;
         category?: string;
         subject?: string;
         predicate?: string;
@@ -994,12 +995,11 @@ export declare const contextPackSchema: z.ZodObject<{
     }[];
     task?: string;
     generatedAt?: string;
-    projectName?: string;
     recentChanges?: {
+        createdAt?: string;
         id?: string;
         commitSha?: string;
         category?: string;
-        createdAt?: string;
         summary?: string;
         previousValue?: string;
         currentValue?: string;
