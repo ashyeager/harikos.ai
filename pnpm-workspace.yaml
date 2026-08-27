@@ -1,3 +1,7 @@
+packages:
+  - apps/web
+  - packages/*
+
 minimumReleaseAgeExclude:
   - '@next/*'
   - next
