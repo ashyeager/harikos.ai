@@ -10,10 +10,21 @@ import { integrationStatus } from "../../../lib/config";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  console.log("[DASHBOARD] entered");
   const identity = await getAuthIdentity();
+  console.log("[DASHBOARD] page identity resolved", identity ? { id: identity.id, provider: identity.provider } : null);
   if (!identity) redirect("/login");
-  const projects = await listCloudProjects(identity);
+  let projects;
+  try {
+    console.log("[DASHBOARD] listCloudProjects started");
+    projects = await listCloudProjects(identity);
+    console.log("[DASHBOARD] listCloudProjects completed", { count: projects.length });
+  } catch (error) {
+    console.error("[DASHBOARD ERROR]", { function: "listCloudProjects", message: error instanceof Error ? error.message : String(error), code: (error as { code?: unknown })?.code, details: (error as { details?: unknown })?.details, hint: (error as { hint?: unknown })?.hint });
+    throw error;
+  }
   const status = integrationStatus();
+  console.log("[DASHBOARD] rendering dashboard");
   return <AppShell>
     <PageHeader eyebrow="WORKSPACE / OVERVIEW" title="Project brains" copy="Open a real connected project, review repository access, or continue the first-run path. Counts appear only when HARIKOS has persisted data for them." action={<Link className="button button-dark" href="/app/projects">Connect repository <span>&rarr;</span></Link>} />
     {projects.length ? <>
