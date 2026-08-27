@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isDemoMode } from "./config";
 import { readSupabasePublicConfig } from "./supabase/config";
 import { createSupabaseServerClient } from "./supabase/server";
 
@@ -61,6 +62,17 @@ export function identityFromClaims(value: unknown): AuthIdentity | undefined {
 }
 
 export const getAuthIdentity = async (): Promise<AuthIdentity | undefined> => {
+  if (isDemoMode()) {
+    return {
+      id: "demo-user",
+      githubUserId: "demo-github-user",
+      login: "demo-user",
+      email: "demo@harikos.ai",
+      displayName: "Demo User",
+      avatarUrl: null,
+      provider: "github",
+    };
+  }
   if (!readSupabasePublicConfig()) return undefined;
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getClaims();

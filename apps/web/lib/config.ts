@@ -45,6 +45,13 @@ export function readGitHubAppOAuthConfig(
   return githubAppOAuthConfigSchema.parse({ clientId, clientSecret });
 }
 
+/** Development-only diagnostic mode. Keep NEXT_PUBLIC_DEMO_MODE unset or false in production. */
+export function isDemoMode(
+  environment: NodeJS.ProcessEnv = process.env,
+): boolean {
+  return environment.NEXT_PUBLIC_DEMO_MODE === "true" && environment.NODE_ENV !== "production";
+}
+
 export function isLocalDemoEnabled(
   environment: NodeJS.ProcessEnv = process.env,
 ): boolean {

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Brand } from "../../components/brand";
 import { ProjectBrain } from "../../components/marketing/project-brain";
 import { getAuthIdentity } from "../../lib/auth";
-import { integrationStatus } from "../../lib/config";
+import { integrationStatus, isDemoMode } from "../../lib/config";
 import { readSupabaseProviderStatus } from "../../lib/supabase/config";
 
 export const metadata: Metadata = { title: "Sign in", description: "Sign in to connect a repository and build a shared HARIKOS Project Brain." };
@@ -26,7 +26,10 @@ export default async function LoginPage() {
         <span className="eyebrow"><i />ACCOUNT / AUTHENTICATION</span>
         <h2>Connect your project brain.</h2>
         <p>Sign in first. GitHub repository authorization is a separate read-only App connection that you choose afterward.</p>
-        {status.supabaseAuth && hasProvider ? <div className="auth-provider-buttons">
+        {isDemoMode() ? <div className="auth-provider-buttons">
+          <a className="auth-provider auth-demo" href="/app/dashboard"><span>DE</span><strong>Enter Demo</strong><b>&rarr;</b></a>
+          <div className="config-notice" role="status"><span>DEMO MODE</span>Authentication is bypassed for development only.</div>
+        </div> : status.supabaseAuth && hasProvider ? <div className="auth-provider-buttons">
           {providers.github ? <a className="auth-provider auth-github" href="/api/auth/github/start"><span>GH</span><strong>Continue with GitHub</strong><b>&rarr;</b></a> : null}
           {providers.google ? <a className="auth-provider auth-google" href="/api/auth/google/start"><span>G</span><strong>Continue with Google</strong><b>&rarr;</b></a> : null}
         </div> : <div className="config-notice" role="status"><span>AUTHENTICATION UNAVAILABLE</span>{status.supabaseAuth ? "No supported OAuth provider is enabled for this deployment." : "Supabase Auth is not configured for this deployment."}</div>}
