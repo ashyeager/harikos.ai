@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @harikos/web build",
-  "outputDirectory": "apps/web/.next"
+  "buildCommand": "pnpm --filter @harikos/web build"
 }
