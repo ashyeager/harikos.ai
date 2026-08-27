@@ -1,0 +1,9 @@
+export const CLAIM_KINDS = ["implementation", "intention", "constraint", "architecture"];
+export const CLAIM_STATUSES = ["active", "superseded", "contradicted"];
+export const CONTRADICTION_STATUSES = ["open", "resolved"];
+export const EPISTEMIC_TYPES = ["fact", "inference", "assumption"];
+export const MEMORY_STATUSES = ["active", "superseded", "archived"];
+export const MEMORY_TYPES = ["decision", "attempt", "failed_attempt", "fix", "bug", "root_cause", "constraint", "discovery", "outcome", "incident", "note"];
+export const RESOLUTION_TYPES = ["override", "merge", "discard"];
+export const SOURCE_TYPES = ["github", "mcp", "manual"];
+//# sourceMappingURL=schema.js.map

@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "noEmit": true,
@@ -9,5 +11,5 @@
   },
   "references": [{ "path": "../../packages/core" }],
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
 }

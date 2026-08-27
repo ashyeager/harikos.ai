@@ -16,11 +16,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "composite": true,
-    "types": ["node"],
-    "paths": {
-      "@harikos/db": ["./packages/db/src/index.ts"],
-      "@harikos/core": ["./packages/core/src/index.ts"]
-    }
+    "composite": true
   }
 }

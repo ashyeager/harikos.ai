@@ -1,0 +1,20 @@
+export declare const CLAIM_KINDS: readonly ["implementation", "intention", "constraint", "architecture"];
+export declare const CLAIM_STATUSES: readonly ["active", "superseded", "contradicted"];
+export declare const CONTRADICTION_STATUSES: readonly ["open", "resolved"];
+export declare const EPISTEMIC_TYPES: readonly ["fact", "inference", "assumption"];
+export declare const MEMORY_STATUSES: readonly ["active", "superseded", "archived"];
+export declare const MEMORY_TYPES: readonly ["decision", "attempt", "failed_attempt", "fix", "bug", "root_cause", "constraint", "discovery", "outcome", "incident", "note"];
+export declare const RESOLUTION_TYPES: readonly ["override", "merge", "discard"];
+export declare const SOURCE_TYPES: readonly ["github", "mcp", "manual"];
+export type Project = any;
+export type Source = any;
+export type Event = any;
+export type Claim = any;
+export type Evidence = any;
+export type Contradiction = any;
+export type Resolution = any;
+export type Memory = any;
+export type AgentSession = any;
+export type Outcome = any;
+export type ContextPack = any;
+//# sourceMappingURL=schema.d.ts.map

@@ -1,8 +1,7 @@
 // Compatibility exports for the existing web app. The frontend uses local demo data
 // when cloud persistence is not configured, so these remain inert until a real schema
 // is connected.
-const cloudTable = {} as Record<string, unknown>;
-
+const cloudTable = {};
 export const cloudSchema = {};
 export const cloudUsers = cloudTable;
 export const cloudProjects = cloudTable;
@@ -20,3 +19,4 @@ export const cloudAgentSessions = cloudTable;
 export const cloudOutcomes = cloudTable;
 export const cloudContextPacks = cloudTable;
 export const cloudSubscriptions = cloudTable;
+//# sourceMappingURL=cloud-schema.js.map
