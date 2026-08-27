@@ -14,10 +14,12 @@ export async function GET(request: Request) {
     );
   }
   const origin = applicationOrigin(request.url);
+  const redirectBase =
+    process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? `${origin}/auth/callback`;
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "github",
-    options: { redirectTo: `${origin}/auth/callback?next=/app/projects` },
+    options: { redirectTo: `${redirectBase}?next=/app/projects` },
   });
   if (error || !data.url) {
     return NextResponse.json(

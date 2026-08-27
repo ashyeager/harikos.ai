@@ -10,10 +10,13 @@ export async function GET(request: Request) {
   if (!readSupabasePublicConfig()) {
     return NextResponse.json({ error: "Supabase Auth is not configured." }, { status: 503 });
   }
+  const origin = applicationOrigin(request.url);
+  const redirectBase =
+    process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? `${origin}/auth/callback`;
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${applicationOrigin(request.url)}/auth/callback?next=/app/projects` },
+    options: { redirectTo: `${redirectBase}?next=/app/projects` },
   });
   if (error || !data.url) {
     return NextResponse.json({ error: "Supabase could not start Google sign-in." }, { status: 502 });
