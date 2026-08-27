@@ -1,8 +1,5 @@
 {
-  "builds": [
-    {
-      "src": "apps/web/package.json",
-      "use": "@vercel/next"
-    }
-  ]
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @harikos/web build && rm -rf .next && cp -a apps/web/.next .next"
 }
