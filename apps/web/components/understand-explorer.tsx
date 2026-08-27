@@ -84,7 +84,7 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
             className="flex-1 h-12 px-4 bg-ink-soft border border-line text-white font-mono text-sm outline-none focus:border-cyan transition-colors rounded-sm shadow-inner"
             placeholder="What do you want to understand?"
             onKeyDown={(e) => {
-              if (e.key === "Enter") ask();
+              if (e.key === "Enter" && !e.nativeEvent.isComposing && e.keyCode !== 229) ask();
             }}
           />
           <button
