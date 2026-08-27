@@ -20,12 +20,12 @@ export declare const githubInstallationSchema: z.ZodObject<{
         login: z.ZodString;
         type: z.ZodEnum<["User", "Organization"]>;
     }, "strip", z.ZodTypeAny, {
-        id?: number;
         type?: "User" | "Organization";
+        id?: number;
         login?: string;
     }, {
-        id?: number;
         type?: "User" | "Organization";
+        id?: number;
         login?: string;
     }>;
     repository_selection: z.ZodEnum<["all", "selected"]>;
@@ -33,8 +33,8 @@ export declare const githubInstallationSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     id?: number;
     account?: {
-        id?: number;
         type?: "User" | "Organization";
+        id?: number;
         login?: string;
     };
     repository_selection?: "all" | "selected";
@@ -42,8 +42,8 @@ export declare const githubInstallationSchema: z.ZodObject<{
 }, {
     id?: number;
     account?: {
-        id?: number;
         type?: "User" | "Organization";
+        id?: number;
         login?: string;
     };
     repository_selection?: "all" | "selected";
@@ -66,39 +66,39 @@ declare const installationRepositoriesSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         id?: number;
         name?: string;
+        private?: boolean;
+        default_branch?: string;
         owner?: {
             login?: string;
         };
-        private?: boolean;
-        default_branch?: string;
     }, {
         id?: number;
         name?: string;
+        private?: boolean;
+        default_branch?: string;
         owner?: {
             login?: string;
         };
-        private?: boolean;
-        default_branch?: string;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
     repositories?: {
         id?: number;
         name?: string;
+        private?: boolean;
+        default_branch?: string;
         owner?: {
             login?: string;
         };
-        private?: boolean;
-        default_branch?: string;
     }[];
 }, {
     repositories?: {
         id?: number;
         name?: string;
+        private?: boolean;
+        default_branch?: string;
         owner?: {
             login?: string;
         };
-        private?: boolean;
-        default_branch?: string;
     }[];
 }>;
 export type GitHubInstallationRepository = z.infer<typeof installationRepositoriesSchema>["repositories"][number];
