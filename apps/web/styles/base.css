@@ -28,9 +28,9 @@
   --shadow-blue: 0 0 80px rgba(79, 140, 255, 0.12);
   --shell: min(1420px, calc(100vw - 72px));
   --ease-engineered: cubic-bezier(0.22, 1, 0.36, 1);
-  --font-sans: var(--font-body), Inter, Arial, sans-serif;
-  --font-display: var(--font-heading), "Space Grotesk", Arial, sans-serif;
-  --font-mono: var(--font-code), "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-mono: var(--font-code);
   --text-primary: #ffffff;
   --text-secondary: #e5e5e5;
   --text-shadow-small: 0 0 2px rgba(0, 0, 0, 0.3);
@@ -64,9 +64,9 @@ button { border: 0; }
   border-radius: var(--radius-sm);
   cursor: pointer;
   display: inline-flex;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   gap: 10px;
   justify-content: center;
   letter-spacing: .02em;
@@ -86,7 +86,7 @@ button { border: 0; }
 .button-large { min-height: 52px; padding: 0 22px; }
 .button:disabled { cursor: not-allowed; filter: grayscale(.45); opacity: .46; transform: none; }
 
-.brand { align-items: center; display: inline-flex; font-size: 14px; font-weight: 760; gap: 11px; letter-spacing: .055em; line-height: 1; white-space: nowrap; }
+.brand { align-items: center; color: var(--text-primary); display: inline-flex; font-family: var(--font-display); font-size: 32px; font-weight: 700; gap: 11px; letter-spacing: -.04em; line-height: 1; text-shadow: var(--text-shadow-medium); white-space: nowrap; }
 .brand-mark { display: grid; height: 27px; position: relative; transform: rotate(45deg); width: 27px; }
 .brand-mark > span, .brand-mark > i { border: 1px solid rgba(86,217,255,.78); grid-area: 1/1; margin: auto; transform: rotate(0); }
 .brand-mark > span:nth-child(1), .brand-mark > i:nth-child(1) { height: 19px; width: 19px; }

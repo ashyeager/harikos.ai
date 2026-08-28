@@ -6,7 +6,7 @@ export const contentType = "image/png";
 
 export default function OpenGraphImage() {
   return new ImageResponse(
-    <div style={{ background: "#07090c", color: "#eef4fb", display: "flex", fontFamily: "Arial, sans-serif", height: "100%", padding: 56, position: "relative", width: "100%" }}>
+    <div style={{ background: "#07090c", color: "#eef4fb", display: "flex", fontFamily: "Inter, sans-serif", height: "100%", padding: 56, position: "relative", width: "100%" }}>
       <div style={{ backgroundImage: "linear-gradient(rgba(86,217,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(86,217,255,.08) 1px, transparent 1px)", backgroundSize: "44px 44px", inset: 0, position: "absolute" }} />
       <div style={{ border: "1px solid #26313c", display: "flex", flex: 1, flexDirection: "column", justifyContent: "space-between", padding: 46, position: "relative" }}>
         <div style={{ alignItems: "center", display: "flex", fontSize: 19, fontWeight: 800, letterSpacing: ".16em" }}><span style={{ alignItems: "center", background: "#dff5ff", color: "#071019", display: "flex", height: 42, justifyContent: "center", marginRight: 16, transform: "rotate(45deg)", width: 42 }}>H</span> HARIKOS AI</div>
