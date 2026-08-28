@@ -22,8 +22,7 @@ async function userRecord(identity: AuthIdentity) {
 }
 
 export async function createCheckoutSession(identity: AuthIdentity): Promise<string> {
-  const price = process.env.STRIPE_PRO_PRICE_ID?.trim();
-  if (!price) throw new Error("Stripe Pro price is not configured.");
+
   const { connection, user } = await userRecord(identity);
   try {
     if (!user) throw new Error("HARIKOS user profile is not available.");
@@ -33,7 +32,7 @@ export async function createCheckoutSession(identity: AuthIdentity): Promise<str
       ? await client.customers.retrieve(existing.stripeCustomerId)
       : await client.customers.create({ ...(identity.email ? { email: identity.email } : {}), ...(identity.displayName ? { name: identity.displayName } : {}), metadata: { harikosUserId: user.id } });
     if (customer.deleted) throw new Error("Stripe customer is unavailable.");
-    const session = await client.checkout.sessions.create({ mode: "subscription", customer: customer.id, line_items: [{ price, quantity: 1 }], success_url: `${appUrl()}/app/settings/billing?checkout=complete`, cancel_url: `${appUrl()}/app/settings/billing?checkout=cancelled` });
+    const session = await client.checkout.sessions.create({ mode: "subscription", customer: customer.id, line_items: [{ price_data: { currency: "usd", unit_amount: 100, recurring: { interval: "month" }, product_data: { name: "HARIKOS Pro" } }, quantity: 1 }], integration_identifier: `harikos_pro_${Math.random().toString(36).slice(2, 10)}`, success_url: `${appUrl()}/app/settings/billing?checkout=complete`, cancel_url: `${appUrl()}/app/settings/billing?checkout=cancelled` });
     if (!existing) {
       await connection.db.insert(cloudSubscriptions).values({ userId: user.id, stripeCustomerId: customer.id, status: "checkout_pending" });
     }

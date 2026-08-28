@@ -158,7 +158,7 @@ export default function LandingPage() {
           <SectionHeading eyebrow="PRICING / SIMPLE BY DESIGN" title={<>Start with one project.<br /><span>Scale the shared brain.</span></>} copy="No annual fiction, fake enterprise tier, or hidden usage story. Start free; Pro is the current launch hypothesis." />
           <div className="pricing-preview-grid" data-reveal>
             <article><span>FREE / FOR INDIVIDUAL BUILDERS</span><div><strong>$0</strong><small>/ forever</small></div><p>One repository · one agent connection · 250 memories · 25 Context Packs/month</p><Link className="button button-secondary" href="/login">Start free <span>↗</span></Link></article>
-            <article className="pricing-pro"><span>PRO / FOR ACTIVE PROJECTS</span><div><strong>$15</strong><small>/ month</small></div><p>Up to five repositories · five agent connections · higher Memory and Context limits</p><Link className="button button-primary" href="/login">Continue to sign in <span>↗</span></Link></article>
+            <article className="pricing-pro"><span>PRO / FOR ACTIVE PROJECTS</span><div><strong>$1</strong><small>/ month</small></div><p>Up to five repositories · five agent connections · higher Memory and Context limits</p><Link className="button button-primary" href="/login">Continue to sign in <span>↗</span></Link></article>
           </div>
           <Link className="section-text-link" href="/pricing">Compare plan details <span>↗</span></Link>
         </section>
