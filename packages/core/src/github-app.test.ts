@@ -7,6 +7,41 @@ import { describe, expect, it, vi } from "vitest";
 const requireFromRoot = createRequire(join(process.cwd(), "package.json"));
 
 describe("GitHub App token boundary", () => {
+  it("normalizes escaped Vercel PEM newlines before reading the App config", () => {
+    const { privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+    const pem = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
+    const { readGitHubAppConfig } = requireFromRoot(
+      join(process.cwd(), "packages", "core", "dist", "index.js"),
+    );
+
+    for (const escapedPrivateKey of [
+      pem.replaceAll("\n", "\\n"),
+      pem.replaceAll("\n", "\\\\n"),
+    ]) {
+      expect(
+        readGitHubAppConfig({
+          GITHUB_APP_ID: "41820",
+          GITHUB_APP_PRIVATE_KEY: `\"${escapedPrivateKey}\"`,
+          GITHUB_APP_SLUG: "harikos-test",
+        }),
+      ).toEqual({ appId: "41820", privateKey: pem.trim(), slug: "harikos-test" });
+    }
+  });
+
+  it("rejects an invalid GitHub App private key", () => {
+    const { readGitHubAppConfig } = requireFromRoot(
+      join(process.cwd(), "packages", "core", "dist", "index.js"),
+    );
+
+    expect(
+      readGitHubAppConfig({
+        GITHUB_APP_ID: "41820",
+        GITHUB_APP_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\\ninvalid\\n-----END PRIVATE KEY-----",
+        GITHUB_APP_SLUG: "harikos-test",
+      }),
+    ).toBeUndefined();
+  });
+
   it("downscopes installation tokens to read-only contents and metadata", async () => {
     const { privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
     const config = {

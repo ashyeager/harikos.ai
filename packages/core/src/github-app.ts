@@ -1,4 +1,4 @@
-import { createSign } from "node:crypto";
+import { createPrivateKey, createSign } from "node:crypto";
 
 import { z } from "zod";
 
@@ -52,13 +52,36 @@ function base64Url(input: string): string {
   return Buffer.from(input).toString("base64url");
 }
 
+function normalizeGitHubAppPrivateKey(value: string): string {
+  const trimmed = value.trim();
+  const unquoted =
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+      ? trimmed.slice(1, -1)
+      : trimmed;
+
+  // Vercel environment variables are commonly pasted as either \n or \\n.
+  // Decode the double-escaped representation first so both become PEM lines.
+  return unquoted.replaceAll("\\\\n", "\n").replaceAll("\\n", "\n").trim();
+}
+
+function isUsableGitHubAppPrivateKey(privateKey: string): boolean {
+  try {
+    return createPrivateKey(privateKey).asymmetricKeyType === "rsa";
+  } catch {
+    return false;
+  }
+}
+
 export function readGitHubAppConfig(
   environment: NodeJS.ProcessEnv = process.env,
 ): GitHubAppConfig | undefined {
   const appId = environment.GITHUB_APP_ID?.trim();
-  const privateKey = environment.GITHUB_APP_PRIVATE_KEY?.replaceAll("\\n", "\n").trim();
+  const privateKey = environment.GITHUB_APP_PRIVATE_KEY
+    ? normalizeGitHubAppPrivateKey(environment.GITHUB_APP_PRIVATE_KEY)
+    : undefined;
   const slug = environment.GITHUB_APP_SLUG?.trim();
-  if (!appId || !privateKey || !slug) {
+  if (!appId || !privateKey || !slug || !isUsableGitHubAppPrivateKey(privateKey)) {
     return undefined;
   }
   const parsed = githubAppConfigSchema.safeParse({ appId, privateKey, slug });
