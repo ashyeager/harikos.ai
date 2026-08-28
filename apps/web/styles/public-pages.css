@@ -3,7 +3,7 @@
 .public-hero-grid { background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 54px 54px; inset: 0; mask-image: linear-gradient(to bottom, #000, transparent 84%); pointer-events: none; position: absolute; }
 .public-hero-copy, .public-hero-visual { position: relative; z-index: 1; }
 .public-hero-copy h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(52px, 5.4vw, 86px); font-weight: 500; letter-spacing: -.065em; line-height: .94; margin: 27px 0; }
-.public-hero-copy h1 span { color: transparent; -webkit-text-stroke: 1px rgba(230,238,250,.56); }
+.public-hero-copy h1 span { color: var(--text-primary); -webkit-text-stroke: 0; text-shadow: var(--text-shadow-large); }
 .public-hero-copy > p { color: var(--muted); font-size: 18px; line-height: 1.72; margin: 0; max-width: 640px; }
 .public-hero-copy .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 34px; }
 .public-hero-visual { min-width: 0; }

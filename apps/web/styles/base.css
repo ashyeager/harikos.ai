@@ -8,8 +8,8 @@
   --ink-600: #262a33;
   --paper: #f4f5f7;
   --paper-soft: #d8dce5;
-  --muted: #929aaa;
-  --muted-dark: #657083;
+  --muted: #e5e5e5;
+  --muted-dark: #c7cbd4;
   --blue: #4f8cff;
   --cyan: #56d9ff;
   --green: #5ee69a;
@@ -31,20 +31,24 @@
   --font-sans: var(--font-body), Inter, Arial, sans-serif;
   --font-display: var(--font-heading), "Space Grotesk", Arial, sans-serif;
   --font-mono: var(--font-code), "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
-  --text-primary: #f4f5f7;
-  --text-secondary: #a8afbc;
+  --text-primary: #ffffff;
+  --text-secondary: #e5e5e5;
+  --text-shadow-small: 0 0 2px rgba(0, 0, 0, 0.3);
+  --text-shadow-medium: 0 0 3px rgba(0, 0, 0, 0.4);
+  --text-shadow-large: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
 * { box-sizing: border-box; }
 html { background: var(--ink-950); color-scheme: dark; overflow-x: clip; scroll-behavior: smooth; }
-body { margin: 0; background: var(--ink-950); color: var(--text-primary); font-family: var(--font-sans); font-size: 16px; line-height: 1.6; overflow-x: clip; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
-h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
-p { font-family: var(--font-sans); }
-small, label { color: var(--text-secondary); font-weight: 500; letter-spacing: .01em; }
+body { margin: 0; background: var(--ink-950); color: var(--text-primary); font-family: var(--font-sans); font-size: 16px; line-height: 1.6; overflow-x: clip; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; text-shadow: var(--text-shadow-small); }
+h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; text-shadow: var(--text-shadow-large); }
+p { color: var(--text-primary); font-family: var(--font-sans); }
+small, label { color: var(--text-secondary); font-weight: 500; letter-spacing: .01em; text-shadow: var(--text-shadow-small); }
 code, pre, kbd, samp { font-family: var(--font-mono); font-size: 13px; }
 body, button, input, textarea, select { font: inherit; }
-a { color: inherit; text-decoration: none; }
-button, input, textarea, select { color: inherit; }
+a { color: var(--text-primary); text-decoration: none; }
+button, input, textarea, select { color: var(--text-primary); }
+button, a { text-shadow: var(--text-shadow-small); }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { border: 0; }
 ::selection { background: rgba(86, 217, 255, 0.26); color: #fff; }
