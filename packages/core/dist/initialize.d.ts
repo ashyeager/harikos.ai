@@ -12,19 +12,19 @@ export declare const harikosConfigSchema: z.ZodObject<{
     databasePath: z.ZodLiteral<".harikos/project.db">;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    version?: 1;
+    createdAt?: string;
     projectId?: string;
     projectName?: string;
+    version?: 1;
     projectRoot?: string;
     databasePath?: ".harikos/project.db";
-    createdAt?: string;
 }, {
-    version?: 1;
+    createdAt?: string;
     projectId?: string;
     projectName?: string;
+    version?: 1;
     projectRoot?: string;
     databasePath?: ".harikos/project.db";
-    createdAt?: string;
 }>;
 export type HarikosConfig = z.infer<typeof harikosConfigSchema>;
 export interface InitializeProjectOptions {

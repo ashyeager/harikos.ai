@@ -36,9 +36,9 @@ export declare const createClaimSchema: z.ZodObject<{
     value: z.ZodAny;
     scope: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     status: z.ZodEnum<{
-        active: "active";
-        superseded: "superseded";
         contradicted: "contradicted";
+        superseded: "superseded";
+        active: "active";
     }>;
     epistemicType: z.ZodEnum<{
         fact: "fact";
@@ -59,9 +59,9 @@ export declare const createClaimSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const updateClaimSchema: z.ZodObject<{
     status: z.ZodOptional<z.ZodEnum<{
-        active: "active";
-        superseded: "superseded";
         contradicted: "contradicted";
+        superseded: "superseded";
+        active: "active";
     }>>;
     confidence: z.ZodOptional<z.ZodNumber>;
     validTo: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -124,8 +124,8 @@ export declare const createMemorySchema: z.ZodObject<{
     content: z.ZodString;
     importance: z.ZodDefault<z.ZodNumber>;
     status: z.ZodDefault<z.ZodEnum<{
-        active: "active";
         superseded: "superseded";
+        active: "active";
         archived: "archived";
     }>>;
     sourceId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
