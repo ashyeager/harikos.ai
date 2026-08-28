@@ -86,7 +86,41 @@
 
 @media (max-width: 900px) { .site-nav-links { display: none; }.mobile-menu-button, .mobile-nav-actions { display: block; }.home-hero { grid-template-columns: 1fr; min-height: auto; padding-top: 130px; }.hero-brain { height: 520px; margin: 20px 0 0; }.signal-ribbon, .pillar-grid { grid-template-columns: repeat(2, 1fr); }.pillar-card + .pillar-card, .pillar-card:first-child { border-radius: 0; border-left: 1px solid var(--border-light); }.pillar-card:first-child { border-radius: 12px 0 0 0; }.pillar-card:nth-child(2) { border-radius: 0 12px 0 0; }.pillar-card:nth-child(3) { border-radius: 0 0 0 12px; }.pillar-card:nth-child(4) { border-radius: 0 0 12px 0; }.cinematic-stage { grid-template-columns: 1fr; gap: 24px; padding: 24px; }.cinematic-data-line { min-height: 70px; }.cinematic-files { left: 24px; width: calc(100% - 48px); } }
 @media (max-width: 560px) { .site-nav-shell { padding-left: 16px; padding-right: 16px; }.home-hero { padding-left: 20px; padding-right: 20px; }.hero-copy h1 { font-size: 46px; }.hero-brain { height: 400px; }.signal-ribbon, .pillar-grid { grid-template-columns: 1fr; }.signal-ribbon > div { border-right: 1px solid var(--border-light); }.pillar-card, .pillar-card:first-child, .pillar-card:nth-child(2), .pillar-card:nth-child(3), .pillar-card:nth-child(4) { border-radius: 0; }.pillar-card:first-child { border-radius: 12px 12px 0 0; }.pillar-card:last-child { border-radius: 0 0 12px 12px; }.section-inner { padding: 72px 20px; }.problem-section h2, .pillars-section h2 { font-size: 36px; }.fragment-field { height: 460px; }.fragment-agent, .fragment-file { width: 170px; }.fragment-agent { left: 4%; }.fragment-file-one { right: 4%; }.fragment-file-two { left: 4%; }.fragment-agent-two { right: 4%; }.cinematic-stage { padding: 18px; }.cinematic-files { left: 18px; width: calc(100% - 36px); }.final-cta-section { padding: 72px 20px; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+@media (prefers-reduced-motion: reduce) { *, *::before { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+/* Premium depth layer: keep the locked light/orange system, add atmosphere and hierarchy. */
+.marketing-root { background: #fff; }
+.home-hero { background: radial-gradient(circle at 78% 36%, rgba(255,107,53,.12), transparent 24%), radial-gradient(circle at 94% 12%, #fff5f0 0, #fff 42%), #fff; }
+.home-hero::before { background: radial-gradient(circle, rgba(255,179,160,.45), transparent 66%); filter: blur(52px); opacity: .55; }
+.home-hero::after { box-shadow: 0 0 26px rgba(255,107,53,.55); }
+.hero-grid-overlay { opacity: .7; }
+.hero-copy h1 { font-size: clamp(52px, 6.8vw, 72px); text-shadow: 0 2px 4px rgba(0,0,0,.05); }
+.hero-copy h1 span { text-shadow: 0 0 28px rgba(255,107,53,.13); }
+.hero-actions a, .marketing-root .button-primary { box-shadow: 0 10px 24px rgba(255,107,53,.22); transition: transform .2s, box-shadow .2s, background .2s; }
+.hero-actions a:hover, .marketing-root .button-primary:hover { box-shadow: 0 14px 30px rgba(255,107,53,.32); transform: translateY(-2px); }
+.hero-brain { filter: drop-shadow(0 20px 38px rgba(255,107,53,.14)); }
+.signal-ribbon { background: linear-gradient(90deg, #fff, #fffaf8 50%, #fff); }
+.signal-ribbon > div { transition: background .2s, transform .2s; }
+.signal-ribbon > div:hover { background: #fff5f0; transform: translateY(-2px); }
+.problem-section, .memory-story, .evidence-section, .faq-section { background-color: #fafafa; background-image: radial-gradient(rgba(255,107,53,.09) .7px, transparent .7px); background-size: 18px 18px; }
+.section-shell { position: relative; }
+.problem-section::before, .pillars-section::before, .mechanic-section::before, .memory-story::before, .evidence-section::before, .faq-section::before { background: var(--accent-orange); content: ""; height: 4px; left: max(36px, calc((100vw - 1420px) / 2)); position: absolute; top: 0; width: 60px; }
+.problem-section h2, .pillars-section h2 { font-size: clamp(40px, 5vw, 52px); text-shadow: 0 2px 4px rgba(0,0,0,.04); }
+.fragment-field, .cinematic-loop, .evidence-inspector, .memory-timeline-visual { box-shadow: 0 22px 55px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.9); }
+.pillar-card { background: linear-gradient(145deg, #fff 0%, #fff 60%, #fff5f0 100%); border-left: 4px solid var(--accent-orange); box-shadow: inset 0 0 22px rgba(255,107,53,.035), 0 12px 28px rgba(0,0,0,.055); }
+.pillar-card + .pillar-card { border-left: 4px solid var(--accent-orange); }
+.pillar-card:hover { box-shadow: inset 0 0 28px rgba(255,107,53,.08), 0 20px 38px rgba(0,0,0,.12); transform: translateY(-6px); }
+.pillar-card > div span { color: var(--accent-orange-dark); font-size: 14px; font-weight: 700; }
+.pillar-card > div span::first-letter { color: var(--accent-orange); }
+.pillar-card > strong { letter-spacing: .12em; }
+.cinematic-loop { background: linear-gradient(145deg, #fff, #fff9f6); }
+.truth-story, .handoff-section, .context-section, .contradiction-section, .developer-section, .security-preview, .pricing-preview { background: #fff; }
+.faq-list details { background: #fff; box-shadow: 0 8px 22px rgba(0,0,0,.045); transition: box-shadow .2s, transform .2s; }
+.faq-list details:hover, .faq-list details[open] { border-left: 4px solid var(--accent-orange); box-shadow: 0 14px 28px rgba(0,0,0,.08); transform: translateX(3px); }
+.final-cta-section { background: radial-gradient(circle at 80% 35%, rgba(255,107,53,.28), transparent 25%), #000; box-shadow: inset 0 30px 80px rgba(255,107,53,.06); }
+.final-cta-section h2 { font-size: clamp(48px, 6vw, 72px); text-shadow: 0 2px 12px rgba(255,255,255,.08); }
+@media (max-width: 900px) { .problem-section::before, .pillars-section::before, .mechanic-section::before, .memory-story::before, .evidence-section::before, .faq-section::before { left: 36px; } }
+@media (max-width: 560px) { .hero-copy h1 { font-size: 48px; } .problem-section::before, .pillars-section::before, .mechanic-section::before, .memory-story::before, .evidence-section::before, .faq-section::before { left: 20px; } }
 
 /* Shared utility names used by marketing components. */
 .text-white { color: #FFFFFF; }
