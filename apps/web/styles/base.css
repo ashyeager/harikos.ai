@@ -28,13 +28,20 @@
   --shadow-blue: 0 0 80px rgba(79, 140, 255, 0.12);
   --shell: min(1420px, calc(100vw - 72px));
   --ease-engineered: cubic-bezier(0.22, 1, 0.36, 1);
-  --font-sans: "Segoe UI Variable", "Segoe UI", Inter, Arial, sans-serif;
-  --font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --font-sans: var(--font-body), Inter, Arial, sans-serif;
+  --font-display: var(--font-heading), "Space Grotesk", Arial, sans-serif;
+  --font-mono: var(--font-code), "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --text-primary: #f4f5f7;
+  --text-secondary: #a8afbc;
 }
 
 * { box-sizing: border-box; }
 html { background: var(--ink-950); color-scheme: dark; overflow-x: clip; scroll-behavior: smooth; }
-body { margin: 0; background: var(--ink-950); color: var(--paper); font-family: var(--font-sans); overflow-x: clip; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--ink-950); color: var(--text-primary); font-family: var(--font-sans); font-size: 16px; line-height: 1.6; overflow-x: clip; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { color: var(--text-primary); font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+p { font-family: var(--font-sans); }
+small, label { color: var(--text-secondary); font-weight: 500; letter-spacing: .01em; }
+code, pre, kbd, samp { font-family: var(--font-mono); font-size: 13px; }
 body, button, input, textarea, select { font: inherit; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { color: inherit; }
