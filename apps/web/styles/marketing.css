@@ -1,4 +1,16 @@
-.marketing-root { background: var(--ink-950); min-height: 100vh; overflow: hidden; }
+.marketing-root { background: radial-gradient(circle at 78% 5%, rgba(79,140,255,.12), transparent 26rem), var(--ink-950); min-height: 100vh; overflow: hidden; }
+.home-hero { background: radial-gradient(ellipse at 76% 42%, rgba(86,217,255,.08), transparent 24%), radial-gradient(ellipse at 22% 78%, rgba(79,140,255,.08), transparent 32%), var(--ink-950); }
+.home-hero::before { animation: hero-breathe 9s ease-in-out infinite; background: radial-gradient(circle, rgba(86,217,255,.18), rgba(79,140,255,.07) 35%, transparent 69%); mix-blend-mode: screen; }
+.hero-copy h1 { text-shadow: 0 0 38px rgba(86,217,255,.08); }
+.hero-copy h1 span { -webkit-text-stroke-color: rgba(86,217,255,.72); text-shadow: 0 0 28px rgba(86,217,255,.16); }
+.hero-brain::before { border: 1px solid rgba(86,217,255,.18); border-radius: 50%; content: "LIVE / PROJECT SIGNAL"; color: rgba(86,217,255,.62); font: 8px var(--font-mono); letter-spacing: .16em; padding: 9px 12px; position: absolute; right: 11%; top: 9%; transform: rotate(8deg); }
+.floating-truth-card { border-color: rgba(86,217,255,.26); box-shadow: 0 18px 45px rgba(0,0,0,.35), 0 0 32px rgba(86,217,255,.08); }
+.signal-ribbon { background: linear-gradient(90deg, rgba(79,140,255,.08), rgba(86,217,255,.03), rgba(79,140,255,.08)); }
+.signal-ribbon > div:hover { background: rgba(86,217,255,.06); }
+.pillar-card:nth-child(2) { transform: translateY(18px); }
+.pillar-card:nth-child(2):hover { transform: translateY(12px); }
+.final-cta-section { background: radial-gradient(circle at 50% 40%, rgba(86,217,255,.16), transparent 28rem), linear-gradient(135deg, #0b1220, var(--ink-950) 62%); }
+@keyframes hero-breathe { 0%, 100% { opacity: .65; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.05); } }
 .site-nav-shell { left: 0; padding: 13px 24px; position: fixed; right: 0; top: 0; transition: padding .3s, background .3s, border-color .3s; z-index: 80; }
 .site-nav-shell.is-scrolled { backdrop-filter: blur(18px); background: rgba(7, 8, 10, .82); border-bottom: 1px solid var(--line); padding-bottom: 9px; padding-top: 9px; }
 .site-nav { align-items: center; display: flex; justify-content: space-between; margin: 0 auto; max-width: 1480px; min-height: 46px; }
