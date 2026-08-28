@@ -4,14 +4,14 @@
 .public-hero-copy, .public-hero-visual { position: relative; z-index: 1; }
 .public-hero-copy h1 { font-family: var(--font-display); font-size: clamp(52px, 5.4vw, 86px); font-weight: 500; letter-spacing: -.065em; line-height: .94; margin: 27px 0; }
 .public-hero-copy h1 span { color: var(--text-primary); -webkit-text-stroke: 0; text-shadow: var(--text-shadow-large); }
-.public-hero-copy > p { color: var(--muted); font-size: 18px; line-height: 1.72; margin: 0; max-width: 640px; }
+.public-hero-copy > p { color: var(--text-secondary); font-size: 18px; line-height: 1.72; margin: 0; max-width: 640px; }
 .public-hero-copy .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 34px; }
 .public-hero-visual { min-width: 0; }
 .example-label { background: rgba(7,8,10,.76); border: 1px solid rgba(86,217,255,.22); color: var(--cyan); font-family: var(--font-mono); font-size: 8px; font-weight: 700; left: 14px; letter-spacing: .12em; padding: 7px 9px; position: absolute; top: 14px; z-index: 5; }
 .principle-strip { background: #0b0d11; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding-inline: max(36px, calc((100vw - 1420px) / 2)); }
 .principle-strip > div { border-right: 1px solid var(--line); display: grid; gap: 8px; min-height: 126px; padding: 28px 30px; }
 .principle-strip > div:first-child { border-left: 1px solid var(--line); }
-.principle-strip span, .principle-strip small { color: var(--muted-dark); font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; }
+.principle-strip span, .principle-strip small { color: var(--muted-dark); font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: .08em; }
 .principle-strip strong { font-size: 13px; letter-spacing: -.01em; }
 .public-section { padding: 132px max(36px, calc((100vw - 1420px) / 2)); position: relative; }
 .public-section-dark { background: #0b0d11; }
