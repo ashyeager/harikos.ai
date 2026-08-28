@@ -74,6 +74,10 @@ function Network({ onHover }: { onHover: (label?: string) => void }) {
   return <group ref={group}><NetworkLines />{nodeData.map((node, index) => <BrainNode index={index} key={node.label} node={node} onHover={onHover} />)}{Array.from({ length: 8 }, (_, index) => <Packet index={index} key={index} />)}</group>;
 }
 
+function BrainScene({ onHover }: { onHover: (label?: string) => void }) {
+  return <Network onHover={onHover} />;
+}
+
 export default function BrainCanvas() {
   const hostRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(true);
@@ -87,7 +91,7 @@ export default function BrainCanvas() {
   return (
     <div className="brain-canvas-host" ref={hostRef}>
       <Canvas camera={{ position: [0, 0, 8.6], fov: 42 }} dpr={[1, 1.6]} frameloop={active ? "always" : "never"} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}>
-        <ambientLight intensity={0.35} /><pointLight color="#56d9ff" intensity={35} position={[0, 0, 4]} /><pointLight color="#4f8cff" intensity={18} position={[-4, 3, 2]} /><Network onHover={setHovered} />
+        <ambientLight intensity={0.35} /><pointLight color="#56d9ff" intensity={35} position={[0, 0, 4]} /><pointLight color="#4f8cff" intensity={18} position={[-4, 3, 2]} /><BrainScene onHover={setHovered} />
       </Canvas>
       <div className="brain-core-label"><span>NODE / 00</span><strong>{hovered ?? "PROJECT BRAIN"}</strong><small>{hovered ? "Inspecting relationship" : "Illustrative evidence network"}</small></div>
       <div className="brain-corner brain-corner-top">ILLUSTRATIVE REPOSITORY <span>MAIN</span></div>
