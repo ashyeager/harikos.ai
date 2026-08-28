@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-heading" });
 const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-code" });
 import "../styles/app.css";
 
@@ -36,7 +35,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className={`${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable}`} data-scroll-behavior="smooth" lang="en">
+    <html className={`${inter.variable} ${jetBrainsMono.variable}`} data-scroll-behavior="smooth" lang="en">
       <body className="bg-ink text-white font-sans antialiased min-h-screen selection:bg-cyan/30 selection:text-white">
         {children}
       </body>

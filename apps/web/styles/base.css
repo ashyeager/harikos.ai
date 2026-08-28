@@ -29,7 +29,7 @@
   --shell: min(1420px, calc(100vw - 72px));
   --ease-engineered: cubic-bezier(0.22, 1, 0.36, 1);
   --font-sans: var(--font-body);
-  --font-display: var(--font-heading);
+  --font-display: var(--font-body);
   --font-mono: var(--font-code);
   --text-primary: #ffffff;
   --text-secondary: #e5e5e5;
