@@ -348,3 +348,24 @@
 @media (max-width: 420px) {
   .agent-node { min-width: 125px; padding: 12px; }.agent-node strong { font-size: 10px; }.agent-core { padding: 18px; }.about-piece { min-width: 135px; }.about-piece strong { font-size: 10px; }
 }
+
+/* Shared HARIKOS light public system */
+.public-page, .login-page, .legal-page, .not-found-page { background: var(--product-canvas); color: var(--product-ink); }
+.public-hero, .public-section-dark, .public-section-deeper, .public-section-blue, .principle-strip, .product-cta { background: var(--product-canvas); border-color: var(--product-line); }
+.public-hero-grid, .product-cta .cta-grid { opacity: .42; }
+.public-hero-copy h1, .public-section-heading h2, .product-cta h2, .public-hero-copy h1 span { color: var(--product-ink); -webkit-text-stroke-color: var(--product-ink); }
+.public-hero-copy > p, .public-section-heading p, .product-cta p, .principle-strip span, .principle-strip small, .public-section-heading h2 span { color: var(--product-muted); }
+.principle-strip > div, .architecture-loop > div, .layer-detail-grid article, .connection-flow article, .context-section-grid article { border-color: var(--product-line); }
+.public-hero .button-primary, .product-cta .button-primary { background: var(--product-orange); border-color: var(--product-orange); color: var(--product-white); }
+.public-hero .button-secondary, .product-cta .button-secondary { background: var(--product-surface); border-color: var(--product-line-strong); color: var(--product-ink); }
+.product-brain-frame, .truth-hero-panel, .context-pack-hero, .before-build-example, .config-preview, .agent-network, .agent-node, .agent-core, .evidence-deep-grid > article, .evidence-deep-grid > section, .contradiction-compact article, .memory-stack article, .memory-control-grid article { background: var(--product-surface); border-color: var(--product-line); box-shadow: 0 18px 48px rgba(30,25,20,.08); color: var(--product-ink); }
+.truth-hero-panel h3, .evidence-deep-grid > article h3, .memory-stack article h3 { color: var(--product-ink); }
+.login-page { min-height: 100vh; }
+.login-nav { background: var(--product-surface); border-color: var(--product-line); color: var(--product-ink); }
+.login-visual { background: var(--product-canvas); border-color: var(--product-line); }
+.login-workspace { background: var(--product-surface); }
+.login-card h2, .login-card small, .login-card small a { color: var(--product-ink); }
+.login-card > p, .login-card small { color: var(--product-muted); }
+.auth-provider { background: var(--product-surface); border-color: var(--product-line-strong); color: var(--product-ink); }
+.auth-provider:hover { background: var(--product-orange-soft); border-color: var(--product-orange); }
+.permission-note, .config-notice { background: var(--product-orange-soft); border-color: var(--product-orange-line); color: var(--product-orange-deep); }

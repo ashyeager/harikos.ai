@@ -30,11 +30,25 @@
   --ease-engineered: cubic-bezier(0.22, 1, 0.36, 1);
   --font-sans: "Segoe UI Variable", "Segoe UI", Inter, Arial, sans-serif;
   --font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --product-canvas: #f7f7f4;
+  --product-surface: #ffffff;
+  --product-surface-muted: #fff7f0;
+  --product-ink: #171717;
+  --product-muted: #6e6b68;
+  --product-line: #e7e3df;
+  --product-line-strong: #d4cec8;
+  --product-orange: #ed6b2f;
+  --product-orange-deep: #c94d18;
+  --product-orange-soft: #fff0e6;
+  --product-orange-line: #f2c3a8;
+  --product-orange-shadow: rgba(237,107,47,.18);
+  --product-green: #2f8a59;
+  --product-white: #ffffff;
 }
 
 * { box-sizing: border-box; }
-html { background: var(--ink-950); color-scheme: dark; overflow-x: clip; scroll-behavior: smooth; }
-body { margin: 0; background: var(--ink-950); color: var(--paper); font-family: var(--font-sans); overflow-x: clip; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+  html { background: var(--product-canvas); color-scheme: light; overflow-x: clip; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--product-canvas); color: var(--product-ink); font-family: var(--font-sans); overflow-x: clip; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 body, button, input, textarea, select { font: inherit; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { color: inherit; }
