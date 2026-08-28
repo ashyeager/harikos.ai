@@ -62,7 +62,13 @@ function normalizeGitHubAppPrivateKey(value: string): string {
 
   // Vercel environment variables are commonly pasted as either \n or \\n.
   // Decode the double-escaped representation first so both become PEM lines.
-  return unquoted.replaceAll("\\\\n", "\n").replaceAll("\\n", "\n").trim();
+  return unquoted
+    .replaceAll("\\\\r\\\\n", "\n")
+    .replaceAll("\\r\\n", "\n")
+    .replaceAll("\\\\n", "\n")
+    .replaceAll("\\n", "\n")
+    .replaceAll("\r\n", "\n")
+    .trim();
 }
 
 function isUsableGitHubAppPrivateKey(privateKey: string): boolean {
