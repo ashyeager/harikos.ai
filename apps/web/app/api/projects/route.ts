@@ -1,4 +1,3 @@
-import { createFlagshipDemoSnapshot } from "@harikos/core";
 import { NextResponse } from "next/server";
 
 import {
@@ -8,7 +7,6 @@ import {
   RepositoryAuthorizationError,
 } from "../../../lib/cloud-projects";
 import { getAuthIdentity } from "../../../lib/auth";
-import { isLocalDemoEnabled } from "../../../lib/config";
 
 export const runtime = "nodejs";
 
@@ -18,18 +16,8 @@ export async function GET() {
     return NextResponse.json({ error: "Authentication required." }, { status: 401 });
   }
   const cloud = await listCloudProjects(session);
-  const demo = isLocalDemoEnabled() ? createFlagshipDemoSnapshot() : undefined;
   return NextResponse.json({
-    projects: [
-      ...(demo ? [{
-        id: demo.projectId,
-        name: demo.repository.name,
-        owner: demo.repository.owner,
-        mode: "fixture",
-        verified: demo.truths.filter((claim) => claim.status === "verified").length,
-      }] : []),
-      ...cloud.map((project) => ({ ...project, mode: "github" })),
-    ],
+    projects: cloud.map((project) => ({ ...project, mode: "github" })),
   });
 }
 

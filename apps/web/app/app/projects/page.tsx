@@ -4,7 +4,6 @@ import { PageHeader } from "../../../components/page-header";
 import { ScanLocalButton } from "../../../components/scan-local-button";
 import { RepositorySelector } from "../../../components/repository-selector";
 import { listCloudProjects } from "../../../lib/cloud-projects";
-import { demoSnapshot } from "../../../lib/project-data";
 import { integrationStatus } from "../../../lib/config";
 import { getAuthIdentity } from "../../../lib/auth";
 
@@ -12,7 +11,6 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   const status = integrationStatus();
-  const snapshot = status.localDemo ? demoSnapshot() : undefined;
   const session = await getAuthIdentity();
   const cloudProjects = session ? await listCloudProjects(session) : [];
 
@@ -39,12 +37,6 @@ export default async function ProjectsPage() {
       </section>
       <section className="connected-projects panel">
         <div className="panel-heading"><div><span>AVAILABLE NOW</span><h2>Projects</h2></div></div>
-        {snapshot ? <Link className="project-row" href={`/app/project/${snapshot.projectId}`}>
-          <span className="repo-avatar">AC</span>
-          <span><strong>{snapshot.repository.name}</strong><small>Controlled Clerk → Supabase fixture · clearly labeled demo</small></span>
-          <span className="project-metrics"><b>{snapshot.truths.filter((claim) => claim.status === "verified").length}</b> verified</span>
-          <b>Open →</b>
-        </Link> : null}
         {cloudProjects.map((project) => (
           <Link className="project-row" href={`/app/project/${project.id}`} key={project.id}>
             <span className="repo-avatar">{project.repository.slice(0, 2).toUpperCase()}</span>
@@ -53,7 +45,7 @@ export default async function ProjectsPage() {
             <b>Open →</b>
           </Link>
         ))}
-        {!snapshot && cloudProjects.length === 0 ? (
+        {cloudProjects.length === 0 ? (
           <p className="empty-projects">No connected projects yet. Install the GitHub App and choose a repository above.</p>
         ) : null}
       </section>
