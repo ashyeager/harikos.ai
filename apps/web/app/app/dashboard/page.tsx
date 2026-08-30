@@ -39,6 +39,17 @@ export default async function DashboardPage() {
         action={<Link className="button button-dark" href="/app/projects">Connect repository <span>&rarr;</span></Link>}
       />
 
+      <section className="dashboard-command-brief" aria-label="Workspace command brief">
+        <div className="dashboard-command-lead">
+          <span className="dashboard-command-kicker"><i /> LIVE WORKSPACE SIGNAL</span>
+          <strong>{projects.length ? "Your project brain is ready for the next decision." : "Establish the first project brain."}</strong>
+          <p>{projects.length ? "Start from current Truth, then hand the right context to the next agent." : "Connect a repository to turn project evidence into a durable working context."}</p>
+          <div className="dashboard-command-actions"><Link className="button button-primary" href={projects.length ? `/app/project/${projects[0]?.id}` : "/app/projects"}>{projects.length ? "Open project" : "Choose repository"} <span>&rarr;</span></Link><Link className="dashboard-command-link" href={projects.length ? `/app/project/${projects[0]?.id}/context` : "/app/projects"}>Prepare context <span>&rarr;</span></Link></div>
+        </div>
+        <div className="dashboard-command-orbit" aria-hidden="true"><i /><i /><i /><b>{readyCount}/3</b><span>BOUNDARIES<br />READY</span></div>
+        <div className="dashboard-command-note"><span>NEXT BEST ACTION</span><strong>{projects.length ? "Review project Truth" : "Connect your first repository"}</strong><small>{projects.length ? "Evidence-backed state is waiting." : "Read-only GitHub access is separate."}</small></div>
+      </section>
+
       <section className="dashboard-metric-grid" aria-label="Workspace metrics">
         <Metric label="PROJECTS" value={summary.projects} detail="Connected project brains" />
         <Metric label="TRUTH" value={summary.truths} detail="Persisted claims" />
