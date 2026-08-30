@@ -287,6 +287,12 @@ button, input, textarea, select { color: var(--paper); }
 .site-nav-links > a, .nav-dropdown > button, .nav-sign-in, .footer-brand-block > p, .footer-columns a { color: #eee7de; }
 .command-palette > div p, .command-palette footer, .settings-data-row > span, .security-setting-row > span { color: #d6cec3; }
 
+/* Final user-requested normalization: one font, white text everywhere. */
+:root { --font-code: var(--font-body); }
+body, body * { color: var(--paper) !important; font-family: var(--font-body) !important; }
+body .button-primary, body .button-dark, body .filter-bar .selected-filter, body .mode-switch button.active, body .settings-nav a.active { color: var(--paper) !important; }
+body input::placeholder, body textarea::placeholder { color: rgba(255, 250, 242, .72) !important; }
+
 @media (max-width: 900px) {
   .app-topbar { background: rgba(13, 10, 8, .96); }
   .app-sidebar { box-shadow: 24px 0 70px rgba(0,0,0,.35); }
