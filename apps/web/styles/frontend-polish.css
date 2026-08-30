@@ -446,3 +446,21 @@ body input::placeholder, body textarea::placeholder { color: rgba(255, 250, 242,
   .pricing-preview-grid { border-bottom: 0; }
   .pricing-preview-grid article { border-bottom: 1px solid rgba(255,238,211,.15); border-right: 0; min-height: 330px; }
 }
+
+
+/* Final typography contract: every rendered frontend character uses Roboto and white. */
+:root { --font-code: var(--font-body); --text-primary: #ffffff; --text-secondary: #ffffff; --muted: #ffffff; --muted-dark: #ffffff; }
+html body, html body * { color: #ffffff !important; font-family: var(--font-body) !important; }
+html body h1, html body h2, html body h3, html body h4, html body h5, html body h6, html body p, html body span, html body small, html body label, html body a, html body button, html body input, html body textarea, html body select, html body option, html body code, html body pre, html body kbd, html body samp, html body strong, html body b, html body i, html body em, html body time { color: #ffffff !important; font-family: var(--font-body) !important; }
+html body ::placeholder { color: #ffffff !important; opacity: 1; }
+html body *::before, html body *::after { color: #ffffff !important; }
+html body .button-primary, html body .button-dark, html body .button-secondary, html body .button-ghost, html body .button-danger, html body .filter-bar .selected-filter, html body .mode-switch button.active, html body .settings-nav a.active { color: #ffffff !important; }
+html body .hero-copy h1 span, html body .final-cta-section h2 span { -webkit-text-stroke-color: #ffffff !important; color: #ffffff !important; }
+html body .status-badge::before, html body .eyebrow > i, html body .dashboard-command-kicker i { background: #ffffff !important; box-shadow: none !important; }
+html body ::selection { background: #ffffff !important; color: #000000 !important; }
+
+/* Highest-priority foreground rule: no component-specific text color may override white. */
+html body.font-sans * { color: #ffffff !important; font-family: var(--font-body) !important; }
+html body.font-sans *::before, html body.font-sans *::after { color: #ffffff !important; }
+html body.font-sans .hero-copy h1 span, html body.font-sans .final-cta-section h2 span { color: #ffffff !important; -webkit-text-stroke-color: #ffffff !important; }
+html body.font-sans ::placeholder { color: #ffffff !important; opacity: 1; }

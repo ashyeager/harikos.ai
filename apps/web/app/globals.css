@@ -8,7 +8,7 @@
 
 @theme inline {
   --font-sans: var(--font-body);
-  --font-mono: var(--font-code);
+  --font-mono: var(--font-body);
   --color-ink: var(--ink-850);
   --color-ink-soft: var(--ink-800);
   --color-ink-elevated: var(--ink-750);
@@ -17,7 +17,7 @@
   --color-muted: var(--muted-dark);
   --color-line: var(--line);
   --color-line-light: var(--line-strong);
-  --color-cyan: var(--gold);
+  --color-cyan: #ffffff;
   --color-orange: var(--orange);
   --color-yellow: var(--gold);
   --color-green: var(--green);
