@@ -6,7 +6,9 @@ import { findCloudProjectByRepositoryId, scanCloudProjectFromWebhook } from "../
 export const runtime = "nodejs";
 
 function validSignature(payload: string, received: string | null): boolean {
-  const secret = process.env.GITHUB_WEBHOOK_SECRET?.trim();
+  const secret =
+    process.env.GITHUB_WEBHOOK_SECRET?.trim() ||
+    process.env.GITHUB_APP_WEBHOOK_SECRET?.trim();
   if (!secret || !received?.startsWith("sha256=")) return false;
   const expected = Buffer.from(`sha256=${createHmac("sha256", secret).update(payload).digest("hex")}`);
   const actual = Buffer.from(received);

@@ -5,12 +5,18 @@ import { afterEach, describe, expect, it } from "vitest";
 import { POST } from "./route";
 
 const originalSecret = process.env.GITHUB_WEBHOOK_SECRET;
+const originalAppSecret = process.env.GITHUB_APP_WEBHOOK_SECRET;
 
 afterEach(() => {
   if (originalSecret === undefined) {
     delete process.env.GITHUB_WEBHOOK_SECRET;
   } else {
     process.env.GITHUB_WEBHOOK_SECRET = originalSecret;
+  }
+  if (originalAppSecret === undefined) {
+    delete process.env.GITHUB_APP_WEBHOOK_SECRET;
+  } else {
+    process.env.GITHUB_APP_WEBHOOK_SECRET = originalAppSecret;
   }
 });
 
@@ -45,6 +51,17 @@ describe("GitHub webhook boundary", () => {
     const secret = "acceptance-webhook-secret";
     const payload = JSON.stringify({ zen: "Keep it logically awesome." });
     process.env.GITHUB_WEBHOOK_SECRET = secret;
+    const response = await POST(request(payload, "ping", sign(payload, secret)));
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ received: true });
+  });
+
+  it("accepts the Vercel webhook-secret alias", async () => {
+    const secret = "vercel-webhook-secret";
+    const payload = JSON.stringify({ zen: "Keep it logically awesome." });
+    delete process.env.GITHUB_WEBHOOK_SECRET;
+    process.env.GITHUB_APP_WEBHOOK_SECRET = secret;
     const response = await POST(request(payload, "ping", sign(payload, secret)));
 
     expect(response.status).toBe(200);

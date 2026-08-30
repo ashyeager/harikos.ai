@@ -3,8 +3,7 @@ import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-class Database { constructor(public databasePath?: string) {} pragma() {} close() {} prepare() { return { get: () => null, all: () => [], run: () => ({ changes: 0 }) }; } }
-namespace Database { export type Database = any; }
+import Database from "better-sqlite3";
 import { afterEach, describe, expect, it } from "vitest";
 
 const temporaryDirectories: string[] = [];

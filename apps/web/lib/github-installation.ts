@@ -116,13 +116,14 @@ export async function completeGitHubInstallation(
   input: { code: string; installationId?: string; state: string },
   fetcher: typeof fetch = fetch,
   installationLookup: typeof getGitHubInstallation = getGitHubInstallation,
+  environment: NodeJS.ProcessEnv = process.env,
 ): Promise<GitHubInstallation> {
-  verifyInstallationState(input.state, identity.id);
+  verifyInstallationState(input.state, identity.id, environment);
   if (input.installationId && !/^\d+$/u.test(input.installationId)) {
     throw new Error("GitHub returned an invalid installation ID.");
   }
-  const oauth = readGitHubAppOAuthConfig();
-  const app = readGitHubAppConfig();
+  const oauth = readGitHubAppOAuthConfig(environment);
+  const app = readGitHubAppConfig(environment);
   if (!oauth || !app) throw new Error("GitHub App credentials are not configured.");
 
   const tokenResponse = await fetcher("https://github.com/login/oauth/access_token", {

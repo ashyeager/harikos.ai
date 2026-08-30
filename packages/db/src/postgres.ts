@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { z } from "zod";
 
@@ -24,7 +24,7 @@ export const cloudDatabaseConfigSchema = z.object({
 export type CloudDatabaseConfig = z.infer<typeof cloudDatabaseConfigSchema>;
 
 export interface CloudDatabase {
-  db: any;
+  db: PostgresJsDatabase<typeof cloudSchema>;
   close(): Promise<void>;
 }
 
@@ -42,7 +42,9 @@ export function readCloudDatabaseConfig(
   environment: NodeJS.ProcessEnv = process.env,
 ): CloudDatabaseConfig | undefined {
   const databaseUrl =
-    environment.DATABASE_URL?.trim() || environment.POSTGRES_URL?.trim();
+    environment.DATABASE_URL?.trim() ||
+    environment.POSTGRES_URL?.trim() ||
+    environment.POSTGRES_URL_NON_POOLING?.trim();
   if (!databaseUrl) {
     return undefined;
   }

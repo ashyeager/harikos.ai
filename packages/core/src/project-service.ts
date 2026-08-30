@@ -96,7 +96,7 @@ function persistSources(
       existing ??
       store.sources.create({
         projectId,
-        type: source.kind === "git_commit" ? "github" : source.kind === "manifest" || source.kind === "config" || source.kind === "documentation" ? "mcp" : "manual",
+        type: source.kind,
         path: source.path,
         contentHash: source.contentHash,
         observedAt: source.observedAt,
@@ -134,8 +134,8 @@ function persistResolution(
         value: truth.value,
         scope: truth.scope,
         status: toLegacyStatus(truth.status),
-        epistemicType: truth.epistemicType === "observed" ? "fact" : truth.epistemicType === "derived" ? "inference" : truth.epistemicType === "inferred" ? "inference" : "assumption",
-        claimKind: truth.claimKind === "intent" ? "intention" : truth.claimKind,
+        epistemicType: truth.epistemicType,
+        claimKind: truth.claimKind,
         confidence: truth.confidence,
         validFrom: truth.validFrom,
         validTo: truth.validTo,
@@ -187,7 +187,7 @@ function persistResolution(
     if (contradiction.status === "resolved" && contradiction.resolution) {
       store.resolutions.create({
         contradictionId: record.id,
-        resolutionType: "override",
+        resolutionType: "human_override",
         chosenClaimId: contradiction.claimAId,
         reason: contradiction.resolution,
         actor: "harikos:truth-engine",

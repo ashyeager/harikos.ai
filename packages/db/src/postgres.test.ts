@@ -14,6 +14,9 @@ describe("cloud database configuration", () => {
     expect(
       readCloudDatabaseConfig({ DATABASE_URL: "postgresql://user:pass@localhost:5432/harikos" }),
     ).toMatchObject({ maxConnections: 5 });
+    expect(
+      readCloudDatabaseConfig({ POSTGRES_URL_NON_POOLING: "postgresql://user:pass@localhost:5432/harikos" }),
+    ).toMatchObject({ maxConnections: 5 });
     expect(() => readCloudDatabaseConfig({ DATABASE_URL: "sqlite://local" })).toThrow();
   });
 });

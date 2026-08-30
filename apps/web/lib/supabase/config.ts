@@ -17,7 +17,8 @@ export function readSupabasePublicConfig(
 ): SupabasePublicConfig | undefined {
   const url = environment.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const publishableKey =
-    environment.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim();
+    environment.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
+    environment.SUPABASE_PUBLISHABLE_KEY?.trim();
   if (!url || !publishableKey) return undefined;
   return supabasePublicConfigSchema.parse({ url, publishableKey });
 }

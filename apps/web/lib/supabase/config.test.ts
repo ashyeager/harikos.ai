@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { readSupabaseProviderStatus } from "./config";
+import { readSupabaseProviderStatus, readSupabasePublicConfig } from "./config";
 
 const environment: NodeJS.ProcessEnv = {
   NODE_ENV: "test",
@@ -9,6 +9,17 @@ const environment: NodeJS.ProcessEnv = {
 };
 
 describe("Supabase provider availability", () => {
+  it("accepts the Vercel publishable-key alias", () => {
+    expect(
+      readSupabasePublicConfig({
+        NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
+        SUPABASE_PUBLISHABLE_KEY: "public-key",
+      }),
+    ).toEqual({
+      url: "https://example.supabase.co",
+      publishableKey: "public-key",
+    });
+  });
   it("returns only providers enabled by the live Auth settings", async () => {
     const request = async () =>
       new Response(
