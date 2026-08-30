@@ -15,7 +15,11 @@ import {
   cloudRepositoryInstallations,
   cloudScans,
   cloudUsers,
+  and,
   count,
+  desc,
+  eq,
+  isNull,
   openCloudDatabase,
   readCloudDatabaseConfig,
 } from "@harikos/db";

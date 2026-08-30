@@ -64,3 +64,9 @@ The existing `HARIKOS AI Project Truth` GitHub App is installed for the `ashyeag
 ## Vercel environment audit
 
 The existing Vercel project production environment contains `HARIKOS_SESSION_SECRET`, `GITHUB_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_APP_ID`, `GITHUB_APP_WEBHOOK_SECRET`, `GITHUB_APP_SLUG`, `SUPABASE_PUBLISHABLE_KEY`, `POSTGRES_URL_NON_POOLING`, and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. The current source expects `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `DATABASE_URL`/`POSTGRES_URL`, and `GITHUB_WEBHOOK_SECRET`, so the production `Credentials not configured` state is explained by variable-name mismatches. Values were not opened or recorded.
+
+## 2026-08-30 post-deploy dashboard verification
+
+The deployed public homepage returned HTTP 200. The authenticated `/app/dashboard` route rendered the global error boundary with `Something went wrong!` in the connected browser, so the deployed dashboard has a runtime failure that must be diagnosed through Vercel runtime logs before further shipping.
+
+The deployment itself reached READY for commit `6931961`.

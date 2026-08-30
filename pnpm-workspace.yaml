@@ -2,6 +2,9 @@ packages:
   - apps/web
   - packages/*
 
+allowBuilds:
+  better-sqlite3: true
+
 minimumReleaseAgeExclude:
   - '@next/*'
   - next
