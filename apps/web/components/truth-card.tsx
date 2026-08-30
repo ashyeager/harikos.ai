@@ -13,7 +13,7 @@ export function TruthCard({
   return (
     <Link 
       href={`/app/project/${projectId}/truth/${encodeURIComponent(claim.id)}`} 
-      className="bg-ink border border-line p-5 flex flex-col group transition-all duration-300 hover:bg-ink-elevated hover:border-line-light relative overflow-hidden rounded-sm"
+      className="truth-card-link bg-ink border border-line p-5 flex flex-col group transition-all duration-300 hover:bg-ink-elevated hover:border-line-light relative overflow-hidden rounded-sm"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
       

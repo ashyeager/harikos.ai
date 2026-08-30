@@ -16,7 +16,7 @@ const nodeData = [
   { position: [3.5, 0.1, -1.5], kind: "change", label: "CHANGE" },
 ] as const;
 
-const nodeColors: Record<string, string> = { core: "#f4f7fb", truth: "#5ee69a", memory: "#56d9ff", context: "#4f8cff", agent: "#8ca8ff", file: "#6f7788", evidence: "#61dca3", change: "#ffad66" };
+const nodeColors: Record<string, string> = { core: "#fffdf8", truth: "#f3b562", memory: "#ff9d5c", context: "#ff7d3d", agent: "#ffd58c", file: "#8f8173", evidence: "#f3b562", change: "#ffb56e" };
 
 function NetworkLines() {
   const geometry = useMemo(() => {
@@ -28,7 +28,7 @@ function NetworkLines() {
     next.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3));
     return next;
   }, []);
-  return <lineSegments geometry={geometry}><lineBasicMaterial color="#4f8cff" transparent opacity={0.3} blending={AdditiveBlending} /></lineSegments>;
+  return <lineSegments geometry={geometry}><lineBasicMaterial color="#ff9d5c" transparent opacity={0.3} blending={AdditiveBlending} /></lineSegments>;
 }
 
 function Packet({ index }: { index: number }) {
@@ -42,7 +42,7 @@ function Packet({ index }: { index: number }) {
     const scale = Math.sin(progress * Math.PI) * 0.7 + 0.35;
     ref.current.scale.setScalar(scale);
   });
-  return <mesh ref={ref}><sphereGeometry args={[0.035, 10, 10]} /><meshBasicMaterial color={index % 2 ? "#56d9ff" : "#8fffc6"} toneMapped={false} /></mesh>;
+  return <mesh ref={ref}><sphereGeometry args={[0.035, 10, 10]} /><meshBasicMaterial color={index % 2 ? "#ff9d5c" : "#ffe0a6"} toneMapped={false} /></mesh>;
 }
 
 function BrainNode({ node, index, onHover }: { node: (typeof nodeData)[number]; index: number; onHover: (label?: string) => void }) {
@@ -87,7 +87,7 @@ export default function BrainCanvas() {
   return (
     <div className="brain-canvas-host" ref={hostRef}>
       <Canvas camera={{ position: [0, 0, 8.6], fov: 42 }} dpr={[1, 1.6]} frameloop={active ? "always" : "never"} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}>
-        <ambientLight intensity={0.35} /><pointLight color="#56d9ff" intensity={35} position={[0, 0, 4]} /><pointLight color="#4f8cff" intensity={18} position={[-4, 3, 2]} /><Network onHover={setHovered} />
+        <ambientLight intensity={0.35} /><pointLight color="#ff9d5c" intensity={35} position={[0, 0, 4]} /><pointLight color="#f3b562" intensity={18} position={[-4, 3, 2]} /><Network onHover={setHovered} />
       </Canvas>
       <div className="brain-core-label"><span>NODE / 00</span><strong>{hovered ?? "PROJECT BRAIN"}</strong><small>{hovered ? "Inspecting relationship" : "Illustrative evidence network"}</small></div>
       <div className="brain-corner brain-corner-top">ILLUSTRATIVE REPOSITORY <span>MAIN</span></div>

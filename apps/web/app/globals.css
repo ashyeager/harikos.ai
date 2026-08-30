@@ -1,5 +1,25 @@
+@import "tailwindcss";
 @import "../styles/base.css";
 @import "../styles/marketing.css";
 @import "../styles/marketing-sections.css";
 @import "../styles/marketing-final.css";
 @import "../styles/public-pages.css";
+@import "../styles/frontend-polish.css";
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-code);
+  --color-ink: var(--ink-850);
+  --color-ink-soft: var(--ink-800);
+  --color-ink-elevated: var(--ink-750);
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-muted: var(--muted-dark);
+  --color-line: var(--line);
+  --color-line-light: var(--line-strong);
+  --color-cyan: var(--gold);
+  --color-orange: var(--orange);
+  --color-yellow: var(--gold);
+  --color-green: var(--green);
+  --color-red: var(--red);
+}
