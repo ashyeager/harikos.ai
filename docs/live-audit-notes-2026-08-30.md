@@ -72,3 +72,7 @@ The deployed public homepage returned HTTP 200. The authenticated `/app/dashboar
 The deployment itself reached READY for commit `6931961`.
 
 A second direct production browser check of `/app/dashboard` after commit `d1d69cc` still rendered the global error boundary. The earlier runtime error was `ReferenceError: eq is not defined`; the latest deployment status records a READY production deployment for `d1d69cc`, so updated runtime diagnostics are required.
+
+## Final live dashboard verification
+
+After deployment `dpl_9GZkKVnFibuM3jZZAff9eZp5f9CY` reached READY for commit `85c7280`, the authenticated `/app/dashboard` route rendered successfully in the connected browser. It displayed the new command-center metrics, first-run project state, system readiness panel, and project/agent actions. The current account shows 0 projects and 2/3 boundaries ready; the remaining readiness label is GitHub App credentials.
