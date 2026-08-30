@@ -15,12 +15,9 @@ import {
   cloudRepositoryInstallations,
   cloudScans,
   cloudUsers,
-  and,
-  desc,
-  eq,
+  count,
   openCloudDatabase,
   readCloudDatabaseConfig,
-  isNull,
 } from "@harikos/db";
 import {
   analyzeRepository,
@@ -329,6 +326,41 @@ export async function listCloudProjects(identity: AuthIdentity) {
       .innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id))
       .innerJoin(cloudRepositories, eq(cloudProjects.id, cloudRepositories.projectId))
       .where(eq(cloudUsers.supabaseUserId, identity.id));
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function getDashboardSummary(identity: AuthIdentity) {
+  const config = readCloudDatabaseConfig();
+  if (!config) {
+    return { projects: 0, truths: 0, memories: 0, scans: 0, agents: 0, activity: 0 };
+  }
+  const connection = await openCloudDatabase(config, { migrate: false });
+  try {
+    const ownedProjects = (table: typeof cloudProjects) =>
+      connection.db
+        .select({ count: count() })
+        .from(table)
+        .innerJoin(cloudProjects, eq(table.projectId, cloudProjects.id))
+        .innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id))
+        .where(eq(cloudUsers.supabaseUserId, identity.id));
+    const [projects, truths, memories, scans, agents, activity] = await Promise.all([
+      connection.db.select({ count: count() }).from(cloudProjects).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(eq(cloudUsers.supabaseUserId, identity.id)),
+      ownedProjects(cloudClaims),
+      ownedProjects(cloudMemories),
+      ownedProjects(cloudScans),
+      connection.db.select({ count: count() }).from(cloudAgentConnections).innerJoin(cloudProjects, eq(cloudAgentConnections.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), isNull(cloudAgentConnections.revokedAt))),
+      ownedProjects(cloudProjectChanges),
+    ]);
+    return {
+      projects: Number(projects[0]?.count ?? 0),
+      truths: Number(truths[0]?.count ?? 0),
+      memories: Number(memories[0]?.count ?? 0),
+      scans: Number(scans[0]?.count ?? 0),
+      agents: Number(agents[0]?.count ?? 0),
+      activity: Number(activity[0]?.count ?? 0),
+    };
   } finally {
     await connection.close();
   }
