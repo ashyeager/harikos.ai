@@ -10,8 +10,8 @@
   --paper-soft: #f3eee5;
   --muted: #e8e3da;
   --muted-dark: #c8c0b4;
-  --blue: #ff7d3d;
-  --cyan: #f3b562;
+  --orange-accent: #ff7d3d;
+  --gold-accent: #f3b562;
   --green: #65d99a;
   --amber: #f3b562;
   --orange: #ff9d5c;
@@ -25,14 +25,14 @@
   --radius-lg: 20px;
   --radius-xl: 28px;
   --shadow-panel: 0 24px 90px rgba(0, 0, 0, 0.34);
-  --shadow-blue: 0 0 80px rgba(79, 140, 255, 0.12);
+  --shadow-warm: 0 0 80px rgba(79, 140, 255, 0.12);
   --shell: min(1420px, calc(100vw - 72px));
   --ease-engineered: cubic-bezier(0.22, 1, 0.36, 1);
   --font-sans: var(--font-body);
   --font-display: var(--font-body);
   --font-mono: var(--font-code);
-  --text-primary: #f1eee8;
-  --text-secondary: #b8b0a5;
+  --text-primary: #fffaf2;
+  --text-secondary: #ddd6ca;
   --text-shadow-small: 0 0 2px rgba(0, 0, 0, 0.3);
   --text-shadow-medium: 0 0 3px rgba(0, 0, 0, 0.4);
   --text-shadow-large: 0 0 4px rgba(0, 0, 0, 0.5);
@@ -54,7 +54,7 @@ button { border: 0; }
 ::selection { background: rgba(86, 217, 255, 0.26); color: #fff; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: var(--ink-950); }
-::-webkit-scrollbar-thumb { background: #313642; border: 2px solid var(--ink-950); border-radius: 999px; }
+::-webkit-scrollbar-thumb { background: #554638; border: 2px solid var(--ink-950); border-radius: 999px; }
 
 :focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
 
@@ -88,13 +88,13 @@ button { border: 0; }
 
 .brand { align-items: center; color: var(--text-primary); display: inline-flex; font-family: var(--font-display); font-size: 32px; font-weight: 700; gap: 11px; letter-spacing: -.04em; line-height: 1; text-shadow: var(--text-shadow-medium); white-space: nowrap; }
 .brand-mark { display: grid; height: 27px; position: relative; transform: rotate(45deg); width: 27px; }
-.brand-mark > span, .brand-mark > i { border: 1px solid rgba(86,217,255,.78); grid-area: 1/1; margin: auto; transform: rotate(0); }
+.brand-mark > span, .brand-mark > i { border: 1px solid rgba(226,181,106,.78); grid-area: 1/1; margin: auto; transform: rotate(0); }
 .brand-mark > span:nth-child(1), .brand-mark > i:nth-child(1) { height: 19px; width: 19px; }
-.brand-mark > span:nth-child(2), .brand-mark > i:nth-child(2) { background: var(--cyan); height: 5px; width: 5px; }
-.brand-mark > span:nth-child(3), .brand-mark > i:nth-child(3) { border-color: rgba(79,140,255,.42); height: 27px; width: 27px; }
+.brand-mark > span:nth-child(2), .brand-mark > i:nth-child(2) { background: var(--gold-accent); height: 5px; width: 5px; }
+.brand-mark > span:nth-child(3), .brand-mark > i:nth-child(3) { border-color: rgba(255,138,76,.42); height: 27px; width: 27px; }
 .brand-compact > span:last-child { display: none; }
 
-.eyebrow { align-items: center; color: var(--cyan); display: inline-flex; font-family: var(--font-sans); font-size: 13px; font-weight: 700; gap: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.eyebrow { align-items: center; color: var(--gold-accent); display: inline-flex; font-family: var(--font-sans); font-size: 13px; font-weight: 700; gap: 10px; letter-spacing: .1em; text-transform: uppercase; }
 .eyebrow > i { background: currentColor; box-shadow: 0 0 10px currentColor; height: 5px; width: 5px; }
 .section-shell { margin: 0 auto; max-width: 100%; padding: 132px max(36px, calc((100vw - 1420px) / 2)); position: relative; }
 .section-heading { align-items: flex-end; display: flex; gap: 80px; justify-content: space-between; margin-bottom: 56px; }
@@ -107,7 +107,7 @@ button { border: 0; }
 .story-copy h2 { font-size: clamp(40px, 4.4vw, 64px); letter-spacing: -.055em; line-height: 1; margin: 22px 0; }
 .story-copy p { color: var(--muted); font-size: 17px; line-height: 1.7; }
 .story-copy > a, .section-text-link { align-items: center; color: var(--paper); display: inline-flex; font-family: var(--font-mono); font-size: 12px; font-weight: 700; gap: 14px; margin-top: 20px; text-transform: uppercase; }
-.story-copy > a span, .section-text-link span { color: var(--cyan); transition: transform .2s; }
+.story-copy > a span, .section-text-link span { color: var(--gold-accent); transition: transform .2s; }
 .story-copy > a:hover span, .section-text-link:hover span { transform: translate(3px, -3px); }
 
 [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity .75s var(--ease-engineered), transform .75s var(--ease-engineered); }
