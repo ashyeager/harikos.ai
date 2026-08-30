@@ -342,6 +342,14 @@ export async function getDashboardSummary(identity: AuthIdentity) {
   }
   const connection = await openCloudDatabase(config, { migrate: false });
   try {
+    const safeCount = async (query: () => Promise<Array<{ count: number | bigint }>>) => {
+      try {
+        const rows = await query();
+        return Number(rows[0]?.count ?? 0);
+      } catch {
+        return 0;
+      }
+    };
     const ownedProjects = (table: typeof cloudProjects) =>
       connection.db
         .select({ count: count() })
@@ -350,21 +358,14 @@ export async function getDashboardSummary(identity: AuthIdentity) {
         .innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id))
         .where(eq(cloudUsers.supabaseUserId, identity.id));
     const [projects, truths, memories, scans, agents, activity] = await Promise.all([
-      connection.db.select({ count: count() }).from(cloudProjects).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(eq(cloudUsers.supabaseUserId, identity.id)),
-      ownedProjects(cloudClaims),
-      ownedProjects(cloudMemories),
-      ownedProjects(cloudScans),
-      connection.db.select({ count: count() }).from(cloudAgentConnections).innerJoin(cloudProjects, eq(cloudAgentConnections.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), isNull(cloudAgentConnections.revokedAt))),
-      ownedProjects(cloudProjectChanges),
+      safeCount(() => connection.db.select({ count: count() }).from(cloudProjects).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(eq(cloudUsers.supabaseUserId, identity.id))),
+      safeCount(() => ownedProjects(cloudClaims)),
+      safeCount(() => ownedProjects(cloudMemories)),
+      safeCount(() => ownedProjects(cloudScans)),
+      safeCount(() => connection.db.select({ count: count() }).from(cloudAgentConnections).innerJoin(cloudProjects, eq(cloudAgentConnections.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), isNull(cloudAgentConnections.revokedAt)))),
+      safeCount(() => ownedProjects(cloudProjectChanges)),
     ]);
-    return {
-      projects: Number(projects[0]?.count ?? 0),
-      truths: Number(truths[0]?.count ?? 0),
-      memories: Number(memories[0]?.count ?? 0),
-      scans: Number(scans[0]?.count ?? 0),
-      agents: Number(agents[0]?.count ?? 0),
-      activity: Number(activity[0]?.count ?? 0),
-    };
+    return { projects, truths, memories, scans, agents, activity };
   } finally {
     await connection.close();
   }

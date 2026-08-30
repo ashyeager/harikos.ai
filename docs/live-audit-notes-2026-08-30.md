@@ -70,3 +70,5 @@ The existing Vercel project production environment contains `HARIKOS_SESSION_SEC
 The deployed public homepage returned HTTP 200. The authenticated `/app/dashboard` route rendered the global error boundary with `Something went wrong!` in the connected browser, so the deployed dashboard has a runtime failure that must be diagnosed through Vercel runtime logs before further shipping.
 
 The deployment itself reached READY for commit `6931961`.
+
+A second direct production browser check of `/app/dashboard` after commit `d1d69cc` still rendered the global error boundary. The earlier runtime error was `ReferenceError: eq is not defined`; the latest deployment status records a READY production deployment for `d1d69cc`, so updated runtime diagnostics are required.
