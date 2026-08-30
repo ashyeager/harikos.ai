@@ -5,6 +5,7 @@
 @import "../styles/marketing-final.css";
 @import "../styles/public-pages.css";
 @import "../styles/frontend-polish.css";
+@import "../styles/radical-redesign.css";
 
 @theme inline {
   --font-sans: var(--font-body);

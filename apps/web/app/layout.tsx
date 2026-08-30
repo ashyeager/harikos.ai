@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 
-const roboto = Roboto({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 import "../styles/app.css";
 
 export const viewport: Viewport = {
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className={roboto.variable} data-scroll-behavior="smooth" lang="en">
+    <html className={inter.variable} data-scroll-behavior="smooth" lang="en">
       <body className="bg-ink text-white font-sans antialiased min-h-screen selection:bg-cyan/30 selection:text-white">
         {children}
       </body>

@@ -16,7 +16,7 @@ const nodeData = [
   { position: [3.5, 0.1, -1.5], kind: "change", label: "CHANGE" },
 ] as const;
 
-const nodeColors: Record<string, string> = { core: "#fffdf8", truth: "#f3b562", memory: "#ff9d5c", context: "#ff7d3d", agent: "#ffd58c", file: "#8f8173", evidence: "#f3b562", change: "#ffb56e" };
+const nodeColors: Record<string, string> = { core: "#ffffff", truth: "#ff7a24", memory: "#d99a24", context: "#ff6a1a", agent: "#ffffff", file: "#e7e7e2", evidence: "#d99a24", change: "#ff7a24" };
 
 function NetworkLines() {
   const geometry = useMemo(() => {
