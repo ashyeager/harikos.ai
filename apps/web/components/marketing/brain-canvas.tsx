@@ -58,7 +58,7 @@ function BrainNode({ node, index, onHover }: { node: (typeof nodeData)[number]; 
   const leave = () => { setHovered(false); onHover(undefined); };
   return (
     <mesh position={node.position} ref={ref} onPointerEnter={enter} onPointerLeave={leave}>
-      <sphereGeometry args={[index === 0 ? 0.54 : node.kind === "file" ? 0.13 : 0.2, 24, 24]} />
+      {index === 0 ? <coneGeometry args={[0.66, 1.55, 6]} /> : <sphereGeometry args={[node.kind === "file" ? 0.13 : 0.2, 24, 24]} />}
       <meshStandardMaterial color={color} emissive={new Color(color)} emissiveIntensity={hovered ? 2.6 : index === 0 ? 1.1 : 0.7} metalness={0.25} roughness={0.28} />
     </mesh>
   );
@@ -71,7 +71,7 @@ function Network({ onHover }: { onHover: (label?: string) => void }) {
     group.current.rotation.y = clock.elapsedTime * 0.075 + pointer.x * 0.12;
     group.current.rotation.x += ((-pointer.y * 0.08) - group.current.rotation.x) * 0.04;
   });
-  return <group ref={group}><NetworkLines />{nodeData.map((node, index) => <BrainNode index={index} key={node.label} node={node} onHover={onHover} />)}{Array.from({ length: 8 }, (_, index) => <Packet index={index} key={index} />)}</group>;
+  return <group ref={group}><NetworkLines />{nodeData.map((node, index) => <group key={node.label} rotation={index === 0 ? [0, 0, Math.PI / 2] : undefined}><BrainNode index={index} node={node} onHover={onHover} /></group>)}{Array.from({ length: 8 }, (_, index) => <Packet index={index} key={index} />)}</group>;
 }
 
 export default function BrainCanvas() {

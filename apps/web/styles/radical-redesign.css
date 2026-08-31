@@ -388,3 +388,94 @@ input:focus, textarea:focus, select:focus { border-color: var(--system-orange) !
 .legal-page > section footer { border-color: var(--system-line) !important; }
 .legal-page > section footer p { color: var(--system-ink-soft) !important; }
 .legal-page > section footer a { color: var(--system-orange) !important; }
+
+
+/* FINAL DARK INFRASTRUCTURE SYSTEM */
+:root {
+  --dark-canvas: #050505;
+  --dark-surface: #0b0b0c;
+  --dark-elevated: #111113;
+  --dark-line: rgba(255,255,255,.14);
+  --dark-line-strong: rgba(255,255,255,.24);
+  --bright-white: #ffffff;
+  --brand-orange: #ff6a1a;
+  --brand-gold: #e7ad38;
+  --mesh-speed: 18s;
+}
+
+html, body { background: var(--dark-canvas) !important; color: var(--bright-white) !important; }
+body { font-size: 16px !important; }
+body::before { background-image: radial-gradient(circle at 18% 20%, rgba(255,106,26,.12) 0 1px, transparent 1px), radial-gradient(circle at 82% 32%, rgba(231,173,56,.08) 0 1px, transparent 1px), linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 160px 160px, 220px 220px, 72px 72px, 72px 72px; content: ""; inset: 0; opacity: .6; pointer-events: none; position: fixed; z-index: -2; }
+body::after { animation: harikos-mesh-drift var(--mesh-speed) ease-in-out infinite alternate; background: radial-gradient(ellipse at 20% 15%, rgba(255,106,26,.12), transparent 34%), radial-gradient(ellipse at 80% 70%, rgba(231,173,56,.08), transparent 38%); content: ""; filter: blur(24px); inset: -12%; pointer-events: none; position: fixed; z-index: -1; }
+@keyframes harikos-mesh-drift { 0% { transform: translate3d(-2%, -1%, 0) scale(1); } 50% { transform: translate3d(1%, 2%, 0) scale(1.04); } 100% { transform: translate3d(3%, -2%, 0) scale(1.08); } }
+
+.marketing-root, .app-frame { background: transparent !important; color: var(--bright-white) !important; position: relative; }
+.marketing-root > *, .app-frame > * { position: relative; z-index: 1; }
+.site-nav, .app-topbar { backdrop-filter: blur(18px); background: rgba(5,5,5,.82) !important; border-color: var(--dark-line) !important; }
+.site-nav *, .app-topbar * { color: var(--bright-white) !important; }
+.site-nav a:hover, .site-nav button:hover, .app-topbar a:hover { color: var(--brand-orange) !important; }
+
+/* Bright, readable type hierarchy without introducing another font. */
+body, body * { text-shadow: none !important; }
+h1, h2, h3, h4, strong, b, label, button, a, p, span, small, li, dt, dd, th, td { color: var(--bright-white); }
+p, li, .text-muted, .text-secondary, small, .muted, [class*="text-muted"] { color: rgba(255,255,255,.78) !important; }
+h1, h2 { letter-spacing: -.035em; }
+h1 { font-weight: 760 !important; }
+h2, h3 { font-weight: 700 !important; }
+.eyebrow, .nav-label, .example-label { color: var(--brand-orange) !important; font-weight: 750 !important; }
+
+/* Surfaces: black foundation, white content contrast, controlled accent moments. */
+.public-section, .public-section-dark, .public-section-deeper, .public-section-accent, .product-cta, .legal-page,
+.app-content, .panel, .truth-card, .source-card, .filter-bar, .settings-nav, .profile-card, .account-actions { background: transparent !important; color: var(--bright-white) !important; }
+.panel, .truth-card, .source-card, .filter-bar, .settings-nav, .profile-card, .account-actions, .project-row, .dashboard-project-grid > a, .dashboard-actions article { background: rgba(255,255,255,.045) !important; border-color: var(--dark-line) !important; box-shadow: 0 14px 48px rgba(0,0,0,.24) !important; }
+.panel:hover, .truth-card:hover, .source-card:hover, .dashboard-project-grid > a:hover, .dashboard-actions article:hover { border-color: rgba(255,106,26,.62) !important; transform: translateY(-2px); }
+.button-primary, .button-orange { background: var(--brand-orange) !important; border-color: var(--brand-orange) !important; color: #050505 !important; box-shadow: 0 10px 30px rgba(255,106,26,.22) !important; }
+.button-secondary, .button-ghost { background: rgba(255,255,255,.06) !important; border-color: var(--dark-line-strong) !important; color: var(--bright-white) !important; }
+.button-primary:hover, .button-secondary:hover, .button-ghost:hover { border-color: var(--brand-orange) !important; box-shadow: 0 12px 34px rgba(255,106,26,.2) !important; }
+input, textarea, select { background: rgba(255,255,255,.06) !important; border-color: var(--dark-line-strong) !important; color: var(--bright-white) !important; }
+input::placeholder, textarea::placeholder { color: rgba(255,255,255,.55) !important; }
+input:focus, textarea:focus, select:focus { border-color: var(--brand-orange) !important; box-shadow: 0 0 0 3px rgba(255,106,26,.17) !important; }
+
+/* Dark overlays stay readable and belong to the same system. */
+.command-backdrop { background: rgba(0,0,0,.78) !important; backdrop-filter: blur(10px); }
+.command-palette { background: #0b0b0c !important; border-color: var(--dark-line-strong) !important; box-shadow: 0 28px 90px rgba(0,0,0,.65) !important; }
+.command-palette header, .command-palette footer { background: rgba(255,255,255,.045) !important; border-color: var(--dark-line) !important; }
+.command-palette input, .command-palette strong, .command-palette p, .command-palette footer, .command-palette kbd { color: var(--bright-white) !important; }
+.command-palette > div a:hover { background: rgba(255,106,26,.12) !important; border-color: rgba(255,106,26,.5) !important; }
+
+/* Hero intelligence core: deeper contrast, controlled energy, and visible depth. */
+.brain-canvas-host { background: radial-gradient(circle at 50% 52%, rgba(255,255,255,.1), transparent 19%), radial-gradient(circle at 50% 50%, rgba(255,106,26,.1), transparent 45%), #030303 !important; border: 1px solid rgba(255,255,255,.18) !important; box-shadow: inset 0 0 90px rgba(0,0,0,.76), 0 22px 80px rgba(0,0,0,.42) !important; }
+.brain-canvas-host::after { border: 1px solid rgba(231,173,56,.35); border-radius: 50%; content: ""; height: 62%; left: 19%; pointer-events: none; position: absolute; top: 19%; transform: rotate(-24deg) skewX(-14deg); width: 62%; }
+.brain-core-label, .brain-corner { color: var(--bright-white) !important; }
+.brain-core-label strong { color: var(--brand-orange) !important; font-size: 14px !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none; }
+  .panel:hover, .truth-card:hover, .source-card:hover, .dashboard-project-grid > a:hover, .dashboard-actions article:hover { transform: none; }
+}
+@media (max-width: 700px) {
+  body { font-size: 15px !important; }
+  .public-hero, .public-section { padding-left: 18px !important; padding-right: 18px !important; }
+  .brain-canvas-host { min-height: 390px !important; }
+  .brain-canvas-host::after { height: 70%; left: 15%; top: 15%; width: 70%; }
+}
+
+
+/* White-only text contract: accents live in surfaces, rules, markers, and motion—not text color. */
+html body * { color: #ffffff !important; }
+html body input::placeholder, html body textarea::placeholder { color: rgba(255,255,255,.62) !important; }
+html body .eyebrow, html body .nav-label, html body .example-label { color: #ffffff !important; }
+html body .button-primary, html body .button-secondary, html body .button-ghost, html body .button-danger { color: #ffffff !important; }
+html body .site-nav a:hover, html body .site-nav button:hover, html body .app-topbar a:hover { color: #ffffff !important; }
+
+/* Compatibility tokens used by older route layers; all visible copy remains white. */
+:root {
+  --system-ink: #ffffff;
+  --system-ink-soft: #ffffff;
+  --system-muted: #ffffff;
+  --system-orange: #ffffff;
+  --ink-850: #ffffff;
+  --ink-800: #ffffff;
+  --ink-750: #ffffff;
+  --muted-dark: #ffffff;
+}
