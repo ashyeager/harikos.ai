@@ -57,10 +57,10 @@ export function ContextComposer({ projectId }: { projectId: string }) {
       
       {/* INPUT SECTION */}
       <section className="bg-ink border border-line flex flex-col gap-6 relative rounded-sm shadow-xl overflow-hidden group">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan to-transparent opacity-30 group-hover:opacity-70 transition-opacity" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange to-transparent opacity-30 group-hover:opacity-70 transition-opacity" />
         
         <div className="p-8 pb-0">
-          <span className="font-mono text-[9px] tracking-widest text-cyan uppercase flex items-center gap-2 mb-3">
+          <span className="font-mono text-[9px] tracking-widest text-orange uppercase flex items-center gap-2 mb-3">
             <Terminal size={12} /> TASK INPUT
           </span>
           <h2 className="text-xl font-bold text-white mb-2 leading-snug">What are you about to build?</h2>
@@ -73,7 +73,7 @@ export function ContextComposer({ projectId }: { projectId: string }) {
             onChange={(event) => setTask(event.target.value)} 
             value={task}
             placeholder="Describe the feature, bug fix, or architecture change..."
-            className="min-h-[180px] p-4 bg-ink-soft border border-line text-white font-mono text-sm leading-relaxed outline-none focus:border-cyan/50 focus:shadow-[0_0_15px_rgba(0,217,232,0.1)] transition-all resize-y rounded-sm placeholder:text-muted/50"
+            className="min-h-[180px] p-4 bg-ink-soft border border-line text-white font-mono text-sm leading-relaxed outline-none focus:border-orange/50 focus:shadow-[0_0_15px_rgba(255,104,24,0.14)] transition-all resize-y rounded-sm placeholder:text-muted/50"
           />
           
           <div className="flex items-center justify-between">
@@ -117,12 +117,12 @@ export function ContextComposer({ projectId }: { projectId: string }) {
                 <FileCode size={14} className="text-muted" />
                 <h2 className="text-sm font-bold text-white">Generated Context Pack</h2>
               </div>
-              <span className="font-mono text-[9px] tracking-widest text-cyan uppercase bg-cyan/10 border border-cyan/20 px-2 py-0.5 rounded-sm">
+              <span className="font-mono text-[9px] tracking-widest text-orange uppercase bg-orange/10 border border-orange/20 px-2 py-0.5 rounded-sm">
                 {result.tokenEstimate} estimated tokens
               </span>
             </div>
             
-            <pre className="flex-1 p-6 text-[11px] sm:text-xs text-white font-mono whitespace-pre-wrap break-words overflow-auto max-h-[600px] bg-ink selection:bg-cyan selection:text-ink">
+            <pre className="flex-1 p-6 text-[11px] sm:text-xs text-white font-mono whitespace-pre-wrap break-words overflow-auto max-h-[600px] bg-ink selection:bg-orange selection:text-ink">
               {result.text}
             </pre>
             
@@ -146,7 +146,7 @@ export function ContextComposer({ projectId }: { projectId: string }) {
                     </>
                   ) : (
                     <>
-                      <Icon size={16} className="group-hover:text-cyan transition-colors" />
+                      <Icon size={16} className="group-hover:text-orange transition-colors" />
                       <span className="text-[9px] font-mono tracking-widest uppercase">{label}</span>
                     </>
                   )}

@@ -7,7 +7,7 @@ import { cn } from "../lib/utils";
 
 const memoryTypes = [
   { id: "decision", label: "Decision", icon: CheckCircle2, color: "text-green" },
-  { id: "attempt", label: "Attempt", icon: Cpu, color: "text-cyan" },
+  { id: "attempt", label: "Attempt", icon: Cpu, color: "text-orange" },
   { id: "failed_attempt", label: "Failed Attempt", icon: FileWarning, color: "text-red" },
   { id: "fix", label: "Fix", icon: Save, color: "text-green" },
   { id: "bug", label: "Bug", icon: AlertCircle, color: "text-red" },
@@ -64,7 +64,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
         <section className="bg-ink border border-line rounded-sm overflow-hidden shadow-lg animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="px-6 py-4 border-b border-line bg-ink-soft flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Plus size={14} className="text-cyan" />
+              <Plus size={14} className="text-orange" />
               <h2 className="text-sm font-bold text-white">Record New Memory</h2>
             </div>
             <button 
@@ -103,7 +103,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
               onChange={(event) => setContent(event.target.value)} 
               placeholder={`Describe this ${selectedType.label.toLowerCase()} so future agents don't repeat mistakes...`}
               value={content}
-              className="min-h-[160px] p-4 bg-ink-soft border border-line text-white text-sm leading-relaxed outline-none focus:border-cyan/50 focus:shadow-[0_0_15px_rgba(0,217,232,0.1)] transition-all resize-y rounded-sm font-mono placeholder:text-muted/50"
+              className="min-h-[160px] p-4 bg-ink-soft border border-line text-white text-sm leading-relaxed outline-none focus:border-orange/50 focus:shadow-[0_0_15px_rgba(255,104,24,0.14)] transition-all resize-y rounded-sm font-mono placeholder:text-muted/50"
               autoFocus
             />
             
@@ -150,9 +150,9 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
       ) : (
         <button 
           onClick={() => setIsComposing(true)}
-          className="w-full p-4 border border-dashed border-line hover:border-cyan hover:bg-ink-soft text-muted hover:text-cyan transition-all rounded-sm flex items-center justify-center gap-2 group"
+          className="w-full p-4 border border-dashed border-line hover:border-orange hover:bg-ink-soft text-muted hover:text-orange transition-all rounded-sm flex items-center justify-center gap-2 group"
         >
-          <div className="w-6 h-6 rounded-sm bg-ink border border-line group-hover:border-cyan/50 flex items-center justify-center transition-colors">
+          <div className="w-6 h-6 rounded-sm bg-ink border border-line group-hover:border-orange/50 flex items-center justify-center transition-colors">
             <Plus size={12} />
           </div>
           <span className="font-mono text-[10px] tracking-widest uppercase">Record New Memory</span>
@@ -202,7 +202,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
                     
                     {memory.agent ? (
                       <div className="mt-4 pt-3 border-t border-line/50 flex items-center gap-1.5">
-                        <Bot size={10} className="text-cyan" />
+                        <Bot size={10} className="text-orange" />
                         <small className="text-[9px] font-mono tracking-widest text-muted uppercase">
                           Recorded by {memory.agent}
                         </small>

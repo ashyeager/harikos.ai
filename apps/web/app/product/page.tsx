@@ -28,7 +28,7 @@ export default function ProductPage() {
         <PublicSection eyebrow="FOUR PRECISE LAYERS" title={<>Rich project understanding.<br /><span>No conceptual blur.</span></>} copy="The interface keeps current state, history, task context, and agent access visibly distinct." tone="deeper">
           <div className="layer-detail-grid">{layers.map(([label, title, copy], index) => <article key={label}><span>0{index + 1}</span><small>{label}</small><h3>{title}</h3><p>{copy}</p></article>)}</div>
         </PublicSection>
-        <PublicSection eyebrow="PRODUCT MECHANIC" title={<>See state move<br /><span>through the brain.</span></>} copy="This deliberately illustrative sequence shows how an implementation change becomes verified Truth, durable Memory, and useful context for another agent." tone="blue"><ExampleLabel /><CinematicLoop /></PublicSection>
+        <PublicSection eyebrow="PRODUCT MECHANIC" title={<>See state move<br /><span>through the brain.</span></>} copy="This deliberately illustrative sequence shows how an implementation change becomes verified Truth, durable Memory, and useful context for another agent." tone="accent"><ExampleLabel /><CinematicLoop /></PublicSection>
         <ProductCTA title="Give the whole project one current understanding." />
       </main>
     </MarketingShell>

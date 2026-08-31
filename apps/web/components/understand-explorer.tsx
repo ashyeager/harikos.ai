@@ -43,7 +43,7 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
 
   return (
     <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-      
+
       {/* SUGGESTIONS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {suggestions.map((suggestion) => {
@@ -53,10 +53,10 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
               key={suggestion.text}
               onClick={() => setQuestion(suggestion.text)}
               type="button"
-              className="px-4 py-3 bg-ink border border-line text-xs text-muted hover:text-white hover:bg-ink-soft hover:border-cyan/50 transition-all font-mono text-left rounded-sm group flex items-center justify-between"
+              className="px-4 py-3 bg-ink border border-line text-xs text-muted hover:text-white hover:bg-ink-soft hover:border-orange/50 transition-all font-mono text-left rounded-sm group flex items-center justify-between"
             >
               <span className="flex items-center gap-2">
-                <Icon size={14} className="group-hover:text-cyan transition-colors" />
+                <Icon size={14} className="group-hover:text-orange transition-colors" />
                 <span className="truncate">{suggestion.text}</span>
               </span>
               <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0" />
@@ -67,21 +67,21 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
 
       {/* INPUT AREA */}
       <div className="bg-ink border border-line p-6 flex flex-col gap-6 relative rounded-sm shadow-xl overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan to-transparent opacity-50" />
-        
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange to-transparent opacity-50" />
+
         <div className="flex items-center gap-2">
-          <MessageSquare size={14} className="text-cyan" />
+          <MessageSquare size={14} className="text-orange" />
           <label htmlFor="project-question" className="font-mono text-[10px] tracking-widest text-white uppercase font-bold">
             Ask about the verified project
           </label>
         </div>
-        
+
         <div className="flex flex-col md:flex-row gap-3">
           <input
             id="project-question"
             onChange={(event) => setQuestion(event.target.value)}
             value={question}
-            className="flex-1 h-12 px-4 bg-ink-soft border border-line text-white font-mono text-sm outline-none focus:border-cyan transition-colors rounded-sm shadow-inner"
+            className="flex-1 h-12 px-4 bg-ink-soft border border-line text-white font-mono text-sm outline-none focus:border-orange transition-colors rounded-sm shadow-inner"
             placeholder="What do you want to understand?"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.nativeEvent.isComposing && e.keyCode !== 229) ask();
@@ -109,7 +109,7 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
             )}
           </button>
         </div>
-        
+
         {/* MODE SELECTOR */}
         <div className="flex items-center gap-4 mt-2">
           <span className="font-mono text-[9px] tracking-widest text-muted uppercase">Depth:</span>
@@ -126,8 +126,8 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
                   key={item.id}
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-1.5 font-mono text-[9px] tracking-widest uppercase transition-all rounded-sm",
-                    active 
-                      ? "bg-ink border-line text-cyan font-bold shadow-sm" 
+                    active
+                      ? "bg-ink border-line text-orange font-bold shadow-sm"
                       : "text-muted hover:text-white hover:bg-ink-elevated border border-transparent"
                   )}
                   onClick={() => setMode(item.id as "simple" | "technical" | "evidence")}
@@ -154,19 +154,19 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
       {answer ? (
         <article className="bg-ink border border-line flex flex-col rounded-sm overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500" aria-live="polite">
           <div className="flex items-center gap-4 border-b border-line px-6 py-4 bg-ink-soft">
-            <div className="w-8 h-8 flex items-center justify-center bg-cyan/10 border border-cyan/30 text-cyan font-mono font-bold rounded-sm shadow-[0_0_10px_rgba(0,217,232,0.2)]">
+            <div className="w-8 h-8 flex items-center justify-center bg-orange/10 border border-orange/30 text-orange font-mono font-bold rounded-sm shadow-[0_0_10px_rgba(255,104,24,0.16)]">
               H
             </div>
             <div className="flex flex-col gap-1">
-              <small className="font-mono text-[9px] tracking-widest text-cyan uppercase">GROUNDED IN PROJECT TRUTH</small>
+              <small className="font-mono text-[9px] tracking-widest text-orange uppercase">GROUNDED IN PROJECT TRUTH</small>
               <strong className="text-white text-sm capitalize">{mode} Answer</strong>
             </div>
           </div>
-          
+
           <div className="p-8 bg-ink text-white leading-relaxed text-sm whitespace-pre-wrap font-sans">
             {answer}
           </div>
-          
+
           <div className="flex items-center justify-between px-6 py-4 bg-ink-soft border-t border-line font-mono text-[9px] tracking-widest text-muted uppercase">
             <span className="flex items-center gap-2">
               <CheckCircle2 size={12} className="text-green" />

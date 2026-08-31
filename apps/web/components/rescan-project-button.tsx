@@ -32,7 +32,7 @@ export function RescanProjectButton({ projectId }: { projectId: string }) {
   return (
     <div className="flex flex-col gap-2 w-full md:w-auto">
       <button
-        className="h-12 px-6 flex items-center justify-center gap-2 border border-line bg-ink-soft hover:border-cyan text-white disabled:opacity-50 disabled:cursor-wait font-mono font-bold text-xs tracking-wide transition-colors whitespace-nowrap"
+        className="h-12 px-6 flex items-center justify-center gap-2 border border-line bg-ink-soft hover:border-orange text-white disabled:opacity-50 disabled:cursor-wait font-mono font-bold text-xs tracking-wide transition-colors whitespace-nowrap"
         disabled={scanning}
         onClick={rescan}
         type="button"

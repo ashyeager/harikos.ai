@@ -43,7 +43,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-sm font-bold text-white flex items-center gap-2">
-          <Activity size={14} className="text-cyan" />
+          <Activity size={14} className="text-orange" />
           Active Project Truths
         </h2>
         <Link href={`/app/project/${snapshot.projectId}/truth`} className="text-[10px] font-mono tracking-widest text-muted hover:text-white uppercase transition-colors">
@@ -78,9 +78,9 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
               <Link className="flex items-center gap-4 py-2 group" href={`/app/project/${snapshot.projectId}/truth/${encodeURIComponent(claim.id)}`} key={claim.id}>
                 <span className="w-24 truncate text-[11px] text-muted capitalize group-hover:text-white transition-colors" title={claim.subject}>{claim.subject}</span>
                 <div className="flex-1 h-1 bg-line rounded-full overflow-hidden">
-                  <div className="h-full bg-cyan rounded-full transition-all" style={{ width: `${Math.round(claim.confidence * 100)}%` }}></div>
+                  <div className="h-full bg-orange rounded-full transition-all" style={{ width: `${Math.round(claim.confidence * 100)}%` }}></div>
                 </div>
-                <strong className="w-16 text-right font-mono text-[9px] text-muted group-hover:text-cyan transition-colors">{claim.evidence.length} sources</strong>
+                <strong className="w-16 text-right font-mono text-[9px] text-muted group-hover:text-orange transition-colors">{claim.evidence.length} sources</strong>
               </Link>
             ))}
             {current.length === 0 ? (
@@ -108,9 +108,9 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
                 <div className="bg-ink-elevated p-4 flex items-center justify-between border border-line mb-6 rounded-sm font-mono text-xs">
                   <span className="text-muted line-through truncate max-w-[40%]">{snapshot.changes[0].previousValue}</span>
                   <ArrowRight size={14} className="text-muted" />
-                  <strong className="text-cyan truncate max-w-[40%]">{snapshot.changes[0].currentValue}</strong>
+                  <strong className="text-orange truncate max-w-[40%]">{snapshot.changes[0].currentValue}</strong>
                 </div>
-                <Link href={`/app/project/${snapshot.projectId}/changes`} className="mt-auto h-9 flex items-center justify-center border border-line hover:border-cyan text-white bg-ink-soft transition-colors text-[10px] uppercase font-mono tracking-widest rounded-sm">
+                <Link href={`/app/project/${snapshot.projectId}/changes`} className="mt-auto h-9 flex items-center justify-center border border-line hover:border-orange text-white bg-ink-soft transition-colors text-[10px] uppercase font-mono tracking-widest rounded-sm">
                   Inspect Change
                 </Link>
               </>

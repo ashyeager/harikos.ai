@@ -38,7 +38,7 @@ export function TruthBoard({ claims, projectId }: { claims: ProjectTruthClaim[];
               <section className="scroll-mt-24" id={category} key={category}>
                 <div className="flex items-end justify-between border-b border-line pb-3 mb-6">
                   <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-6 bg-cyan/50 rounded-full" />
+                    <span className="w-1.5 h-6 bg-orange/50 rounded-full" />
                     <h2 className="text-xl font-bold text-white capitalize">{category}</h2>
                   </div>
                   <span className="font-mono text-[9px] tracking-widest uppercase text-muted bg-ink-soft px-2 py-1 rounded-sm border border-line">

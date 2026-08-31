@@ -30,7 +30,7 @@ export function ScanLocalButton() {
   return (
     <div className="flex flex-col gap-2 w-full">
       <button 
-        className="h-12 px-6 flex items-center justify-center gap-2 border border-line bg-ink text-white hover:border-cyan disabled:opacity-50 disabled:cursor-wait font-mono font-bold text-xs tracking-wide transition-colors w-full md:w-auto self-start"
+        className="h-12 px-6 flex items-center justify-center gap-2 border border-line bg-ink text-white hover:border-orange disabled:opacity-50 disabled:cursor-wait font-mono font-bold text-xs tracking-wide transition-colors w-full md:w-auto self-start"
         disabled={scanning} 
         onClick={scan} 
         type="button"

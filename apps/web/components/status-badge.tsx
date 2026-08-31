@@ -4,7 +4,7 @@ import { cn } from "../lib/utils";
 export function StatusBadge({ status }: { status: ProjectTruthClaim["status"] }) {
   const statusStyles: Record<string, string> = {
     verified: "text-green bg-green/10 border-green/20",
-    likely: "text-cyan bg-cyan/10 border-cyan/20",
+    likely: "text-orange bg-orange/10 border-orange/20",
     uncertain: "text-yellow bg-yellow/10 border-yellow/20",
     contradicted: "text-red bg-red/10 border-red/20",
     superseded: "text-muted bg-ink-elevated border-line-light/20",

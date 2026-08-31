@@ -15,8 +15,8 @@ export function PageHeader({
     <header className="page-header mb-10 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
       <div className="flex flex-col gap-2 max-w-2xl">
         {eyebrow && (
-          <span className="font-mono text-[9px] tracking-widest uppercase text-cyan mb-1 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-cyan animate-pulse"></span>
+          <span className="font-mono text-[9px] tracking-widest uppercase text-orange mb-1 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-orange animate-pulse"></span>
             {eyebrow}
           </span>
         )}

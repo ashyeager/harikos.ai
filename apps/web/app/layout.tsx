@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={inter.variable} data-scroll-behavior="smooth" lang="en">
-      <body className="bg-ink text-white font-sans antialiased min-h-screen selection:bg-cyan/30 selection:text-white">
+      <body className="bg-ink text-white font-sans antialiased min-h-screen selection:bg-orange/30 selection:text-white">
         {children}
       </body>
     </html>

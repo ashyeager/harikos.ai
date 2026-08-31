@@ -62,7 +62,7 @@ export default async function TruthDetailPage({ params }: { params: Promise<{ id
           </div>
           
           <div className="w-full h-1 bg-line rounded-full overflow-hidden mt-6">
-            <div className="h-full bg-cyan rounded-full" style={{ width: `${Math.round(claim.confidence * 100)}%` }}></div>
+            <div className="h-full bg-orange rounded-full" style={{ width: `${Math.round(claim.confidence * 100)}%` }}></div>
           </div>
         </article>
       </section>
@@ -79,7 +79,7 @@ export default async function TruthDetailPage({ params }: { params: Promise<{ id
         <div className="flex flex-col divide-y divide-line">
           {claim.evidence.map((item, index) => (
             <div className="p-6 flex gap-6" key={`${item.path}-${index}`}>
-              <span className="w-10 h-10 flex items-center justify-center bg-ink-soft border border-line text-cyan font-mono text-xs font-black shrink-0">
+              <span className="w-10 h-10 flex items-center justify-center bg-ink-soft border border-line text-orange font-mono text-xs font-black shrink-0">
                 {item.sourceType === "documentation" ? "D" : "F"}
               </span>
               <div className="flex-1 min-w-0 flex flex-col gap-2 justify-center">

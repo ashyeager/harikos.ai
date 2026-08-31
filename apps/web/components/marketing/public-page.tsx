@@ -54,7 +54,7 @@ export function PublicSection({
   title: ReactNode;
   copy: string;
   children: ReactNode;
-  tone?: "dark" | "deeper" | "blue";
+  tone?: "dark" | "deeper" | "accent";
 }) {
   return (
     <section className={`public-section public-section-${tone}`}>

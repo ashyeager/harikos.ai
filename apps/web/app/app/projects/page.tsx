@@ -31,7 +31,7 @@ export default async function ProjectsPage() {
           <div className="source-status"><i className={status.githubApp ? "ready" : ""} />{status.githubApp ? "GitHub App ready" : "Credentials not configured"}</div>
         </article>
         <article className="source-card">
-          <span className="source-icon cyan-icon">⌁</span>
+          <span className="source-icon orange-icon">⌁</span>
           <div><small>DEVELOPMENT-ONLY SOURCE</small><h2>HARIKOS-AI workspace</h2><p>Run the bounded scanner against this repository and persist an isolated local verification snapshot.</p></div>
           {status.localDemo ? <ScanLocalButton /> : <span className="disabled-message">Local scanning is disabled in production.</span>}
           <div className="source-status"><i className="ready" />Deterministic · no AI key required</div>

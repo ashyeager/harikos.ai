@@ -42,14 +42,14 @@ button, input, textarea, select { color: var(--paper); }
 .bg-ink-elevated { background-color: var(--ink-750) !important; }
 .bg-paper { background-color: var(--paper) !important; }
 .bg-orange { background-color: var(--orange) !important; }
-.bg-cyan { background-color: var(--gold) !important; }
+.bg-orange { background-color: var(--gold) !important; }
 .text-white, .text-paper { color: var(--paper) !important; }
 .text-muted { color: var(--muted-dark) !important; }
-.text-cyan, .text-yellow { color: var(--gold) !important; }
+.text-orange, .text-yellow { color: var(--gold) !important; }
 .text-orange { color: var(--orange) !important; }
 .border-line { border-color: var(--line) !important; }
 .border-line-light { border-color: var(--line-strong) !important; }
-.border-cyan { border-color: rgba(226, 181, 106, .45) !important; }
+.border-orange { border-color: rgba(226, 181, 106, .45) !important; }
 
 .button { border-radius: 5px; letter-spacing: .035em; }
 .button:hover { transform: translateY(-2px); }
@@ -134,7 +134,7 @@ button, input, textarea, select { color: var(--paper); }
 .truth-card-link h3 { color: var(--paper) !important; }
 .truth-card-link:hover h3 { color: var(--gold) !important; }
 .truth-card-link .bg-line { background: #493628 !important; }
-.truth-card-link .bg-cyan { background: var(--gold) !important; }
+.truth-card-link .bg-orange { background: var(--gold) !important; }
 .status-badge { border-radius: 3px; }
 .status-verified { color: var(--green); }
 .status-likely { color: var(--gold); }
