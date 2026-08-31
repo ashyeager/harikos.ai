@@ -235,3 +235,156 @@ html body.font-sans .app-frame .recent-change-card,
 html body.font-sans .app-frame .recent-change-card * { color: #ffffff !important; }
 html body.font-sans .app-frame .app-topbar,
 html body.font-sans .app-frame .app-topbar * { color: var(--bright-ink) !important; }
+
+
+/* FINAL PRODUCT-WIDE COHERENCE CONTRACT */
+:root {
+  --system-bg: #f4f4f1;
+  --system-surface: #ffffff;
+  --system-elevated: #fbfbf9;
+  --system-ink: #101010;
+  --system-ink-soft: #404040;
+  --system-muted: #6a6a66;
+  --system-line: #d9d9d4;
+  --system-line-strong: #bcbcb5;
+  --system-orange: #ff6818;
+  --system-gold: #c89128;
+  --system-success: #177245;
+  --system-danger: #c13d32;
+  --system-radius: 8px;
+  --system-shadow: 0 14px 40px rgba(16,16,16,.08);
+}
+
+/* One intended font everywhere; monospace is reserved for actual code/data widgets. */
+html body.font-sans, html body.font-sans * { font-family: var(--font-body) !important; }
+html body.font-sans code, html body.font-sans pre, html body.font-sans kbd,
+html body.font-sans .terminal-body, html body.font-sans .config-preview pre,
+html body.font-sans .command-palette header > span { font-family: var(--font-body) !important; }
+html body.font-sans button, html body.font-sans input, html body.font-sans textarea, html body.font-sans select { font-family: var(--font-body) !important; }
+
+/* Shared geometry and interaction language. */
+.button, .button-primary, .button-secondary, .button-dark, .button-ghost, .button-danger { border-radius: 6px !important; min-height: 40px; font-weight: 700 !important; transition: transform .18s var(--ease-engineered), background .18s ease, border-color .18s ease, box-shadow .18s ease !important; }
+.button:active, button:active { transform: scale(.98) !important; }
+input, textarea, select { background: var(--system-surface) !important; border: 1px solid var(--system-line-strong) !important; border-radius: 6px !important; color: var(--system-ink) !important; min-height: 42px; }
+textarea { min-height: 120px; padding: 12px 14px !important; }
+input::placeholder, textarea::placeholder { color: var(--system-muted) !important; opacity: 1; }
+input:focus, textarea:focus, select:focus { border-color: var(--system-orange) !important; box-shadow: 0 0 0 3px rgba(255,104,24,.14) !important; outline: none !important; }
+
+/* Bright dialogs and overlays. */
+.command-backdrop { align-items: flex-start !important; background: rgba(16,16,16,.28) !important; backdrop-filter: blur(4px); padding-top: 12vh !important; }
+.command-palette { background: var(--system-surface) !important; border: 1px solid var(--system-line-strong) !important; border-radius: 10px !important; box-shadow: 0 28px 90px rgba(16,16,16,.22) !important; color: var(--system-ink) !important; overflow: hidden; }
+.command-palette header, .command-palette footer { background: var(--system-elevated) !important; border-color: var(--system-line) !important; }
+.command-palette header > span, .command-palette kbd, .command-palette footer, .command-palette > div p { color: var(--system-muted) !important; }
+.command-palette input { background: transparent !important; border: 0 !important; box-shadow: none !important; color: var(--system-ink) !important; }
+.command-palette > div a { border-radius: 6px !important; color: var(--system-ink) !important; }
+.command-palette > div a:hover { background: #fff1e9 !important; border-color: #ffc2a4 !important; }
+.command-palette > div a strong, .command-palette > div a i { color: var(--system-ink) !important; }
+.command-palette > div a > span { color: var(--system-orange) !important; }
+.command-palette > div i { background: var(--system-surface) !important; border-color: var(--system-line) !important; }
+
+/* Public secondary pages share the same bright foundation and section rhythm. */
+.public-page, .public-page main, .marketing-root > main > section:not(.final-cta-section),
+.before-build-example, .context-section-grid, .agent-network, .connection-flow, .tool-contract-grid,
+.config-preview, .security-grid, .pricing-preview-grid { background-color: var(--system-bg) !important; color: var(--system-ink) !important; }
+.public-page h1, .public-page h2, .public-page h3, .public-page p, .public-page li,
+.public-page .section-heading h2, .public-page .section-heading p { color: var(--system-ink) !important; }
+.public-page p, .public-page small, .public-page .muted, .public-page .section-heading p { color: var(--system-ink-soft) !important; }
+.before-build-example, .config-preview { background: var(--system-surface) !important; border: 1px solid var(--system-line) !important; box-shadow: var(--system-shadow) !important; }
+.before-build-example header, .config-preview header, .config-preview footer { border-color: var(--system-line) !important; }
+.before-build-example header span, .config-preview header b, .config-preview footer { color: var(--system-orange) !important; }
+.before-build-example p { border-color: var(--system-line) !important; color: var(--system-ink-soft) !important; }
+.before-build-example p i { color: var(--system-orange) !important; }
+.agent-network { background: #111 !important; border: 1px solid #111 !important; box-shadow: 18px 18px 0 var(--system-orange); }
+.agent-core, .agent-node { background: #fff !important; border-color: var(--system-line-strong) !important; color: var(--system-ink) !important; }
+.agent-core strong, .agent-node strong, .agent-node span, .agent-node small, .agent-core small { color: var(--system-ink) !important; }
+.agent-core > i, .agent-node > i { background: var(--system-orange) !important; box-shadow: none !important; }
+.agent-network path { stroke: rgba(255,255,255,.32) !important; }
+.connection-flow { border-color: var(--system-line) !important; }
+.connection-flow article { border-color: var(--system-line) !important; background: var(--system-surface) !important; }
+.connection-flow span, .connection-flow p { color: var(--system-ink-soft) !important; }
+.connection-flow strong { color: var(--system-ink) !important; }
+.connection-flow article > i { background: var(--system-orange) !important; }
+.tool-contract-grid article { background: var(--system-surface) !important; border-color: var(--system-line) !important; }
+.tool-contract-grid article span, .tool-contract-grid article code { color: var(--system-orange) !important; }
+.tool-contract-grid article p { color: var(--system-ink-soft) !important; }
+
+/* Authenticated product pages: same system, same navigation, same states. */
+.app-frame, .app-content { background: var(--system-bg) !important; color: var(--system-ink) !important; }
+.app-sidebar { background: var(--system-surface) !important; border-right: 1px solid var(--system-line) !important; }
+.app-sidebar .brand, .app-sidebar .nav-label, .app-sidebar .side-nav a, .app-sidebar .sidebar-bottom > a,
+.app-sidebar .sidebar-profile strong, .app-sidebar .sidebar-profile small { color: var(--system-ink) !important; }
+.app-sidebar .project-switcher { background: var(--system-ink) !important; color: #fff !important; border-radius: 8px !important; }
+.app-sidebar .project-switcher * { color: #fff !important; }
+.app-sidebar .side-nav a, .app-sidebar .sidebar-bottom > a { border-radius: 6px !important; }
+.app-sidebar .side-nav a.active, .app-sidebar .sidebar-bottom > a.active { background: var(--system-ink) !important; color: #fff !important; }
+.app-sidebar .side-nav a.active::after, .app-sidebar .sidebar-bottom > a.active::after { background: var(--system-orange) !important; }
+.app-topbar { background: rgba(255,255,255,.92) !important; border-bottom: 1px solid var(--system-line) !important; }
+.app-topbar, .app-topbar * { color: var(--system-ink) !important; }
+.app-content { padding-bottom: 88px !important; }
+.page-header { margin-bottom: 32px !important; }
+.page-header h1 { color: var(--system-ink) !important; font-weight: 750 !important; }
+.page-header p { color: var(--system-ink-soft) !important; }
+.page-header > div > span, .panel-heading > div > span { color: var(--system-orange) !important; }
+.panel, .truth-card, .source-card, .filter-bar, .overview-status-bar, .connected-projects,
+.repository-selector, .settings-nav, .profile-card, .account-actions, .plan-pro-card { background: var(--system-surface) !important; border: 1px solid var(--system-line) !important; border-radius: var(--system-radius) !important; box-shadow: var(--system-shadow) !important; }
+.panel-heading, .project-row, .truth-card-footer, .source-status, .settings-data-row, .security-setting-row { border-color: var(--system-line) !important; }
+.panel-heading h2, .panel-heading a, .panel-heading b, .truth-card h3, .truth-card p, .source-card h2, .source-card p,
+.project-row *, .truth-category, .source-card small, .source-status, .empty-state, .disabled-message { color: var(--system-ink) !important; }
+.truth-card p, .source-card p, .empty-state, .disabled-message, .project-row small, .project-metrics { color: var(--system-ink-soft) !important; }
+.dashboard-project-grid > a, .dashboard-actions article:not(:first-child) { background: var(--system-surface) !important; border-color: var(--system-line) !important; border-radius: var(--system-radius) !important; }
+.dashboard-project-grid > a:hover, .dashboard-actions article:hover, .truth-card:hover, .source-card:hover { border-color: #ffb18a !important; box-shadow: 0 18px 45px rgba(16,16,16,.12) !important; }
+.dashboard-metric, .dashboard-actions article:first-child, .recent-change-card { background: var(--system-ink) !important; border-radius: var(--system-radius) !important; color: #fff !important; }
+.dashboard-metric *, .dashboard-actions article:first-child *, .recent-change-card * { color: #fff !important; }
+.dashboard-metric::before { background: var(--system-orange) !important; }
+.overview-status-bar { box-shadow: none !important; }
+.overview-status-bar span, .overview-status-bar strong { color: var(--system-ink) !important; }
+.confidence-row > span, .confidence-gauge { background: #e2e2dc !important; }
+.confidence-row > span i, .confidence-gauge i { background: var(--system-orange) !important; }
+.filter-bar { box-shadow: none !important; }
+.filter-bar span, .filter-bar button { color: var(--system-ink-soft) !important; }
+.filter-bar .selected-filter { background: var(--system-orange) !important; color: #fff !important; }
+
+/* States, badges, loading and errors use semantic color, never brand color drift. */
+.status-verified, .status-likely, .status-uncertain, .evidence-check { color: var(--system-success) !important; }
+.status-contradicted, .status-rejected { color: var(--system-danger) !important; }
+.status-stale, .status-superseded { color: var(--system-muted) !important; }
+.status-badge { border-radius: 999px !important; }
+.loading-page { background: var(--system-bg) !important; color: var(--system-ink) !important; }
+.loading-page h1, .loading-page small { color: var(--system-ink) !important; }
+.scan-orbit span { background: var(--system-orange) !important; }
+.inline-error { background: #fff1ef !important; border-color: #efb2aa !important; color: var(--system-danger) !important; }
+
+/* Consistent mobile behavior across every shell and content family. */
+@media (max-width: 900px) {
+  .app-sidebar { background: var(--system-surface) !important; }
+  .app-content { padding: 28px 18px 56px !important; }
+  .page-header { gap: 18px !important; }
+  .dashboard-project-grid, .dashboard-actions, .project-source-grid, .truth-card-grid, .dashboard-grid { grid-template-columns: 1fr !important; }
+  .dashboard-actions article:first-child { min-height: 180px; }
+  .agent-network { box-shadow: 10px 10px 0 var(--system-orange); min-height: 360px; }
+  .connection-flow { grid-template-columns: 1fr !important; }
+  .connection-flow article { border-bottom: 1px solid var(--system-line); border-right: 0; min-height: 130px; }
+  .connection-flow article > i { display: none; }
+  .connection-flow strong { margin-top: 34px; }
+  .context-section-grid, .tool-contract-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 520px) {
+  .context-section-grid, .tool-contract-grid { grid-template-columns: 1fr !important; }
+  .command-palette { width: calc(100% - 24px) !important; }
+  .page-header h1 { font-size: 32px !important; }
+  .panel-heading { padding-inline: 15px !important; }
+}
+
+
+/* Legal documents: readable black-on-paper panels within the shared dark/light rhythm. */
+.legal-page { background: var(--system-bg) !important; color: var(--system-ink) !important; }
+.legal-page > header { background: var(--system-ink) !important; color: #fff !important; }
+.legal-page > header h1, .legal-page > header p, .legal-page > header small { color: #fff !important; }
+.legal-page > header .eyebrow { color: var(--system-orange) !important; }
+.legal-page > section { background: var(--system-surface) !important; border: 1px solid var(--system-line) !important; box-shadow: var(--system-shadow) !important; color: var(--system-ink) !important; }
+.legal-page > section article { background: var(--system-surface) !important; border-color: var(--system-line) !important; color: var(--system-ink) !important; }
+.legal-page > section article > span { color: var(--system-orange) !important; }
+.legal-page > section article h2, .legal-page > section article p { color: var(--system-ink) !important; }
+.legal-page > section footer { border-color: var(--system-line) !important; }
+.legal-page > section footer p { color: var(--system-ink-soft) !important; }
+.legal-page > section footer a { color: var(--system-orange) !important; }
