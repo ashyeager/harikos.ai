@@ -280,22 +280,6 @@ button, input, textarea, select { color: var(--paper); }
 .site-footer-bottom { border-color: rgba(255, 238, 211, .14); color: #cfc4b3; }
 .login-visual > .example-label { background: rgba(19, 13, 9, .9); border-color: rgba(226, 181, 106, .34); color: var(--gold); left: 18px; top: 82px; }
 
-/* White-first reading contrast: warm color is reserved for system accents. */
-.text-muted { color: #e5ddd2 !important; }
-.hero-copy > p, .section-heading p, .story-copy p, .pillar-card p, .security-grid p, .security-grid small, .hero-proof-line span { color: #f1ece4 !important; }
-.page-header p, .dashboard-metric > small, .dashboard-empty-block p, .source-card p, .project-row small, .project-metrics, .empty-state, .disabled-message { color: #ddd5c8 !important; }
-.site-nav-links > a, .nav-dropdown > button, .nav-sign-in, .footer-brand-block > p, .footer-columns a { color: #eee7de; }
-.command-palette > div p, .command-palette footer, .settings-data-row > span, .security-setting-row > span { color: #d6cec3; }
-
-/* One consistent type family with an intentional reading hierarchy. */
-:root { --font-code: var(--font-body); }
-body, body * { font-family: var(--font-body) !important; }
-body { color: #f8f2e9; }
-body p { color: #cfc4b5; }
-body small, body label, body [class*="meta"], body [class*="eyebrow"] { color: #a99b8d; }
-body h1, body h2, body h3, body h4, body strong { color: #fffaf2; }
-body input::placeholder, body textarea::placeholder { color: rgba(255, 250, 242, .55) !important; }
-
 @media (max-width: 900px) {
   .app-topbar { background: rgba(13, 10, 8, .96); }
   .app-sidebar { box-shadow: 24px 0 70px rgba(0,0,0,.35); }
@@ -446,21 +430,3 @@ body input::placeholder, body textarea::placeholder { color: rgba(255, 250, 242,
   .pricing-preview-grid { border-bottom: 0; }
   .pricing-preview-grid article { border-bottom: 1px solid rgba(255,238,211,.15); border-right: 0; min-height: 330px; }
 }
-
-
-/* Final typography contract: every rendered frontend character uses Roboto and white. */
-:root { --font-code: var(--font-body); --text-primary: #ffffff; --text-secondary: #ffffff; --muted: #ffffff; --muted-dark: #ffffff; }
-html body, html body * { color: #ffffff !important; font-family: var(--font-body) !important; }
-html body h1, html body h2, html body h3, html body h4, html body h5, html body h6, html body p, html body span, html body small, html body label, html body a, html body button, html body input, html body textarea, html body select, html body option, html body code, html body pre, html body kbd, html body samp, html body strong, html body b, html body i, html body em, html body time { color: #ffffff !important; font-family: var(--font-body) !important; }
-html body ::placeholder { color: #ffffff !important; opacity: 1; }
-html body *::before, html body *::after { color: #ffffff !important; }
-html body .button-primary, html body .button-dark, html body .button-secondary, html body .button-ghost, html body .button-danger, html body .filter-bar .selected-filter, html body .mode-switch button.active, html body .settings-nav a.active { color: #ffffff !important; }
-html body .hero-copy h1 span, html body .final-cta-section h2 span { -webkit-text-stroke-color: #ffffff !important; color: #ffffff !important; }
-html body .status-badge::before, html body .eyebrow > i, html body .dashboard-command-kicker i { background: #ffffff !important; box-shadow: none !important; }
-html body ::selection { background: #ffffff !important; color: #000000 !important; }
-
-/* Highest-priority foreground rule: no component-specific text color may override white. */
-html body.font-sans * { color: #ffffff !important; font-family: var(--font-body) !important; }
-html body.font-sans *::before, html body.font-sans *::after { color: #ffffff !important; }
-html body.font-sans .hero-copy h1 span, html body.font-sans .final-cta-section h2 span { color: #ffffff !important; -webkit-text-stroke-color: #ffffff !important; }
-html body.font-sans ::placeholder { color: #ffffff !important; opacity: 1; }

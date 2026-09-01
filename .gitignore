@@ -1,34 +1,31 @@
-<<<<<<< HEAD
-node_modules/
-dist/
-.next/
-coverage/
-test-results/
-playwright-report/
-.tmp/
-.harikos/
-*.tsbuildinfo
-*.log
-.env
-.env.*
-!.env.example
-
-.vercel
-supabase/.temp/
-=======
 # v0 sandbox internal files
 __v0_runtime_loader.js
 __v0_devtools.tsx
 __v0_jsx-dev-runtime.ts
 .snowflake/
 .v0-trash/
+
+# Local tooling
+.codex/
+.harikos/
+.tmp/
 .vercel/
+supabase/.temp/
 
-# Environment variables
-.env*.local
-
-# Common ignores
-node_modules
+# Dependencies and generated output
+node_modules/
 .next/
+dist/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+*.log
+
+# Environment variables (keep the documented template)
+.env
+.env.*
+!.env.example
+
+# Operating system files
 .DS_Store
->>>>>>> 79c16f5 (Initial commit from v0)

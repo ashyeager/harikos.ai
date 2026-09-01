@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title description">
+  <title id="title">HARIKOS project brain walkthrough</title>
+  <desc id="description">An illustrative flow from repository evidence to truth, memory, context, and an aligned coding agent.</desc>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="48%" r="58%">
+      <stop offset="0" stop-color="#ff6b35" stop-opacity=".24"/>
+      <stop offset=".48" stop-color="#ff6b35" stop-opacity=".06"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0V64" fill="none" stroke="#fff" stroke-opacity=".055"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="720" fill="#000"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <text x="64" y="72" fill="#ff6b35" font-family="monospace" font-size="16" letter-spacing="3">ILLUSTRATIVE PRODUCT LOOP / 00:30</text>
+  <text x="64" y="144" fill="#fff" font-family="Arial, sans-serif" font-size="56" font-weight="700" letter-spacing="-2">FROM REPOSITORY SIGNAL</text>
+  <text x="64" y="202" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="56" font-weight="700" letter-spacing="-2">TO AN ALIGNED NEXT AGENT.</text>
+  <g transform="translate(92 312)">
+    <rect width="220" height="132" rx="10" fill="#0a0a0a" stroke="#333"/>
+    <text x="20" y="32" fill="#a0a0a0" font-family="monospace" font-size="12">01 / EVIDENCE</text>
+    <text x="20" y="75" fill="#fff" font-family="Arial, sans-serif" font-size="22" font-weight="700">middleware.ts</text>
+    <text x="20" y="104" fill="#ff6b35" font-family="monospace" font-size="12">COMMIT C2137FB</text>
+  </g>
+  <path d="M312 378H402" stroke="#ff6b35" stroke-width="2"/>
+  <g transform="translate(402 312)">
+    <rect width="220" height="132" rx="10" fill="#0a0a0a" stroke="#333"/>
+    <text x="20" y="32" fill="#a0a0a0" font-family="monospace" font-size="12">02 / TRUTH</text>
+    <text x="20" y="75" fill="#fff" font-family="Arial, sans-serif" font-size="22" font-weight="700">Supabase Auth</text>
+    <text x="20" y="104" fill="#ff6b35" font-family="monospace" font-size="12">VERIFIED / 99%</text>
+  </g>
+  <path d="M622 378H712" stroke="#ff6b35" stroke-width="2"/>
+  <g transform="translate(712 312)">
+    <rect width="220" height="132" rx="10" fill="#0a0a0a" stroke="#333"/>
+    <text x="20" y="32" fill="#a0a0a0" font-family="monospace" font-size="12">03 / MEMORY</text>
+    <text x="20" y="75" fill="#fff" font-family="Arial, sans-serif" font-size="19" font-weight="700">Server-side billing</text>
+    <text x="20" y="104" fill="#ff6b35" font-family="monospace" font-size="12">DECISION PERSISTED</text>
+  </g>
+  <path d="M932 378H1022" stroke="#ff6b35" stroke-width="2"/>
+  <g transform="translate(1022 312)">
+    <path d="M76 0h76l38 66-38 66H76L38 66z" fill="#f4f4f2" stroke="#ff6b35" stroke-width="2"/>
+    <path d="M96 35h36l18 31-18 31H96L78 66z" fill="#111"/>
+    <text x="114" y="72" text-anchor="middle" fill="#ff6b35" font-family="Arial, sans-serif" font-size="24" font-weight="700">H</text>
+  </g>
+  <text x="64" y="580" fill="#fff" font-family="Arial, sans-serif" font-size="28" font-weight="700">CURRENT TRUTH + USEFUL MEMORY + RELEVANT FILES</text>
+  <text x="64" y="622" fill="#a0a0a0" font-family="monospace" font-size="14" letter-spacing="2">CONTEXT PACK READY / AGENT HANDOFF</text>
+  <rect x="64" y="662" width="1152" height="2" fill="#242424"/>
+  <rect x="64" y="662" width="864" height="2" fill="#ff6b35"/>
+</svg>

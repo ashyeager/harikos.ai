@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
-const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
+
 import "./globals.css";
-import "../styles/app.css";
-import "../styles/radical-redesign.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
+const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-code", display: "swap" });
 
 export const viewport: Viewport = {
   themeColor: "#050505",
@@ -34,18 +36,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className={inter.variable} data-scroll-behavior="smooth" lang="en">
-      <body className="bg-ink text-white font-sans antialiased min-h-screen selection:bg-orange/30 selection:text-white">
-        {children}
-        <style dangerouslySetInnerHTML={{ __html: `
-          html body.bg-ink *, html body [class], html body [class] *, html body .public-page *,
-          html body .legal-page *, html body .site-nav *, html body .app-frame *,
-          html body .app-sidebar *, html body .app-content *, html body .app-topbar * {
-            color: #fff !important;
-          }
-          html body input::placeholder, html body textarea::placeholder { color: rgba(255,255,255,.62) !important; }
-        ` }} />
-      </body>
+    <html className={`${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable}`} data-scroll-behavior="smooth" lang="en">
+      <body>{children}</body>
     </html>
   );
 }

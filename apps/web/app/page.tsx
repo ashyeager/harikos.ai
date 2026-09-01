@@ -87,6 +87,18 @@ export default function LandingPage() {
           <div data-reveal><CinematicLoop /></div>
         </section>
 
+        <section className="demo-video-section section-shell">
+          <SectionHeading eyebrow="PRODUCT DEMO / 30 SECONDS" title={<>See the handoff.<br /><span>Keep the context.</span></>} copy="A short, illustrative walkthrough of repository evidence becoming current Truth, durable Memory, and a focused handoff for the next coding agent." />
+          <div className="demo-video-frame" data-reveal>
+            <div className="demo-video-chrome"><span><i /><i /><i /></span><strong>HARIKOS / PROJECT LOOP</strong><small>ILLUSTRATIVE</small></div>
+            <video aria-label="Illustrative HARIKOS project brain product walkthrough" autoPlay controls loop muted playsInline poster="/harikos-demo-poster.svg" preload="metadata">
+              <source src="/harikos-product-demo.mp4" type="video/mp4" />
+            </video>
+            <div className="demo-video-meta"><span>01 / EVIDENCE</span><span>02 / TRUTH</span><span>03 / MEMORY</span><span>04 / CONTEXT</span></div>
+          </div>
+          <p className="demo-disclaimer">Illustrative product flow. No live repository or customer data is shown.</p>
+        </section>
+
         <section className="truth-story section-shell">
           <div className="story-copy" data-reveal><span className="eyebrow"><i /> TRUTH / CURRENT STATE</span><h2>Truth moves with the repository.</h2><p>Every important claim carries status, confidence, scope, evidence, and a validity window. When implementation changes, HARIKOS preserves what was true without presenting it as current.</p><Link href="/truth">Explore Project Truth <span>↗</span></Link></div>
           <div data-reveal><TemporalTruth /></div>

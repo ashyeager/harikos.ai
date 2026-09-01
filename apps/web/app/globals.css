@@ -5,11 +5,12 @@
 @import "../styles/marketing-final.css";
 @import "../styles/public-pages.css";
 @import "../styles/frontend-polish.css";
+@import "../styles/app.css";
 @import "../styles/radical-redesign.css";
 
 @theme inline {
   --font-sans: var(--font-body);
-  --font-mono: var(--font-body);
+  --font-mono: var(--font-code);
   --color-ink: var(--ink-850);
   --color-ink-soft: var(--ink-800);
   --color-ink-elevated: var(--ink-750);
