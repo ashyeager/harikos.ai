@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { applicationOrigin } from "../../../lib/config";
+import { safeAuthNext } from "../../../lib/auth-redirect";
 import { createSupabaseServerClient } from "../../../lib/supabase/server";
 
 export const runtime = "nodejs";
-
-function safeNext(value: string | null): string {
-  return value?.startsWith("/") && !value.startsWith("//")
-    ? value
-    : "/app/projects";
-}
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -23,7 +18,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=oauth", applicationOrigin(request.url)));
   }
   const response = NextResponse.redirect(
-    new URL(safeNext(url.searchParams.get("next")), applicationOrigin(request.url)),
+    new URL(safeAuthNext(url.searchParams.get("next")), applicationOrigin(request.url)),
   );
   response.headers.set("Cache-Control", "private, no-store");
   return response;

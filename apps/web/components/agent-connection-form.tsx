@@ -13,7 +13,7 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
   const [pending, setPending] = useState<PendingAction>();
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string>();
-  const endpoint = `/api/mcp/${projectId}`;
+  const [endpoint, setEndpoint] = useState("");
   const config = token ? `Endpoint: ${endpoint}\nAuthorization: Bearer ${token}` : "";
 
   async function create() {
@@ -28,6 +28,7 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
       const body = await response.json() as { connection?: AgentConnection; token?: string; error?: string };
       if (!response.ok || !body.connection || !body.token) throw new Error(body.error ?? "Connection could not be created.");
       setConnections((current) => [...current, body.connection!]);
+      setEndpoint(new URL(`/api/mcp/${encodeURIComponent(projectId)}`, window.location.origin).toString());
       setToken(body.token);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Connection could not be created.");
@@ -52,8 +53,7 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
 
   async function copyConfig() {
     if (!config) return;
-    const absoluteConfig = config.replace(endpoint, new URL(endpoint, window.location.origin).toString());
-    try { await navigator.clipboard.writeText(absoluteConfig); setCopied(true); }
+    try { await navigator.clipboard.writeText(config); setCopied(true); }
     catch { setError("Copy was blocked by the browser. Select the configuration manually."); }
   }
 

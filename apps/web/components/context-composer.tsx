@@ -21,6 +21,8 @@ export function ContextComposer({ projectId }: { projectId: string }) {
   async function prepare() {
     if (!task.trim()) return;
     setLoading(true);
+    setResult(undefined);
+    setCopied(undefined);
     setError(undefined);
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}/context`, {
@@ -70,7 +72,8 @@ export function ContextComposer({ projectId }: { projectId: string }) {
         <div className="px-8 pb-8 flex flex-col gap-4">
           <textarea 
             aria-label="Development task" 
-            onChange={(event) => setTask(event.target.value)} 
+            onChange={(event) => { setTask(event.target.value); setResult(undefined); setCopied(undefined); }}
+            disabled={loading}
             value={task}
             placeholder="Describe the feature, bug fix, or architecture change..."
             className="min-h-[180px] p-4 bg-ink-soft border border-line text-white font-mono text-sm leading-relaxed outline-none focus:border-orange/50 focus:shadow-[0_0_15px_rgba(255,104,24,0.14)] transition-all resize-y rounded-sm placeholder:text-muted/50"

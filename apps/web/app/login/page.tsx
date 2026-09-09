@@ -9,8 +9,9 @@ import { readSupabaseProviderStatus } from "../../lib/supabase/config";
 
 export const metadata: Metadata = { title: "Sign in", description: "Sign in to connect a repository and build a shared HARIKOS Project Brain." };
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string | string[] }> }) {
   if (await getAuthIdentity()) redirect("/app/dashboard");
+  const { error } = await searchParams;
   const status = integrationStatus();
   const providers = await readSupabaseProviderStatus();
   const hasProvider = providers.github || providers.google;
@@ -26,6 +27,7 @@ export default async function LoginPage() {
         <span className="eyebrow"><i />ACCOUNT / AUTHENTICATION</span>
         <h2>Connect your project brain.</h2>
         <p>Sign in first. GitHub repository authorization is a separate read-only App connection that you choose afterward.</p>
+        {error === "oauth" ? <p className="inline-error" role="alert">Sign-in could not be completed. Please try again.</p> : null}
         {status.supabaseAuth && hasProvider ? <div className="auth-provider-buttons">
           {providers.github ? <a className="auth-provider auth-github" href="/api/auth/github/start"><span>GH</span><strong>Continue with GitHub</strong><b>&rarr;</b></a> : null}
           {providers.google ? <a className="auth-provider auth-google" href="/api/auth/google/start"><span>G</span><strong>Continue with Google</strong><b>&rarr;</b></a> : null}

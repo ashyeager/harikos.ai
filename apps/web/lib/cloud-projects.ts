@@ -350,7 +350,7 @@ export async function getDashboardSummary(identity: AuthIdentity) {
         return 0;
       }
     };
-    const ownedProjects = (table: typeof cloudProjects) =>
+    const ownedProjects = (table: typeof cloudClaims | typeof cloudMemories | typeof cloudScans | typeof cloudProjectChanges) =>
       connection.db
         .select({ count: count() })
         .from(table)
