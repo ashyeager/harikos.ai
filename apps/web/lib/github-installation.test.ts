@@ -111,4 +111,121 @@ describe("GitHub installation state", () => {
     );
     expect(installation.id).toBe(123);
   });
+
+  it("confirms a setup-callback installation through GitHub user authorization", async () => {
+    const testEnvironment = {
+      ...environment,
+      GITHUB_CLIENT_ID: "Iv1.github-app-client",
+      GITHUB_CLIENT_SECRET: "github-app-secret",
+      GITHUB_APP_ID: "4693646",
+      GITHUB_APP_PRIVATE_KEY: testPrivateKey,
+      GITHUB_APP_SLUG: "harikos-ai-project-truth",
+    };
+    const identity = {
+      id: "github-user",
+      githubUserId: "42",
+      login: "github-builder",
+      email: "builder@example.com",
+      displayName: "GitHub Builder",
+      avatarUrl: null,
+      provider: "github" as const,
+    };
+    const fetcher = vi.fn(async (input: string | URL | Request) => {
+      const url = input.toString();
+      if (url === "https://github.com/login/oauth/access_token") {
+        return Response.json({ access_token: "user-token" });
+      }
+      if (url.endsWith("/user")) {
+        return Response.json({ id: 42, login: "github-builder" });
+      }
+      if (url.includes("/user/installations")) {
+        return Response.json({ installations: [{ id: 123 }] });
+      }
+      return new Response(null, { status: 404 });
+    }) as typeof fetch;
+    const installationLookup = vi.fn(async () => ({
+      id: 123,
+      account: { id: 42, login: "github-builder", type: "User" as const },
+      repository_selection: "all" as const,
+      suspended_at: null,
+    }));
+
+    const installation = await completeGitHubInstallation(
+      identity,
+      {
+        code: "oauth-code",
+        state: createInstallationState(
+          identity.id,
+          testEnvironment,
+          Date.now(),
+          "123",
+        ),
+      },
+      fetcher,
+      installationLookup,
+      testEnvironment,
+    );
+
+    expect(installation.id).toBe(123);
+    expect(installationLookup).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: "harikos-ai-project-truth" }),
+      "123",
+      fetcher,
+    );
+    expect(fetcher).toHaveBeenCalledWith(
+      "https://github.com/login/oauth/access_token",
+      expect.any(Object),
+    );
+  });
+
+  it("rejects a setup-callback installation absent from the user's installations", async () => {
+    const testEnvironment = {
+      ...environment,
+      GITHUB_CLIENT_ID: "Iv1.github-app-client",
+      GITHUB_CLIENT_SECRET: "github-app-secret",
+      GITHUB_APP_ID: "4693646",
+      GITHUB_APP_PRIVATE_KEY: testPrivateKey,
+      GITHUB_APP_SLUG: "harikos-ai-project-truth",
+    };
+    const identity = {
+      id: "google-user",
+      githubUserId: null,
+      login: "google-builder",
+      email: "builder@example.com",
+      displayName: "Google Builder",
+      avatarUrl: null,
+      provider: "google" as const,
+    };
+    const fetcher = vi.fn(async (input: string | URL | Request) => {
+      const url = input.toString();
+      if (url === "https://github.com/login/oauth/access_token") {
+        return Response.json({ access_token: "user-token" });
+      }
+      if (url.endsWith("/user")) {
+        return Response.json({ id: 42, login: "github-builder" });
+      }
+      if (url.includes("/user/installations")) {
+        return Response.json({ installations: [{ id: 999 }] });
+      }
+      return new Response(null, { status: 404 });
+    }) as typeof fetch;
+
+    await expect(
+      completeGitHubInstallation(
+        identity,
+        {
+          code: "oauth-code",
+          state: createInstallationState(
+            identity.id,
+            testEnvironment,
+            Date.now(),
+            "123",
+          ),
+        },
+        fetcher,
+        vi.fn(),
+        testEnvironment,
+      ),
+    ).rejects.toThrow("does not belong");
+  });
 });

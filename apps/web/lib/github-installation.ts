@@ -18,6 +18,7 @@ const installationStateSchema = z.object({
   userId: z.string().min(1),
   nonce: z.string().min(16),
   expiresAt: z.number().int().positive(),
+  installationId: z.string().regex(/^\d+$/u).optional(),
 });
 
 const userTokenSchema = z.object({ access_token: z.string().min(1) });
@@ -52,6 +53,7 @@ export function createInstallationState(
   userId: string,
   environment: NodeJS.ProcessEnv = process.env,
   now = Date.now(),
+  installationId?: string,
 ): string {
   const payload = Buffer.from(
     JSON.stringify(
@@ -59,6 +61,7 @@ export function createInstallationState(
         userId,
         nonce: randomBytes(18).toString("base64url"),
         expiresAt: now + 10 * 60 * 1000,
+        ...(installationId ? { installationId } : {}),
       }),
     ),
   ).toString("base64url");
@@ -70,7 +73,7 @@ export function verifyInstallationState(
   expectedUserId: string,
   environment: NodeJS.ProcessEnv = process.env,
   now = Date.now(),
-): void {
+): z.infer<typeof installationStateSchema> {
   const [payload, receivedSignature, extra] = state.split(".");
   if (!payload || !receivedSignature || extra) {
     throw new Error("GitHub installation state is invalid.");
@@ -90,6 +93,7 @@ export function verifyInstallationState(
   if (parsed.userId !== expectedUserId || parsed.expiresAt <= now) {
     throw new Error("GitHub installation state is invalid or expired.");
   }
+  return parsed;
 }
 
 async function githubUserRequest(
@@ -113,18 +117,16 @@ async function githubUserRequest(
 
 export async function completeGitHubInstallation(
   identity: AuthIdentity,
-  input: { code: string; installationId?: string; state: string },
+  input: { code: string; state: string },
   fetcher: typeof fetch = fetch,
   installationLookup: typeof getGitHubInstallation = getGitHubInstallation,
   environment: NodeJS.ProcessEnv = process.env,
 ): Promise<GitHubInstallation> {
-  verifyInstallationState(input.state, identity.id, environment);
-  if (input.installationId && !/^\d+$/u.test(input.installationId)) {
-    throw new Error("GitHub returned an invalid installation ID.");
-  }
+  const state = verifyInstallationState(input.state, identity.id, environment);
   const oauth = readGitHubAppOAuthConfig(environment);
   const app = readGitHubAppConfig(environment);
-  if (!oauth || !app) throw new Error("GitHub App credentials are not configured.");
+  if (!app) throw new Error("GitHub App credentials are not configured.");
+  if (!oauth) throw new Error("GitHub App OAuth credentials are not configured.");
 
   const tokenResponse = await fetcher("https://github.com/login/oauth/access_token", {
     method: "POST",
@@ -153,7 +155,7 @@ export async function completeGitHubInstallation(
   if (identity.provider === "github" && String(githubUser.id) !== identity.githubUserId) {
     throw new Error("The GitHub installation does not belong to this signed-in user.");
   }
-  const installationId = input.installationId ??
+  const installationId = state.installationId ??
     installations.installations[0]?.id.toString();
   if (!installationId) throw new GitHubInstallationRequiredError();
   if (!installations.installations.some(
