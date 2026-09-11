@@ -1,46 +1,91 @@
-# DAILY STANDUP — September 9, 2026
+# HARIKOS stabilization report — September 11, 2026
 
-## ORCHESTRATOR STATUS
+## BASELINE
 
-- Priority: restore GitHub App readiness, then verify login → repository scan → Truth → Memory/Context → MCP with a real account.
-- Not release-accepted. Ash authorized pushing the fixes below to main after this audit; production acceptance remains outstanding.
-- Local HEAD and remote main: `c51b4049925f3fbf0a571069747cf4a4ff4b2d57` (detached worktree, initially clean).
-- Vercel production deployment `dpl_4WjcZEjCckFAAmv8bciPXbcnX5yU` is READY at the same commit. Canonical domain: `https://harikos-ai.vercel.app`.
-- Live `/`, `/login` return 200; `/app/dashboard` redirects unauthenticated visitors to login. No runtime errors returned by the Vercel query in its selected time range; this is not full browser coverage.
-- Live `/api/status`: Supabase configuration true, PostgreSQL configuration true, GitHub App false, local demo false, Stripe false. Configuration flags do not prove connectivity.
+- Starting `origin/main`: `427a8fb98bd6bb1436cddaecaccb24f98260e83f`; the stabilization worktree was clean.
+- Starting production: Vercel deployment `dpl_FMKBvzc1bKhLepwbAGRgbu2EhqHT`, READY on the same commit.
+- Starting live `/api/status`: Supabase Auth, GitHub App, and PostgreSQL configured; local demo and Stripe disabled.
+- Supabase project: `nfhxdvfpctwwijhnrdkv`. The checked-in migration history was reconciled with the remote database before DDL.
 
-## FRONTEND AGENT
+## STRUCTURAL CLEANUP
 
-- Fixed missing OAuth failure feedback, stale Context output after task edits/retries, and relative MCP URL in the manually copied configuration.
-- Scoped lint passed.
-- Initial Playwright dev-server startup timed out. Retried against the built app: all 6 desktop/mobile public-route, overflow, sign-in boundary and 404 tests passed. Authenticated browser acceptance remains unverified.
-- Later: make dashboard configuration wording distinguish configured from verified operational state.
+- `apps/web` remains the canonical production application.
+- Removed the unreferenced root Next.js application, root UI/assets/config, empty `packages/mcp` placeholder, and their root-only dependencies after tracing imports, scripts, workspace references, and Vercel behavior.
+- Retained the root Vercel build adapter because the linked Vercel project still uses it to build `apps/web`.
+- Retained `packages/cli`, deterministic scanner/database adapters, fixtures, and verification scripts as engineering infrastructure.
+- Replaced unsupported OSS-integration claims with a bounded provenance audit. No vendored third-party source tree was found; normal package dependencies and license duties remain.
 
-## BACKEND / DATABASE / AUTH AGENT
+## AUTH
 
-- Both OAuth providers are enabled, contrary to the attached September 8 assumptions. Production GitHub start redirects to `nfhxdvfpctwwijhnrdkv.supabase.co/auth/v1/authorize`.
-- Current Supabase project is `nfhxdvfpctwwijhnrdkv`; August BUILD_STATE references a different historical project.
-- Read-only audit: 15 harikos tables, all RLS enabled, no anon/authenticated table grants; 3 users, 0 projects, 0 scans, 0 agent connections.
-- Migration history reports `20260903052622 phase0_production_foundation`; reconcile this with checked-in migrations before any DDL.
-- Fixed dashboard count-helper TypeScript annotation and callback redirect accepting backslashes/control characters. Six redirect tests pass; typecheck passes.
-- Advisor reported leaked-password protection disabled. No remote configuration or database writes performed.
+- Supabase remains the single authentication authority; server components and APIs resolve identity from the cookie-backed session.
+- Redirect safety, callback behavior, logout route behavior, protected route handling, and ownership checks are covered by the passing suite.
+- Production acceptance used an existing authenticated Chrome session: `/app/projects` loaded two real authorized projects, and a fresh tab after deployment retained the session.
+- Unauthenticated `/app/dashboard` redirected to `/login`; unauthenticated `/api/projects` returned 401.
+- A destructive live logout/login cycle was not run against Ash's active browser session.
 
-## LOGIC SYSTEM AGENT
+## GITHUB
 
-- GitHub private-key normalization already supports escaped newlines. No duplicate patch needed; usable live App credentials remain unverified.
-- MCP already exists at `/api/mcp/[projectId]` with nine tools. Do not add a competing `/api/mcp/endpoint`.
-- Fixed tool input schemas, initialized-notification response (202), unsupported SSE GET response (405), unknown methods, and cross-origin request rejection.
-- Focused MCP/GitHub/Truth/Context checks: 13 tests pass. Full suite: 33 pass, 4 fail because the SQLite native binding is unavailable under local Node 26.3.0.
+- Production reports the GitHub App configured and the authenticated repository list showed `ashyeager/harikos.ai` and `ashyeager/virally`.
+- Installation and repository ownership validation remain server-side with least-privilege Contents: Read and Metadata: Read access.
+- The push webhook requires a valid HMAC signature and now matches repository ID, installation ID, and the tracked default branch before reverification.
+- A real production rescan of `ashyeager/harikos.ai` completed and advanced the project snapshot from `427a8fb9` to `06571b43` with 61 files analyzed.
 
-## NEXT ESCALATIONS
+## TRUTH / MEMORY / CONTEXT
 
-1. Inspect production GitHub App environment configuration: App ID/private key, OAuth client ID/secret, and session secret. Status false does not identify which value is absent/invalid. Local environment has no usable credentials; Vercel CLI inspection timed out.
-2. Verify a real user login/logout and App installation/repository scan; current empty project tables cannot prove the ship flow or five-user acceptance.
-3. Verify real MCP token creation, client connection, write-back and revocation. Review session ownership on agent memory writes and Context persistence/entitlement enforcement before acceptance.
-4. Repair local native test runtime and complete authenticated acceptance before proposing shipment. `pnpm.cmd build` passed; separate typecheck passed (Next build skips type validation). All 6 public browser checks passed. Parent reran both new regression files: 12/12 passed.
-5. Billing remains deferred under the current user-specified ship criteria. Keep older full-MVP requirements distinct from this initial release target.
+- Truth resolution preserves A → B → A history, exposes competing evidence, and does not raise confidence when replacement evidence is weaker.
+- Assumption checks use current supported Truth rather than superseded or stale claims.
+- Context Packs rank task-relevant persistent Memory before applying limits and include Memory in token estimates.
+- The production Truth view rendered 7 current claims with inspectable evidence after the real rescan and no browser console errors.
+- A factual stabilization memory and production outcome were written through MCP and persisted.
 
-## DOCUMENTATION
+## MCP
 
-- Restored required `docs/harikos_ai_prd.md` as a pointer to existing V3 content in `docs/HARIKOS_PRD_V3_FULL_MVP.md`, with the current initial-release scope distinguished from the full paid MVP.
-- `docs/BUILD_STATE.md` is historical August 24 evidence, not current release proof. This dated audit supersedes its current-state claims only where fresh evidence is listed above.
+- Canonical endpoint remains `/api/mcp/[projectId]`; no competing endpoint was added.
+- Production round trip verified protocol `2025-06-18` and all 9 tools: `get_project_truth`, `search_project_memory`, `get_recent_changes`, `get_context_pack`, `check_assumption`, `record_memory`, `record_outcome`, `begin_agent_session`, and `end_agent_session`.
+- The round trip initialized, listed tools, began sessions, retrieved Truth/Memory/Changes/Context, checked an assumption, recorded a factual Memory and outcome, and ended sessions.
+- Token authentication enforces project scope, revocation state, connection-bound sessions, owner entitlement, and no-active-entitlement denial. Revocation and expired-entitlement behavior passed focused automated tests; the existing live token was not revoked.
+
+## BILLING / ENTITLEMENT
+
+- Paddle is the sole launch billing authority in code. Stripe runtime code, dependencies, copy, and Vercel environment entries were removed.
+- Canonical plans are Core `$9/month` (1 project, 1 agent), Pro `$29/month` (5/5), Scale `$79/month` (20/20), and Enterprise custom. There is no permanent Free plan.
+- New eligible users use a 7-day Pro trial configured on the Paddle Pro price. Hosted Paddle Checkout handles payment details.
+- Signed raw-body webhook events are idempotent and ordered by provider occurrence time; trialing and active grant access only through authoritative persisted lifecycle state.
+- `resolveEntitlement` is the single server-side resolver for project creation, scans, project data, Memory, Context, agent creation, and MCP.
+- Ash's internal access is a persisted server-side `developer` role assigned to the immutable existing Supabase user; it bypasses payment only and preserves authentication, GitHub authorization, ownership, and project isolation.
+- Applied remote migrations `paddle_billing` and `internal_developer_role`. Verified one developer role, two customer roles, no subscription rows, and protected webhook-event storage.
+- Production `/api/status` reports `paddle:false`. Live checkout, trial conversion, cancellation, past-due, and webhook acceptance remain blocked until a real Paddle merchant catalog and credentials are configured.
+
+## TESTS
+
+- `pnpm.cmd lint`: passed with zero warnings.
+- `pnpm.cmd typecheck`: passed separately from the Next.js build.
+- `pnpm.cmd test`: 24 files, 67 tests passed.
+- `pnpm.cmd build`: passed, including strict Next.js TypeScript validation and 39 generated routes.
+- `pnpm.cmd test:e2e`: 6 Playwright checks passed across desktop and mobile.
+- `git diff --check` and the secret-pattern scan passed; no environment file or credential was committed.
+- A production-only hydration mismatch found during authenticated acceptance was traced to timezone-dependent client rendering, fixed with deterministic UTC formatting, and covered by a regression test.
+- The requested fresh Sol security-review agent could not start because the account reached its agent usage limit. The Orchestrator completed the final-diff auth, entitlement, ownership, MCP scope, webhook, secret, migration, cleanup, and dependency checklist directly.
+
+## PREVIEW
+
+- Primary stabilization Preview: `dpl_88BHhJsHtUP318TF29d6pPeq3m5t`, READY on `6152635`.
+- Final corrective Preview: `dpl_CM6idZKMVbU9QXCgJdwJw6pmRMt6`, READY on `06571b4`.
+- Both Vercel builds compiled and ran TypeScript successfully. Public routes returned 200, unauthenticated protected UI redirected to login, protected API returned 401, and no Preview runtime errors were found.
+- Preview intentionally reported GitHub App and Paddle unavailable because GitHub credentials are Production-only and Paddle is not configured.
+
+## PRODUCTION
+
+- Application release SHA: `06571b43de610f68d872de1154810ed199de5a30`.
+- Production deployment: `dpl_f13EhEdp4eS8ggCwy1DhvPHrSiSZ`, READY and aliased to `https://harikos-ai.vercel.app`.
+- Vercel build logs identify branch `main` and commit `06571b4`; compilation, strict TypeScript, and deployment completed.
+- `/`, `/login`, `/pricing`, and `/api/status` returned 200. Pricing showed `$9`, `$29`, `$79`, and the 7-day trial with no Free, Stripe, or local-scan copy.
+- Live status: Supabase Auth true, GitHub App true, PostgreSQL true, Paddle false.
+- Authenticated projects, real rescan, Truth/Evidence rendering, persistent Memory/Context, MCP read/write round trip, and post-fix clean browser console were verified. Vercel reported no new error-level runtime logs in the checked interval.
+
+## REMAINING NON-BLOCKERS / ACTION REQUIRED
+
+- **ACTION REQUIRED:** configure the Paddle merchant account, approved checkout domain, Core/Pro/Scale price IDs, 7-day Pro trial, API key, webhook secret, and webhook destination before accepting real customers.
+- **ACTION REQUIRED:** make `ashyeager/harikos.ai` private before treating source confidentiality as complete.
+- Run Paddle sandbox lifecycle acceptance once those credentials exist, including trialing → active, cancellation/expiration, past due, reactivation, and denied MCP access after entitlement loss.
+- Run a dedicated UI/UX revamp only after this stabilized backend/product base; the current mission intentionally preserved the existing visual system.
