@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { CloudMemory } from "../lib/cloud-projects";
 import { History, Cpu, FileWarning, Lightbulb, AlertCircle, Save, CheckCircle2, Bot, Plus } from "lucide-react";
 import { cn } from "../lib/utils";
+import { formatUtcDateTime } from "../lib/date-format";
 
 const memoryTypes = [
   { id: "decision", label: "Decision", icon: CheckCircle2, color: "text-green" },
@@ -192,9 +193,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
                         <strong className="font-mono text-[10px] tracking-widest text-white uppercase">{memType.label}</strong>
                       </div>
                       <small className="font-mono text-[9px] text-muted tracking-wide">
-                        {new Date(memory.createdAt).toLocaleString(undefined, {
-                          month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
-                        })}
+                        {formatUtcDateTime(memory.createdAt)}
                       </small>
                     </div>
                     

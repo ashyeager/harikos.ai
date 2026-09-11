@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { AgentConnection } from "../lib/cloud-projects";
+import { formatUtcDate, formatUtcDateTime } from "../lib/date-format";
 
 type PendingAction = "create" | string;
 
@@ -80,8 +81,8 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
         {connections.length === 0 ? <div className="agent-list-empty"><span>NO CONNECTIONS</span><p>Create the first project-scoped connection above. No agent is shown as online until it makes an authenticated request.</p></div> : connections.map((connection) => (
           <div className="agent-connection-row" key={connection.id}>
             <span className="agent-mark">{connection.name.slice(0, 2).toUpperCase()}</span>
-            <div><strong>{connection.name}</strong><small>{connection.tokenPrefix}… · created {new Date(connection.createdAt).toLocaleDateString()}</small></div>
-            <div className="agent-use-state"><span className={connection.revokedAt ? "revoked" : connection.lastUsedAt ? "used" : "unused"}>{connection.revokedAt ? "REVOKED" : connection.lastUsedAt ? "USED" : "AWAITING FIRST REQUEST"}</span>{connection.lastUsedAt ? <small>{new Date(connection.lastUsedAt).toLocaleString()}</small> : null}</div>
+            <div><strong>{connection.name}</strong><small>{connection.tokenPrefix}… · created {formatUtcDate(connection.createdAt)}</small></div>
+            <div className="agent-use-state"><span className={connection.revokedAt ? "revoked" : connection.lastUsedAt ? "used" : "unused"}>{connection.revokedAt ? "REVOKED" : connection.lastUsedAt ? "USED" : "AWAITING FIRST REQUEST"}</span>{connection.lastUsedAt ? <small>{formatUtcDateTime(connection.lastUsedAt)}</small> : null}</div>
             {!connection.revokedAt ? <button disabled={pending !== undefined} onClick={() => revoke(connection.id)} type="button">{pending === connection.id ? "Revoking..." : "Revoke"}</button> : null}
           </div>
         ))}
