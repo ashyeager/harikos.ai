@@ -2,6 +2,11 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  // Provider webhooks carry their own signatures and cannot have browser sessions.
+  if (pathname === "/api/github/webhook" || pathname === "/api/billing/webhook") {
+    return NextResponse.next({ request });
+  }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !publishableKey) return NextResponse.next({ request });
@@ -28,8 +33,8 @@ export async function proxy(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const protectedApi =
-    request.nextUrl.pathname.startsWith("/api/projects") ||
-    request.nextUrl.pathname.startsWith("/api/github");
+    pathname.startsWith("/api/projects") ||
+    pathname.startsWith("/api/github");
   if (protectedApi && !data?.claims) {
     return NextResponse.json(
       { error: "Authentication required." },

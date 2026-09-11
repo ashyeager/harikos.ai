@@ -6,7 +6,7 @@ import { PrincipleStrip, ProductCTA, PublicHero, PublicSection } from "../../com
 export const metadata: Metadata = { title: "Security", description: "The real HARIKOS security model: minimum GitHub permissions, server-side authorization, bounded source analysis, signed webhooks, and revocable agent tokens." };
 
 function SecurityVisual() {
-  return <div className="security-boundary"><div className="boundary-label">PROJECT SECURITY BOUNDARY</div><div className="boundary-core"><span>HARIKOS</span><strong>SERVER</strong><small>AUTHORIZATION / OWNERSHIP</small></div>{[["GITHUB", "CONTENTS: READ"], ["SUPABASE", "PRIVATE DATA"], ["AGENT", "SCOPED TOKEN"], ["STRIPE", "SIGNED EVENTS"]].map(([label, access], index) => <article className={`boundary-node boundary-node-${index}`} key={label}><i /><strong>{label}</strong><small>{access}</small></article>)}<footer>NO ARBITRARY REPOSITORY CODE EXECUTION</footer></div>;
+  return <div className="security-boundary"><div className="boundary-label">PROJECT SECURITY BOUNDARY</div><div className="boundary-core"><span>HARIKOS</span><strong>SERVER</strong><small>AUTHORIZATION / OWNERSHIP</small></div>{[["GITHUB", "CONTENTS: READ"], ["SUPABASE", "PRIVATE DATA"], ["AGENT", "SCOPED TOKEN"], ["PADDLE", "SIGNED EVENTS"]].map(([label, access], index) => <article className={`boundary-node boundary-node-${index}`} key={label}><i /><strong>{label}</strong><small>{access}</small></article>)}<footer>NO ARBITRARY REPOSITORY CODE EXECUTION</footer></div>;
 }
 
 const controls = [
@@ -14,8 +14,8 @@ const controls = [
   ["SOURCE HANDLING", "Relevant files are fetched through an authorized boundary, secret paths are denied, and unnecessary raw source is not intended for permanent retention."],
   ["USER OWNERSHIP", "Sensitive server operations resolve the authenticated user and verify project ownership instead of trusting browser-supplied IDs."],
   ["AGENT TOKENS", "Connections use high-entropy project-scoped bearer tokens. Plaintext is shown once; active access can be revoked."],
-  ["WEBHOOKS", "GitHub and Stripe webhook handlers verify signatures before accepting repository or billing state changes."],
-  ["BILLING AUTHORITY", "Paid entitlement comes from trusted Stripe subscription state, never from a checkout success URL in the browser."],
+  ["WEBHOOKS", "GitHub and billing webhook handlers verify signatures before accepting repository or subscription state changes."],
+  ["BILLING AUTHORITY", "Entitlement comes from trusted provider lifecycle state, never from a checkout success URL in the browser."],
 ] as const;
 
 export default function SecurityPage() {

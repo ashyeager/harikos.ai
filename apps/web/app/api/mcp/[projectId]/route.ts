@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { checkProjectAssumption, composeContextPack } from "@harikos/core";
 
 import { authenticateAgentToken, beginAgentSession, createAgentMemory, createCloudMemorySchema, finishAgentSession, loadCloudSnapshotForAgent, listAgentMemories, recordAgentOutcome, outcomeSchema } from "../../../../lib/cloud-projects";
+import { ProductAccessError } from "../../../../lib/entitlements";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -64,20 +66,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
         return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(memories.filter((memory) => !query || memory.content.toLowerCase().includes(query) || memory.type.includes(query))) }] });
       }
       if (name === "record_memory") {
-        const memory = await createAgentMemory(projectId, createCloudMemorySchema.parse({ type: args.type, content: args.content, agent: "remote-agent", sessionId: args.sessionId }));
+        const memory = await createAgentMemory(projectId, auth.connectionId, createCloudMemorySchema.parse({ type: args.type, content: args.content, agent: "remote-agent", sessionId: args.sessionId }));
         return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(memory) }] });
       }
       if (name === "get_recent_changes") return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(snapshot.changes.slice(-10)) }] });
       if (name === "check_assumption") {
-        const statement = typeof args.statement === "string" ? args.statement.toLowerCase() : "";
-        const matches = snapshot.truths.filter((claim) => statement.includes(claim.subject.toLowerCase()) || statement.includes(claim.value.toLowerCase()));
-        const contradicted = matches.some((claim) => claim.status === "superseded" || !statement.includes(claim.value.toLowerCase()));
-        return rpc(body.id, { content: [{ type: "text", text: JSON.stringify({ status: matches.length === 0 ? "UNVERIFIED" : contradicted ? "CONTRADICTED" : "SUPPORTED", matches }) }] });
+        const statement = typeof args.statement === "string" ? args.statement : "";
+        return rpc(body.id, { content: [{ type: "text", text: JSON.stringify(checkProjectAssumption(snapshot.truths, statement)) }] });
       }
       if (name === "get_context_pack") {
         const task = typeof args.task === "string" ? args.task : undefined;
         if (!task) return rpc(body.id, { isError: true, content: [{ type: "text", text: "task is required" }] });
-        const { composeContextPack } = await import("@harikos/core");
         const memories = await listAgentMemories(projectId);
         return rpc(body.id, { content: [{ type: "text", text: composeContextPack(snapshot, task, () => new Date(), memories).text }] });
       }
@@ -86,6 +85,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
     if (body.method === "ping") return rpc(body.id, {});
     return NextResponse.json({ jsonrpc: "2.0", id: body.id ?? null, error: { code: -32601, message: "Method not found" } });
   } catch (error) {
+    if (error instanceof ProductAccessError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 402 });
+    }
     const cause = error instanceof Error ? error.cause : undefined;
     const code =
       cause && typeof cause === "object" && "code" in cause

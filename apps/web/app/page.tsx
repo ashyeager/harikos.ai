@@ -110,7 +110,7 @@ export default function LandingPage() {
             <ExampleLabel />
             <div className="memory-rail"><i /><i /><i /><i /></div>
             {[
-              ["12:14", "ATTEMPT", "Create Stripe subscription from the browser", "Codex / session 2F7A"],
+              ["12:14", "ATTEMPT", "Create a subscription from the browser", "Codex / session 2F7A"],
               ["12:17", "FAILED ATTEMPT", "Privileged credentials cannot cross the client boundary", "root cause / security"],
               ["12:20", "DECISION", "Keep subscription creation server-side", "applies to billing routes"],
               ["12:31", "OUTCOME", "Checkout route and signed webhook boundary created", "commit c2137fb"],
@@ -167,10 +167,10 @@ export default function LandingPage() {
         </section>
 
         <section className="pricing-preview section-shell">
-          <SectionHeading eyebrow="PRICING / SIMPLE BY DESIGN" title={<>Start with one project.<br /><span>Scale the shared brain.</span></>} copy="No annual fiction, fake enterprise tier, or hidden usage story. Start free; Pro is the current launch hypothesis." />
+          <SectionHeading eyebrow="PRICING / SIMPLE BY DESIGN" title={<>Start with one project.<br /><span>Scale the shared brain.</span></>} copy="Every plan includes the complete HARIKOS intelligence loop. Begin with a 7-day Pro trial and scale capacity as the work grows." />
           <div className="pricing-preview-grid" data-reveal>
-            <article><span>FREE / FOR INDIVIDUAL BUILDERS</span><div><strong>$0</strong><small>/ forever</small></div><p>One repository · one agent connection · 250 memories · 25 Context Packs/month</p><Link className="button button-secondary" href="/login">Start free <span>↗</span></Link></article>
-            <article className="pricing-pro"><span>PRO / FOR ACTIVE PROJECTS</span><div><strong>$1</strong><small>/ month</small></div><p>Up to five repositories · five agent connections · higher Memory and Context limits</p><Link className="button button-primary" href="/login">Continue to sign in <span>↗</span></Link></article>
+            <article><span>CORE / FOR ONE PROJECT</span><div><strong>$9</strong><small>/ month</small></div><p>One active project and agent connection with the complete Truth, Memory, Context, and MCP loop.</p><Link className="button button-secondary" href="/login">Start with Core <span>↗</span></Link></article>
+            <article className="pricing-pro"><span>PRO / 7-DAY TRIAL</span><div><strong>$29</strong><small>/ month</small></div><p>Up to five projects and agent connections with higher Memory and Context capacity.</p><Link className="button button-primary" href="/login">Start Pro trial <span>↗</span></Link></article>
           </div>
           <Link className="section-text-link" href="/pricing">Compare plan details <span>↗</span></Link>
         </section>

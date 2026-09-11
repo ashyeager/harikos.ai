@@ -93,7 +93,7 @@ export function AgentHandoff() {
 }
 
 const contextSignals = [
-  ["middleware.ts", "truth"], ["README.md", "dim"], ["stripe.ts", "file"], ["auth.ts", "dim"],
+  ["middleware.ts", "truth"], ["README.md", "dim"], ["billing.ts", "file"], ["auth.ts", "dim"],
   ["billing decision", "memory"], ["failed client attempt", "memory"], ["route.ts", "file"], ["dashboard.tsx", "dim"],
   ["webhook constraint", "truth"], ["package.json", "dim"], ["current plan", "truth"], ["old auth change", "dim"],
 ] as const;
@@ -112,7 +112,7 @@ export function ContextCompression() {
 
 const terminalResults: Record<string, string[]> = {
   "truth auth": ["Authentication", "Supabase Auth", "VERIFIED · 99%", "", "Evidence", "middleware.ts:18", "lib/supabase/server.ts:7", "", "Previous: Clerk · SUPERSEDED"],
-  "memory billing": ["4 relevant memories", "", "DECISION · Keep subscription creation server-side", "FAILED_ATTEMPT · Client-side Stripe credentials", "CONSTRAINT · Webhook state is authoritative", "OUTCOME · Checkout boundary implemented"],
+  "memory billing": ["4 relevant memories", "", "DECISION · Keep subscription creation server-side", "FAILED_ATTEMPT · Client-side billing credentials", "CONSTRAINT · Webhook state is authoritative", "OUTCOME · Checkout boundary implemented"],
   "context subscriptions": ["Context Pack / subscriptions", "1,184 estimated tokens", "", "6 current truths", "3 relevant files", "2 constraints", "1 failed attempt", "1 outcome"],
   "agents": ["Illustrative connection", "Codex laptop · token shown once", "State: authenticated request observed", "Scope: project / read-write memory"],
 };

@@ -1,7 +1,7 @@
 # AGENTS.md — HARIKOS AI Repository Instructions
 
-**Version:** V3 — Full-Stack MVP Lock  
-**Date:** August 24, 2026
+**Version:** V4 — Paid SaaS Product Lock
+**Date:** September 11, 2026
 
 These instructions apply to Codex, Claude Code, Cursor, Hermes, Copilot agents, and any other coding agent working inside the HARIKOS repository.
 
@@ -299,23 +299,27 @@ Truth Engine must not directly depend on Octokit/GitHub internals.
 
 Billing is no longer a non-goal.
 
-Implement:
+Launch plans:
 
 ```text
-Free
-Pro ($15/month initial hypothesis)
+Core ($9/month): 1 active project, 1 active agent connection
+Pro ($29/month): 5 active projects, 5 active agent connections
+Scale ($79/month): 20 active projects, 20 active agent connections
+Enterprise: custom agreement; no enterprise product features in this phase
 ```
+
+There is no permanent Free plan. New eligible users may start a 7-day Pro trial.
 
 Use:
 
-- Stripe Checkout;
-- signed Stripe webhooks;
-- Customer Portal;
+- Paddle hosted Checkout;
+- signed Paddle webhooks;
+- Paddle subscription management;
 - centralized entitlements.
 
 Do not grant paid features from client redirect state.
 
-Stripe billing state is authoritative.
+Paddle billing state is authoritative.
 
 ---
 
@@ -325,21 +329,12 @@ Keep plan/limits in one domain module.
 
 Do not scatter plan checks.
 
-Initial recommended Free limits:
+Enforce launch limits on the server:
 
 ```text
-1 repo
-1 agent connection
-250 memories/project
-25 context packs/month
-```
-
-Initial Pro:
-
-```text
-up to 5 repos
-up to 5 agents
-higher memory/context limits
+Core: 1 project / 1 agent
+Pro: 5 projects / 5 agents
+Scale: 20 projects / 20 agents
 ```
 
 Pricing/limits must be changeable without rewriting the product.
@@ -475,7 +470,7 @@ Do not make privacy claims beyond reality.
 Never:
 
 - trust Checkout success query params as entitlement;
-- expose Stripe secret key;
+- expose Paddle API keys or webhook secrets;
 - skip webhook signature verification;
 - directly trust client-selected plan state.
 
@@ -530,13 +525,11 @@ One coherent full-stack application is preferred.
 
 ---
 
-# 23. Open Source Augmentation Comes After Functional Lock
+# 23. Closed-Source Product Boundary
 
-Do not start the larger Tree-sitter/Aider/CodeGraph/projectmem/Qarinah/Mem0 augmentation until the base SaaS loop works and is committed.
-
-First establish a real baseline.
-
-Then measure OSS improvements against it.
+HARIKOS is closed source for now. Do not scrape, copy, or vendor third-party
+repositories as a product strategy. Normal package-manager dependencies remain
+allowed when their licenses and notices are respected.
 
 ---
 
@@ -552,7 +545,7 @@ At minimum test:
 
 ## Billing
 - webhook-derived entitlement;
-- Free/Pro gating;
+- webhook-derived trial and paid-plan gating;
 - portal boundary.
 
 ## GitHub
@@ -609,7 +602,7 @@ Never commit:
 .env
 .env.local
 Supabase secrets
-Stripe secrets
+Paddle secrets
 GitHub private key
 webhook secrets
 agent tokens
@@ -664,7 +657,7 @@ Do not hide important architectural decisions behind generated code.
 7. implement remote MCP agent connection
 8. implement Truth+Memory Context
 9. implement agent write-back/session/outcome
-10. implement Stripe subscription
+10. implement Paddle subscription
 11. remove fake/dead production states
 12. browser/integration/security tests
 13. clean build

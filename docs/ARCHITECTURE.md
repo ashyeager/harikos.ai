@@ -2,8 +2,16 @@
 
 **Canonical path:** `docs/ARCHITECTURE.md`  
 **Version:** V3 — Full-Stack MVP Lock  
-**Date:** August 24, 2026  
+**Date:** September 11, 2026
 **Product source of truth:** `docs/harikos_ai_prd.md`
+
+> Current lock: HARIKOS is cloud-first and closed-source for now. There is no
+> permanent Free plan. Launch plans are Core ($9/month), Pro ($29/month), Scale
+> ($79/month), and Enterprise (custom), with one 7-day Pro trial for eligible
+> users. The configured billing provider's signed lifecycle state is the sole
+> entitlement authority. Sections below that mention older providers or limits
+> are historical implementation notes and must not override current code or the
+> product lock.
 
 ---
 
@@ -40,7 +48,7 @@ into one real system.
           ┌───────────────┼────────────────┐
           │               │                │
           ▼               ▼                ▼
-      Stripe          GitHub App       Agent Bridge
+      Paddle          GitHub App       Agent Bridge
       Billing             │             Remote MCP
           │               │                │
           │               ▼                ▼
@@ -90,7 +98,7 @@ into one real system.
 8. GitHub App is the main production repository source.
 9. Supabase PostgreSQL is the main SaaS database.
 10. Supabase Auth identifies users.
-11. Stripe webhook state drives paid entitlement.
+11. Signed billing-provider webhook state drives paid entitlement.
 12. Remote MCP is the MVP agent-neutral integration.
 13. Agent tokens are revocable and scoped.
 14. Raw source retention is minimized.
@@ -112,7 +120,7 @@ into one real system.
 | Main DB | Supabase PostgreSQL |
 | ORM | Reuse/adapt Drizzle |
 | GitHub | GitHub App + Octokit |
-| Billing | Stripe Billing / Checkout / Customer Portal |
+| Billing | Configured recurring billing provider / hosted Checkout / customer portal |
 | Agent Bridge | Remote MCP over HTTP |
 | Agent Auth | Revocable HARIKOS bearer token, scoped to user/project |
 | Validation | Zod |
@@ -184,8 +192,8 @@ coding agent
 
 ```text
 user
-→ Stripe Checkout
-→ Stripe subscription
+→ Paddle hosted Checkout
+→ Paddle subscription
 → signed webhook
 → HARIKOS billing record
 → entitlement
@@ -239,7 +247,7 @@ A user must never access another user's private project through guessed IDs.
 
 # 8. Billing Architecture
 
-Stripe is the billing authority.
+Paddle is the billing authority.
 
 Core concepts:
 
@@ -253,22 +261,28 @@ Suggested persisted fields:
 
 ```text
 user_id
-stripe_customer_id
-stripe_subscription_id
-stripe_price_id
-subscription_status
+provider
+provider_customer_id
+provider_subscription_id
+provider_price_id
+plan
+status
+trial_start
+trial_end
+current_period_start
 current_period_end
+provider_occurred_at
 cancel_at_period_end
 updated_at
 ```
 
-Do not grant Pro from the Checkout success URL alone.
+Do not grant product access from the Checkout success URL alone.
 
-Signed Stripe webhooks update trusted subscription state.
+Signed Paddle webhooks update trusted subscription state.
 
-Required relevant events should be chosen from current Stripe guidance and implementation needs, typically including subscription creation/update/deletion and successful Checkout/payment events where appropriate.
+Subscription lifecycle events update the provider-neutral subscription record idempotently and in provider event-time order.
 
-Use Stripe Customer Portal for subscription management rather than rebuilding billing UI.
+Use Paddle subscription management URLs rather than rebuilding billing UI.
 
 ---
 
@@ -279,7 +293,7 @@ Create a centralized entitlement module.
 Example:
 
 ```ts
-type Plan = "free" | "pro";
+type Plan = "core" | "pro" | "scale" | "enterprise";
 
 interface Entitlements {
   maxProjects: number;
@@ -292,16 +306,20 @@ interface Entitlements {
 Initial configuration:
 
 ```text
-FREE
+CORE ($9/month)
 projects: 1
 agent connections: 1
-memories/project: 250
-context packs/month: 25
 
-PRO
+PRO ($29/month)
 projects: 5
 agent connections: 5
-higher practical memory/context limits
+
+SCALE ($79/month)
+projects: 20
+agent connections: 20
+
+ENTERPRISE
+custom limits and commercial agreement
 ```
 
 Do not scatter `if (plan === "pro")` logic throughout arbitrary components.
@@ -770,7 +788,7 @@ billing:
 checkout/portal/status
 
 webhooks:
-stripe
+paddle
 github
 
 mcp:
@@ -836,7 +854,7 @@ Required:
 - Supabase session verification;
 - project ownership checks;
 - RLS/DB permissions where appropriate;
-- Stripe webhook signature verification;
+- Paddle webhook signature verification;
 - GitHub webhook signature verification;
 - GitHub installation authorization;
 - no permanent installation token storage;
@@ -858,7 +876,7 @@ Expected categories:
 Supabase/Auth
 Database
 GitHub App
-Stripe
+Paddle
 AI provider
 App URL
 ```
@@ -876,9 +894,13 @@ GITHUB_APP_SLUG
 GITHUB_APP_PRIVATE_KEY
 GITHUB_WEBHOOK_SECRET
 
-STRIPE_SECRET_KEY
-STRIPE_WEBHOOK_SECRET
-STRIPE_PRO_PRICE_ID
+PADDLE_ENVIRONMENT
+PADDLE_API_KEY
+PADDLE_WEBHOOK_SECRET
+PADDLE_CORE_PRICE_ID
+PADDLE_PRO_PRICE_ID
+PADDLE_SCALE_PRICE_ID
+HARIKOS_DEVELOPER_USER_IDS (optional immutable UUID allowlist)
 
 NEXT_PUBLIC_APP_URL
 
@@ -900,7 +922,7 @@ Webhook is required for trustworthy entitlement.
 Conceptual:
 
 ```text
-Stripe event
+Paddle event
 → verify signature
 → locate customer/user
 → update subscription
@@ -954,7 +976,7 @@ Persist:
 - GitHubRepositorySource;
 - scan lifecycle;
 - memory persistence;
-- Stripe webhook;
+- Paddle webhook;
 - GitHub webhook;
 - remote MCP auth/tools;
 - authorization.
@@ -1030,8 +1052,8 @@ same token → unauthorized
 ## Billing entitlement
 
 ```text
-free → free limits
-signed Stripe subscription webhook → Pro
+no entitlement → payment required
+signed Paddle subscription webhook → trialing or paid plan
 cancellation/status change → entitlement updates
 ```
 

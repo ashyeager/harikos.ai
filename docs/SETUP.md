@@ -17,14 +17,24 @@ Configure the existing HARIKOS GitHub App with Contents: Read and Metadata: Read
 
 Use `pnpm verify:github-app` to verify App authentication without printing credentials. For the full cloud acceptance, start `pnpm dev:web`, set `HARIKOS_ACCEPTANCE_GITHUB_TOKEN` to an authorized CLI/user token for the real test repository, and run `pnpm verify:cloud:functional`.
 
-## Stripe
+## Billing provider
 
-1. Create a HARIKOS Pro product with a recurring monthly price of $15.
-2. Set `STRIPE_SECRET_KEY`, `STRIPE_PRO_PRICE_ID`, and `STRIPE_WEBHOOK_SECRET` in Vercel and local server environments.
-3. Register `https://<production-domain>/api/billing/webhook` for subscription created, updated, and deleted events.
-4. Enable Stripe Customer Portal.
+HARIKOS launches with Core ($9/month), Pro ($29/month), and Scale ($79/month),
+plus custom Enterprise agreements. New eligible users receive a 7-day Pro trial.
+Paddle Billing is the single provider. Configure `PADDLE_API_KEY`,
+`PADDLE_WEBHOOK_SECRET`, `PADDLE_CORE_PRICE_ID`, `PADDLE_PRO_PRICE_ID`, and
+`PADDLE_SCALE_PRICE_ID`; set `PADDLE_ENVIRONMENT=sandbox` outside live billing.
+The Pro recurring price must contain a 7-day trial with payment method collection.
+Register
+`https://<production-domain>/api/billing/webhook` for subscription lifecycle
+events and grant the API key permission to create transactions and retrieve
+temporary subscription management URLs. Paddle lifecycle state is authoritative;
+checkout redirects never grant entitlement. Keep provider credentials server-side
+and never commit them.
 
-Stripe webhook state is authoritative for entitlement. Checkout redirects do not grant Pro.
+Internal developer access is stored as `role = 'developer'` on the immutable
+server-side `harikos.users` row. `HARIKOS_DEVELOPER_USER_IDS` is an optional
+server-only UUID allowlist for recovery; never use email, login, or browser state.
 
 ## Vercel
 

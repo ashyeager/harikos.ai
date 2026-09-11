@@ -74,12 +74,12 @@ export function SiteNav() {
           <Link href="/about">Company</Link>
           <div className="mobile-nav-actions">
             <Link href="/login">Sign in</Link>
-            <Link className="button button-primary" href="/login">Start free <span>↗</span></Link>
+            <Link className="button button-primary" href="/login">Start 7-day trial <span>↗</span></Link>
           </div>
         </nav>
         <div className="site-nav-actions">
           <Link className="nav-sign-in" href="/login">Sign in</Link>
-          <Link className="button button-primary button-small" href="/login">Start free <span>↗</span></Link>
+            <Link className="button button-primary button-small" href="/login">Start 7-day trial <span>↗</span></Link>
           <button aria-expanded={open} aria-label={open ? "Close navigation" : "Open navigation"} className={`mobile-menu-button ${open ? "is-open" : ""}`} onClick={() => setOpen((value) => !value)} type="button"><i /><i /></button>
         </div>
       </div>

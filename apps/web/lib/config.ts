@@ -1,5 +1,3 @@
-import { resolve } from "node:path";
-
 import { readCloudDatabaseConfig } from "@harikos/db";
 import { readGitHubAppConfig } from "@harikos/core";
 import { z } from "zod";
@@ -45,21 +43,6 @@ export function readGitHubAppOAuthConfig(
   return githubAppOAuthConfigSchema.parse({ clientId, clientSecret });
 }
 
-export function isLocalDemoEnabled(
-  environment: NodeJS.ProcessEnv = process.env,
-): boolean {
-  if (environment.HARIKOS_ENABLE_LOCAL_DEMO === "true") {
-    return true;
-  }
-  return environment.NODE_ENV !== "production";
-}
-
-export function localRepositoryPath(
-  environment: NodeJS.ProcessEnv = process.env,
-): string {
-  return environment.HARIKOS_LOCAL_REPOSITORY?.trim() || resolve(process.cwd(), "../..");
-}
-
 export function integrationStatus(environment: NodeJS.ProcessEnv = process.env) {
   return {
     supabaseAuth: readSupabasePublicConfig(environment) !== undefined,
@@ -69,7 +52,12 @@ export function integrationStatus(environment: NodeJS.ProcessEnv = process.env) 
       isUsableSecret(environment.HARIKOS_SESSION_SECRET) &&
       environment.HARIKOS_SESSION_SECRET.trim().length >= 32,
     postgres: readCloudDatabaseConfig(environment) !== undefined,
-    localDemo: isLocalDemoEnabled(environment),
-    stripe: Boolean(environment.STRIPE_SECRET_KEY?.trim() && environment.STRIPE_PRO_PRICE_ID?.trim()),
+    paddle: Boolean(
+      isUsableSecret(environment.PADDLE_API_KEY) &&
+      isUsableSecret(environment.PADDLE_WEBHOOK_SECRET) &&
+      environment.PADDLE_CORE_PRICE_ID?.trim() &&
+      environment.PADDLE_PRO_PRICE_ID?.trim() &&
+      environment.PADDLE_SCALE_PRICE_ID?.trim(),
+    ),
   };
 }

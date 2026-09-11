@@ -1,6 +1,6 @@
 # ADR 0001: Cloud-first SaaS boundaries
 
-- Status: accepted
+- Status: partially superseded September 11, 2026
 - Date: 2026-08-23
 
 ## Context
@@ -17,8 +17,8 @@ PostgreSQL.
 2. Keep truth resolution in `packages/core` and adapters at the edges.
 3. Retain SQLite for local proof, tests, CLI diagnostics, and future local mode.
 4. Add a real PostgreSQL/Drizzle adapter as the SaaS persistence boundary.
-5. Keep GitHub OAuth/App credentials server-side and expose an honest local demo
-   session when they are absent.
+5. Keep GitHub OAuth/App credentials server-side. The former local demo product
+   behavior is superseded; local adapters remain for engineering tests and CLI diagnostics.
 6. Do not permanently clone connected repositories; fetch bounded files and
    persist derived truth plus evidence pointers.
 

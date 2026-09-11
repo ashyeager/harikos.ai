@@ -7,6 +7,7 @@ import {
   revokeAgentConnection,
 } from "../../../../../lib/cloud-projects";
 import { getAuthIdentity } from "../../../../../lib/auth";
+import { ProductAccessError, ProductQuotaError } from "../../../../../lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -30,7 +31,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json(await createAgentConnection(identity, id, name), { status: 201 });
   } catch (error) {
     const invalid = error instanceof Error && error.name === "ZodError";
-    return NextResponse.json({ error: invalid ? "A connection name is required." : "Agent connection could not be created." }, { status: invalid ? 400 : 404 });
+    const paymentRequired = error instanceof ProductAccessError;
+    const quotaExceeded = error instanceof ProductQuotaError;
+    return NextResponse.json({ error: invalid ? "A connection name is required." : paymentRequired || quotaExceeded ? error.message : "Agent connection could not be created.", code: paymentRequired ? error.code : quotaExceeded ? error.code : undefined }, { status: invalid ? 400 : paymentRequired ? 402 : quotaExceeded ? 429 : 404 });
   }
 }
 

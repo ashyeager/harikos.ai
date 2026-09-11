@@ -89,11 +89,11 @@ function statusFor(candidate: CandidateClaim): ProjectTruthClaim["status"] {
 function makeClaim(
   candidate: CandidateClaim,
   at: string,
-  options: { status?: ProjectTruthClaim["status"]; supersedesClaimId?: string | null } = {},
+  options: { id?: string; status?: ProjectTruthClaim["status"]; supersedesClaimId?: string | null } = {},
 ): ProjectTruthClaim {
   return projectTruthClaimSchema.parse({
     ...candidate,
-    id: `truth_${digest(`${identityOf(candidate)}::${valueKey(candidate.value)}`)}`,
+    id: options.id ?? `truth_${digest(`${identityOf(candidate)}::${valueKey(candidate.value)}`)}`,
     status: options.status ?? statusFor(candidate),
     validFrom: at,
     validTo: null,
@@ -101,6 +101,17 @@ function makeClaim(
     lastVerifiedAt: at,
     supersedesClaimId: options.supersedesClaimId ?? null,
   });
+}
+
+function nextClaimId(
+  candidate: CandidateClaim,
+  truths: Map<string, ProjectTruthClaim>,
+  at: string,
+): string {
+  const base = `truth_${digest(`${identityOf(candidate)}::${valueKey(candidate.value)}`)}`;
+  const existing = truths.get(base);
+  if (!existing || ["verified", "likely", "uncertain"].includes(existing.status)) return base;
+  return `${base}_${digest(at).slice(0, 8)}`;
 }
 
 function makeContradiction(
@@ -157,16 +168,32 @@ export function resolveTruth(
       .sort((left, right) => right.confidence - left.confidence)[0];
 
     if (previous && valueKey(previous.value) === valueKey(leader.value)) {
-      truths.set(
-        previous.id,
-        projectTruthClaimSchema.parse({
+      const current = projectTruthClaimSchema.parse({
           ...previous,
           status: statusFor(leader),
-          confidence: Math.max(previous.confidence, leader.confidence),
+          confidence: leader.confidence,
           lastVerifiedAt: at,
           evidence: leader.evidence,
-        }),
-      );
+        });
+      truths.set(previous.id, current);
+      const runner = group.find((candidate) => valueKey(candidate.value) !== valueKey(leader.value));
+      if (runner) {
+        const competing = makeClaim(runner, at, {
+          id: nextClaimId(runner, truths, at),
+          status: "contradicted",
+        });
+        truths.set(competing.id, competing);
+        contradictions.push(
+          makeContradiction(
+            current,
+            competing.id,
+            at,
+            `${runner.value} conflicts with stronger evidence for ${current.value}.`,
+            "open",
+            null,
+          ),
+        );
+      }
       continue;
     }
 
@@ -182,6 +209,7 @@ export function resolveTruth(
         }),
       );
       const current = makeClaim(leader, at, {
+        id: nextClaimId(leader, truths, at),
         status: "verified",
         supersedesClaimId: previous.id,
       });
@@ -223,7 +251,10 @@ export function resolveTruth(
     }
 
     if (previous) {
-      const competing = makeClaim(leader, at, { status: "contradicted" });
+      const competing = makeClaim(leader, at, {
+        id: nextClaimId(leader, truths, at),
+        status: "contradicted",
+      });
       truths.set(competing.id, competing);
       contradictions.push(
         makeContradiction(
@@ -238,11 +269,14 @@ export function resolveTruth(
       continue;
     }
 
-    const current = makeClaim(leader, at);
+    const current = makeClaim(leader, at, { id: nextClaimId(leader, truths, at) });
     truths.set(current.id, current);
     const runner = group.find((candidate) => valueKey(candidate.value) !== valueKey(leader.value));
     if (runner) {
-      const competing = makeClaim(runner, at, { status: "contradicted" });
+      const competing = makeClaim(runner, at, {
+        id: nextClaimId(runner, truths, at),
+        status: "contradicted",
+      });
       truths.set(competing.id, competing);
       contradictions.push(
         makeContradiction(

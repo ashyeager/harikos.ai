@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Project Memory", description: "Persi
 
 const events = [
   ["12:14", "ATTEMPT", "Create the subscription from the browser", "Codex / session 2F7A"],
-  ["12:17", "FAILED ATTEMPT", "Privileged Stripe credentials required", "root cause / client boundary"],
+  ["12:17", "FAILED ATTEMPT", "Privileged billing credentials required", "root cause / client boundary"],
   ["12:20", "DECISION", "Keep billing mutations server-side", "applies to checkout and portal"],
   ["12:31", "OUTCOME", "Signed webhook boundary completed", "commit c2137fb"],
 ] as const;

@@ -3,10 +3,11 @@ import type * as CloudProjects from "../../../../lib/cloud-projects";
 
 vi.mock("../../../../lib/cloud-projects", async (importOriginal) => {
   const actual = await importOriginal<typeof CloudProjects>();
-  return { ...actual, authenticateAgentToken: vi.fn(), loadCloudSnapshotForAgent: vi.fn() };
+  return { ...actual, authenticateAgentToken: vi.fn(), createAgentMemory: vi.fn(), loadCloudSnapshotForAgent: vi.fn() };
 });
 
-import { authenticateAgentToken, loadCloudSnapshotForAgent } from "../../../../lib/cloud-projects";
+import { authenticateAgentToken, createAgentMemory, loadCloudSnapshotForAgent } from "../../../../lib/cloud-projects";
+import { ProductAccessError } from "../../../../lib/entitlements";
 import { GET, POST } from "./route";
 
 function call(body: unknown, token = "test-token", origin?: string) {
@@ -60,5 +61,35 @@ describe("remote MCP transport", () => {
 
   it("advertises unsupported SSE with 405", async () => {
     expect((await GET()).status).toBe(405);
+  });
+
+  it("checks assumptions against current truth instead of superseded history", async () => {
+    vi.mocked(loadCloudSnapshotForAgent).mockResolvedValue({
+      repository: { name: "repo", headSha: "abc" },
+      truths: [
+        { id: "old", category: "Authentication", subject: "authentication", predicate: "provider", value: "Clerk", scope: "application", epistemicType: "derived", claimKind: "implementation", confidence: 0.9, status: "superseded", validFrom: "2026-09-10T00:00:00.000Z", validTo: "2026-09-11T00:00:00.000Z", firstSeenAt: "2026-09-10T00:00:00.000Z", lastVerifiedAt: "2026-09-11T00:00:00.000Z", supersedesClaimId: null, evidence: [] },
+        { id: "current", category: "Authentication", subject: "authentication", predicate: "provider", value: "Supabase Auth", scope: "application", epistemicType: "derived", claimKind: "implementation", confidence: 0.95, status: "verified", validFrom: "2026-09-11T00:00:00.000Z", validTo: null, firstSeenAt: "2026-09-11T00:00:00.000Z", lastVerifiedAt: "2026-09-11T00:00:00.000Z", supersedesClaimId: "old", evidence: [] },
+      ],
+      contradictions: [],
+      changes: [],
+    } as never);
+    const response = await call({ jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "check_assumption", arguments: { statement: "Authentication uses Clerk" } } });
+    const body = await response.json();
+    expect(JSON.parse(body.result.content[0].text)).toMatchObject({ status: "CONTRADICTED", matches: [{ id: "current" }] });
+  });
+
+  it("binds recorded session memory to the authenticated connection", async () => {
+    vi.mocked(loadCloudSnapshotForAgent).mockResolvedValue({ repository: { name: "repo", headSha: "abc" }, truths: [], contradictions: [], changes: [] } as never);
+    vi.mocked(createAgentMemory).mockResolvedValue({ id: "memory", projectId: "project", type: "decision", content: "Use Supabase", status: "active", importance: 0.5, agent: "remote-agent", sessionId: null, createdAt: "2026-09-11T00:00:00.000Z" });
+    const response = await call({ jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "record_memory", arguments: { type: "decision", content: "Use Supabase" } } });
+    expect(response.status).toBe(200);
+    expect(createAgentMemory).toHaveBeenCalledWith("project", "connection", expect.objectContaining({ content: "Use Supabase" }));
+  });
+
+  it("denies MCP access when the token owner has no active entitlement", async () => {
+    vi.mocked(authenticateAgentToken).mockRejectedValueOnce(new ProductAccessError());
+    const response = await call({ jsonrpc: "2.0", id: 9, method: "tools/list" });
+    expect(response.status).toBe(402);
+    expect(await response.json()).toMatchObject({ code: "PAYMENT_REQUIRED" });
   });
 });

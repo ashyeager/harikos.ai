@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 
-import { findCloudProjectByRepositoryId, scanCloudProjectFromWebhook } from "../../../../lib/cloud-projects";
+import { findCloudProjectForWebhook, scanCloudProjectFromWebhook } from "../../../../lib/cloud-projects";
 
 export const runtime = "nodejs";
 
@@ -22,12 +22,16 @@ export async function POST(request: Request) {
   }
   if (request.headers.get("x-github-event") !== "push") return NextResponse.json({ received: true });
   try {
-    const body = JSON.parse(payload) as { repository?: { id?: number } };
+    const body = JSON.parse(payload) as { repository?: { id?: number; default_branch?: string }; installation?: { id?: number }; ref?: string };
     const repositoryId = body.repository?.id;
+    const installationId = body.installation?.id;
     if (!repositoryId) return NextResponse.json({ error: "Repository ID is missing." }, { status: 400 });
-    const projectId = await findCloudProjectByRepositoryId(String(repositoryId));
-    if (!projectId) return NextResponse.json({ received: true, matched: false });
-    await scanCloudProjectFromWebhook(projectId);
+    if (!installationId) return NextResponse.json({ error: "Installation ID is missing." }, { status: 400 });
+    if (!body.ref) return NextResponse.json({ error: "Repository ref is missing." }, { status: 400 });
+    const project = await findCloudProjectForWebhook(String(repositoryId), String(installationId));
+    if (!project) return NextResponse.json({ received: true, matched: false });
+    if (body.ref !== `refs/heads/${project.defaultBranch}`) return NextResponse.json({ received: true, matched: false, reason: "non_default_branch" });
+    await scanCloudProjectFromWebhook(project.projectId);
     return NextResponse.json({ received: true, matched: true });
   } catch {
     return NextResponse.json({ error: "GitHub webhook processing failed." }, { status: 500 });

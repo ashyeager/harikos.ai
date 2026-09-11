@@ -1,4 +1,7 @@
-# Frontend / Backend Handoff
+# Frontend / Backend Handoff (Historical)
+
+> Superseded September 11, 2026. The centralized entitlement resolver and
+> `/api/billing/status` now provide this read model. Retained as historical context.
 
 ## Billing subscription read model
 

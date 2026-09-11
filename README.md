@@ -102,7 +102,7 @@ pnpm exec harikos context --cwd . --task "Add OAuth"
 
 Local state lives in `.harikos/` (ignored by Git).
 
-### The Proof
+### Local verification
 
 See HARIKOS work end-to-end:
 
@@ -110,7 +110,7 @@ See HARIKOS work end-to-end:
 pnpm demo
 ```
 
-This creates a test repository, migrates authentication from Clerk to Supabase, and proves:
+This creates an isolated test repository, migrates authentication from Clerk to Supabase, and verifies:
 - Supabase becomes VERIFIED
 - Clerk becomes SUPERSEDED
 - Contradictions are surfaced
@@ -138,15 +138,16 @@ See `docs/ARCHITECTURE.md` for full details.
 
 ## Pricing
 
-| | Free | Pro |
-|---|---|---|
-| **Price** | $0 | $15/mo |
-| **Repositories** | 1 | 5 |
-| **Memories** | 250 | Unlimited |
-| **Context Packs/mo** | 25 | Unlimited |
-| **Agent Connections** | 1 | 5 |
+HARIKOS has one complete product with capacity-based plans:
 
-Start free. Upgrade as you scale.
+| Plan | Price | Active projects | Agent connections |
+|---|---:|---:|---:|
+| Core | $9/mo | 1 | 1 |
+| Pro | $29/mo | 5 | 5 |
+| Scale | $79/mo | 20 | 20 |
+| Enterprise | Custom | Custom | Custom |
+
+New eligible users can start a 7-day Pro trial. Subscription lifecycle events are authoritative for entitlement.
 
 ---
 
@@ -178,7 +179,7 @@ For detailed setup, see `docs/DEPLOY.md`.
 ✅ Landing page with full product story  
 ✅ GitHub OAuth login flow  
 ✅ Supabase database schema (15 tables)  
-✅ Truth extraction engine (Clerk → Supabase demo proven)  
+✅ Truth extraction engine with Supabase persistence
 ✅ Contradiction detection  
 ✅ Temporal history tracking  
 ✅ Agent MCP bridge (Remote MCP over HTTP)  
@@ -187,14 +188,12 @@ For detailed setup, see `docs/DEPLOY.md`.
 
 ---
 
-## What's Coming
+## Product surface
 
-📋 Dashboard (view your projects)  
-📋 Project analyzer (connect repo → see claims)  
-📋 Context pack generation (task-specific briefs)  
-📋 Memory recording (decisions that survive sessions)  
-📋 Stripe payments  
-📋 Agent integration UI  
+The cloud product includes the dashboard, repository analysis, Truth and Evidence,
+persistent Memory, task-specific Context Packs, remote MCP, agent write-back, and
+subscription billing. See the dated release evidence in `DAILY.md` for what has
+been verified in each environment.
 
 ---
 
@@ -213,7 +212,8 @@ Any MCP client: Claude, Codex, Cursor, or custom tools.
 Embeddings hallucinate. HARIKOS grounds every claim in actual repository evidence. You can see *why* it believes something.
 
 **Can I run this locally?**  
-Yes. The CLI tools work offline. The cloud product requires Supabase + GitHub.
+The cloud product requires Supabase and the HARIKOS GitHub App. Local development
+and test fixtures remain available for engineering verification.
 
 ---
 

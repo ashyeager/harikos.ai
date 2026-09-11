@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { projectSnapshot } from "../../../../../lib/project-data";
+import { getAuthIdentity } from "../../../../../lib/auth";
+import { ProductAccessError, requireProductAccess } from "../../../../../lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -16,6 +18,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const identity = await getAuthIdentity();
+    if (!identity) return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    await requireProductAccess(identity);
     const { id } = await params;
     const input = requestSchema.parse(await request.json());
     const snapshot = await projectSnapshot(id);
@@ -27,6 +32,7 @@ export async function POST(
     });
   } catch (error) {
     const invalidInput = error instanceof Error && error.name === "ZodError";
+    if (error instanceof ProductAccessError) return NextResponse.json({ error: error.message, code: error.code }, { status: 402 });
     return NextResponse.json(
       { error: invalidInput ? "A valid question and answer mode are required." : "Question could not be answered." },
       { status: invalidInput ? 400 : 500 },

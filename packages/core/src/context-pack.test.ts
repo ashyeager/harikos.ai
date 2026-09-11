@@ -23,4 +23,17 @@ describe("Context memory retrieval", () => {
     expect(pack.text).not.toContain("This archived note should not be included.");
     expect(pack.truths.every((claim) => claim.status !== "superseded")).toBe(true);
   });
+
+  it("prioritizes task matches and counts memory text in the token estimate", () => {
+    const snapshot = createFlagshipDemoSnapshot();
+    const filler = Array.from({ length: 8 }, (_, index) => ({
+      type: "decision", content: `Unrelated deployment decision ${index}.`, status: "active",
+    }));
+    const pack = composeContextPack(snapshot, "Fix billing webhook", () => new Date("2026-09-11T00:00:00.000Z"), [
+      ...filler,
+      { type: "note", content: "Billing webhook retries must be idempotent.", status: "active" },
+    ]);
+    expect(pack.text).toContain("Billing webhook retries must be idempotent.");
+    expect(pack.tokenEstimate).toBe(Math.ceil(pack.text.length / 4));
+  });
 });

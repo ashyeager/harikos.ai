@@ -23,7 +23,7 @@ describe("web integration configuration", () => {
       integrationStatus({
         NODE_ENV: "production",
       }),
-    ).toMatchObject({ supabaseAuth: false, localDemo: false });
+    ).toMatchObject({ supabaseAuth: false, paddle: false });
   });
 
   it("does not treat Vercel sensitive placeholders as configured secrets", () => {

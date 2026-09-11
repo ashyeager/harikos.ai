@@ -7,7 +7,7 @@ export function PublicHero({
   accent,
   copy,
   visual,
-  primary = ["Start free", "/login"],
+  primary = ["Start 7-day trial", "/login"],
   secondary,
 }: {
   eyebrow: string;

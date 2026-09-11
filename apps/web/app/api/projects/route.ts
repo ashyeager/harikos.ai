@@ -1,4 +1,3 @@
-import { createFlagshipDemoSnapshot } from "@harikos/core";
 import { NextResponse } from "next/server";
 
 import {
@@ -8,7 +7,7 @@ import {
   RepositoryAuthorizationError,
 } from "../../../lib/cloud-projects";
 import { getAuthIdentity } from "../../../lib/auth";
-import { isLocalDemoEnabled } from "../../../lib/config";
+import { ProductAccessError, ProductQuotaError } from "../../../lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -18,18 +17,8 @@ export async function GET() {
     return NextResponse.json({ error: "Authentication required." }, { status: 401 });
   }
   const cloud = await listCloudProjects(session);
-  const demo = isLocalDemoEnabled() ? createFlagshipDemoSnapshot() : undefined;
   return NextResponse.json({
-    projects: [
-      ...(demo ? [{
-        id: demo.projectId,
-        name: demo.repository.name,
-        owner: demo.repository.owner,
-        mode: "fixture",
-        verified: demo.truths.filter((claim) => claim.status === "verified").length,
-      }] : []),
-      ...cloud.map((project) => ({ ...project, mode: "github" })),
-    ],
+    projects: cloud.map((project) => ({ ...project, mode: "github" })),
   });
 }
 
@@ -48,15 +37,19 @@ export async function POST(request: Request) {
   } catch (error) {
     const invalidInput = error instanceof Error && error.name === "ZodError";
     const unauthorized = error instanceof RepositoryAuthorizationError;
+    const paymentRequired = error instanceof ProductAccessError;
+    const quotaExceeded = error instanceof ProductQuotaError;
     return NextResponse.json(
       {
         error: invalidInput
           ? "Repository selection is invalid."
           : unauthorized
             ? error.message
+            : paymentRequired || quotaExceeded
+              ? error.message
             : "Project creation failed.",
       },
-      { status: invalidInput ? 400 : unauthorized ? 403 : 500 },
+      { status: invalidInput ? 400 : unauthorized ? 403 : paymentRequired ? 402 : quotaExceeded ? 429 : 500 },
     );
   }
 }

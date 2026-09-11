@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { AppShell } from "../../../components/app-shell";
 import { PageHeader } from "../../../components/page-header";
-import { ScanLocalButton } from "../../../components/scan-local-button";
 import { RepositorySelector } from "../../../components/repository-selector";
 import { listCloudProjects } from "../../../lib/cloud-projects";
-import { demoSnapshot } from "../../../lib/project-data";
 import { integrationStatus } from "../../../lib/config";
 import { getAuthIdentity } from "../../../lib/auth";
 
@@ -12,13 +10,12 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   const status = integrationStatus();
-  const snapshot = status.localDemo ? demoSnapshot() : undefined;
   const session = await getAuthIdentity();
   const cloudProjects = session ? await listCloudProjects(session) : [];
 
   return (
     <AppShell>
-      <PageHeader eyebrow="REPOSITORIES" title="Choose what HARIKOS should understand." copy="Connect with least-privilege GitHub access or, when explicitly enabled for development, analyze the local verification workspace." />
+      <PageHeader eyebrow="REPOSITORIES" title="Choose what HARIKOS should understand." copy="Connect a repository with least-privilege GitHub access, then create a project from the authorized repository." />
       <section className="project-source-grid">
         <article className="source-card featured-source">
           <span className="source-icon">⌘</span>
@@ -30,21 +27,9 @@ export default async function ProjectsPage() {
           )}
           <div className="source-status"><i className={status.githubApp ? "ready" : ""} />{status.githubApp ? "GitHub App ready" : "Credentials not configured"}</div>
         </article>
-        <article className="source-card">
-          <span className="source-icon orange-icon">⌁</span>
-          <div><small>DEVELOPMENT-ONLY SOURCE</small><h2>HARIKOS-AI workspace</h2><p>Run the bounded scanner against this repository and persist an isolated local verification snapshot.</p></div>
-          {status.localDemo ? <ScanLocalButton /> : <span className="disabled-message">Local scanning is disabled in production.</span>}
-          <div className="source-status"><i className="ready" />Deterministic · no AI key required</div>
-        </article>
       </section>
       <section className="connected-projects panel">
         <div className="panel-heading"><div><span>AVAILABLE NOW</span><h2>Projects</h2></div></div>
-        {snapshot ? <Link className="project-row" href={`/app/project/${snapshot.projectId}`}>
-          <span className="repo-avatar">AC</span>
-          <span><strong>{snapshot.repository.name}</strong><small>Controlled Clerk → Supabase fixture · clearly labeled demo</small></span>
-          <span className="project-metrics"><b>{snapshot.truths.filter((claim) => claim.status === "verified").length}</b> verified</span>
-          <b>Open →</b>
-        </Link> : null}
         {cloudProjects.map((project) => (
           <Link className="project-row" href={`/app/project/${project.id}`} key={project.id}>
             <span className="repo-avatar">{project.repository.slice(0, 2).toUpperCase()}</span>
@@ -53,7 +38,7 @@ export default async function ProjectsPage() {
             <b>Open →</b>
           </Link>
         ))}
-        {!snapshot && cloudProjects.length === 0 ? (
+        {cloudProjects.length === 0 ? (
           <p className="empty-projects">No connected projects yet. Install the GitHub App and choose a repository above.</p>
         ) : null}
       </section>

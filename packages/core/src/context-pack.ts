@@ -89,14 +89,20 @@ export function composeContextPack(
   const taskMemoryWords = taskWords(normalizedTask);
   const relevantMemories = memories
     .filter((memory) => memory.status !== "archived" && memory.status !== "superseded")
-    .filter((memory) => {
+    .map((memory, index) => {
       const haystack = `${memory.type} ${memory.content}`.toLowerCase();
-      return [...taskMemoryWords].some((word) => haystack.includes(word)) || ["constraint", "decision", "failed_attempt", "outcome"].includes(memory.type);
+      const matches = [...taskMemoryWords].filter((word) => haystack.includes(word)).length;
+      const typePriority = ["constraint", "decision", "failed_attempt", "outcome"].includes(memory.type) ? 1 : 0;
+      return { memory, index, score: matches * 10 + typePriority };
     })
-    .slice(0, 8);
+    .filter(({ score }) => score > 0)
+    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .slice(0, 8)
+    .map(({ memory }) => memory);
   const memoryText = relevantMemories.length
     ? `\n\nMEMORY\n${relevantMemories.map((memory) => `- ${memory.type}: ${memory.content}`).join("\n")}`
     : "";
+  const completeText = `${text}${memoryText}`;
   return contextPackSchema.parse({
     task: normalizedTask,
     generatedAt: clock().toISOString(),
@@ -105,8 +111,8 @@ export function composeContextPack(
     recentChanges: snapshot.changes.slice(-3),
     constraints,
     relevantFiles,
-    tokenEstimate: Math.ceil(text.length / 4),
-    text: `${text}${memoryText}`,
+    tokenEstimate: Math.ceil(completeText.length / 4),
+    text: completeText,
   });
 }
 

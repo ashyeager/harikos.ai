@@ -34,26 +34,43 @@ export const cloudEpistemicType = harikosCloud.enum("epistemic_type", [
 export const cloudUsers = harikosCloud.table("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   supabaseUserId: text("supabase_user_id").notNull().unique(),
+  role: text("role").notNull().default("customer"),
   githubUserId: text("github_user_id").unique(),
   login: text("login").notNull(),
+  email: text("email"),
   displayName: text("display_name"),
   avatarUrl: text("avatar_url"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const cloudSubscriptions = harikosCloud.table("subscriptions", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => cloudUsers.id, { onDelete: "cascade" }),
-  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
-  stripeSubscriptionId: text("stripe_subscription_id").unique(),
-  stripePriceId: text("stripe_price_id"),
+  provider: text("provider").notNull().default("paddle"),
+  providerCustomerId: text("provider_customer_id").unique(),
+  providerSubscriptionId: text("provider_subscription_id").unique(),
+  providerPriceId: text("provider_price_id"),
+  plan: text("plan"),
   status: text("status").notNull(),
+  trialStart: timestamp("trial_start", { withTimezone: true }),
+  trialEnd: timestamp("trial_end", { withTimezone: true }),
+  currentPeriodStart: timestamp("current_period_start", { withTimezone: true }),
   currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+  providerOccurredAt: timestamp("provider_occurred_at", { withTimezone: true }),
   cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [index("subscriptions_user_idx").on(table.userId)]);
+
+export const cloudBillingWebhookEvents = harikosCloud.table("billing_webhook_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  provider: text("provider").notNull(),
+  providerEventId: text("provider_event_id").notNull().unique(),
+  eventType: text("event_type").notNull(),
+  receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow().notNull(),
+});
 
 export const cloudRepositoryInstallations = harikosCloud.table(
   "repository_installations",
@@ -337,6 +354,7 @@ export const cloudSchema = {
   contextPacks: cloudContextPacks,
   agentConnections: cloudAgentConnections,
   subscriptions: cloudSubscriptions,
+  billingWebhookEvents: cloudBillingWebhookEvents,
   agentSessions: cloudAgentSessions,
   outcomes: cloudOutcomes,
 };

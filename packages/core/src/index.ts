@@ -1,4 +1,5 @@
 export * from "./analyzer.js";
+export * from "./assumption.js";
 export * from "./context-pack.js";
 export * from "./demo.js";
 export * from "./domain.js";

@@ -18,13 +18,14 @@ export function RepositorySelector() {
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState<string>();
   const [message, setMessage] = useState<string>();
+  const [createdProjectId, setCreatedProjectId] = useState<string>();
 
   useEffect(() => {
     const controller = new AbortController();
 
     void fetch("/api/github/repositories", { signal: controller.signal })
       .then(async (response) => {
-        if (response.status === 401) return [];
+        if (response.status === 401) throw new Error("Sign in to view repositories authorized for HARIKOS.");
         if (!response.ok) throw new Error("Repository lookup failed.");
         const body = (await response.json()) as { repositories?: RepositoryOption[] };
         return body.repositories ?? [];
@@ -55,11 +56,13 @@ export function RepositorySelector() {
         return;
       }
 
+      setCreatedProjectId(body.id);
+
       const scanResponse = await fetch(`/api/projects/${body.id}/scan`, { method: "POST" });
       const scanBody = (await scanResponse.json()) as { projectId?: string; error?: string };
       
       if (!scanResponse.ok || !scanBody.projectId) {
-        setMessage(scanBody.error ?? "Project created, but its first scan failed.");
+        setMessage(scanBody.error ?? "Project created, but its first scan failed. You can open it and retry.");
         return;
       }
 
@@ -99,6 +102,7 @@ export function RepositorySelector() {
             Install GitHub App &rarr;
           </a>
           {message && <p className="text-red text-xs" role="alert">{message}</p>}
+          {createdProjectId && <a className="text-orange text-xs" href={`/app/project/${createdProjectId}`}>Open the created project →</a>}
         </div>
       </section>
     );
@@ -132,7 +136,10 @@ export function RepositorySelector() {
           </button>
         ))}
       </div>
-      {message && <div className="p-4 border-t border-line"><p className="text-red text-xs" role="alert">{message}</p></div>}
+      {(message || createdProjectId) && <div className="p-4 border-t border-line">
+        {message && <p className="text-red text-xs" role="alert">{message}</p>}
+        {createdProjectId && <a className="text-orange text-xs" href={`/app/project/${createdProjectId}`}>Open the created project →</a>}
+      </div>}
     </section>
   );
 }

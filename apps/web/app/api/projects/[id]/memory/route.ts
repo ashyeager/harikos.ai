@@ -6,6 +6,7 @@ import {
   listCloudMemories,
 } from "../../../../../lib/cloud-projects";
 import { getAuthIdentity } from "../../../../../lib/auth";
+import { ProductAccessError } from "../../../../../lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -19,7 +20,8 @@ export async function GET(
   const type = new URL(request.url).searchParams.get("type") ?? undefined;
   try {
     return NextResponse.json({ memories: await listCloudMemories(identity, id, type) });
-  } catch {
+  } catch (error) {
+    if (error instanceof ProductAccessError) return NextResponse.json({ error: error.message, code: error.code }, { status: 402 });
     return NextResponse.json({ error: "Memory could not be loaded." }, { status: 404 });
   }
 }
@@ -36,6 +38,7 @@ export async function POST(
     return NextResponse.json({ memory: await createCloudMemory(identity, id, input) }, { status: 201 });
   } catch (error) {
     const invalid = error instanceof Error && error.name === "ZodError";
+    if (error instanceof ProductAccessError) return NextResponse.json({ error: error.message, code: error.code }, { status: 402 });
     return NextResponse.json(
       { error: invalid ? "A valid memory type and content are required." : "Memory could not be saved." },
       { status: invalid ? 400 : 404 },
