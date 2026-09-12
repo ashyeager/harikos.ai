@@ -13,6 +13,7 @@
   --accent-orange: #ff6b35;
   --accent-orange-hover: #e55100;
   --accent-orange-light: #ffb3a0;
+  --brand-gold: #d8b979;
   --border-primary: #1a1a1a;
   --border-secondary: #0f0f0f;
   --border-visible: rgba(255, 255, 255, 0.12);
@@ -377,13 +378,39 @@ select:focus {
 /* Homepage hero */
 .home-hero {
   background:
-    radial-gradient(circle at 72% 42%, rgba(255, 107, 53, 0.12), transparent 28%),
+    radial-gradient(circle at 72% 42%, rgba(255, 107, 53, 0.12), transparent 30%),
     linear-gradient(180deg, #000 0%, #030303 100%);
   border-bottom: 1px solid var(--border-visible);
   color: var(--text-primary);
-  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
-  min-height: max(760px, 100svh);
+  display: block;
+  min-height: min(760px, 100svh);
+  padding-bottom: clamp(88px, 12vw, 150px);
+  padding-top: clamp(150px, 19vw, 224px);
 }
+
+.skip-link {
+  background: #fffdf8;
+  color: #111;
+  font: 700 12px/1 var(--font-mono);
+  left: 14px;
+  padding: 12px 16px;
+  position: fixed;
+  top: 14px;
+  transform: translateY(-180%);
+  transition: transform .16s ease;
+  z-index: 1000;
+}
+.skip-link:focus { transform: translateY(0); }
+
+.brand-logo {
+  border-radius: 9px;
+  box-shadow: 0 7px 22px rgba(0, 0, 0, .28);
+  display: block;
+  flex: 0 0 auto;
+  height: 34px;
+  width: 34px;
+}
+.sidebar-brand .brand-logo { border-radius: 7px; height: 28px; width: 28px; }
 
 .hero-grid-overlay,
 .public-hero-grid,
@@ -395,22 +422,24 @@ select:focus {
   opacity: 0.58;
 }
 
-.hero-copy { max-width: 760px; }
+.hero-copy { max-width: 980px; }
 
 .hero-copy h1 {
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-size: clamp(54px, 4.55vw, 74px);
+  font-size: clamp(54px, 7vw, 112px);
   font-weight: 700;
-  letter-spacing: -0.067em;
-  line-height: 0.88;
-  margin: 32px 0 28px;
+  letter-spacing: -0.077em;
+  line-height: 0.89;
+  margin: 24px 0 30px;
+  max-width: 970px;
 }
 
 .hero-copy h1 span {
   color: transparent;
   background: linear-gradient(110deg, #ffffff 18%, #bdbdbd 82%);
   background-clip: text;
+  display: block;
   -webkit-background-clip: text;
 }
 
@@ -419,6 +448,35 @@ select:focus {
   font-size: 18px;
   max-width: 610px;
 }
+
+.hero-copy .hero-slogan {
+  color: var(--accent-orange);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 24px 0 0;
+  max-width: none;
+  text-transform: uppercase;
+}
+
+.hero-copy .hero-support {
+  font-size: clamp(17px, 1.45vw, 21px);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 700px;
+}
+
+.hero-trial-link {
+  color: var(--text-tertiary);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  gap: 8px;
+  letter-spacing: .04em;
+  margin-top: 15px;
+}
+.hero-trial-link:hover { color: var(--brand-gold); }
 
 .system-pill {
   background: rgba(255, 255, 255, 0.045);
@@ -436,12 +494,6 @@ select:focus {
   color: var(--text-tertiary);
 }
 .hero-proof-line i { background: var(--accent-orange); }
-
-.hero-brain {
-  background: radial-gradient(circle, rgba(255, 107, 53, 0.06), transparent 62%);
-  min-height: 620px;
-  position: relative;
-}
 
 .hexagon-hero {
   background:
@@ -693,7 +745,26 @@ select:focus {
 .terminal-output { color: var(--text-secondary); }
 
 .demo-video-section {
-  background: var(--bg-secondary);
+  background:
+    radial-gradient(circle at 72% 12%, rgba(255, 107, 53, 0.1), transparent 28%),
+    var(--bg-secondary);
+  padding-bottom: clamp(72px, 9vw, 120px);
+  padding-top: clamp(72px, 9vw, 120px);
+}
+
+.product-demo-heading {
+  display: grid;
+  gap: 16px;
+  margin: 0 auto 34px;
+  max-width: 1180px;
+}
+
+.product-demo-heading p {
+  color: var(--text-secondary);
+  font-size: clamp(17px, 1.45vw, 20px);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 700px;
 }
 
 .demo-video-frame {
@@ -952,6 +1023,73 @@ select:focus {
 .plan-grid .plan-pro { border-color: rgba(255, 107, 53, 0.48); box-shadow: var(--shadow-glow); }
 .pricing-note { background: rgba(255, 107, 53, 0.055); }
 
+/* Pricing and authoritative billing state */
+.pricing-composition { background: var(--bg-primary); padding: 0 max(24px, calc((100vw - 1280px) / 2)) 96px; }
+.pricing-composition .plan-grid { background: transparent; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; }
+.pricing-composition .plan-grid > article { border-radius: var(--radius-panel); display: flex; flex-direction: column; min-height: 410px; padding: 28px; }
+.pricing-composition .plan-grid > article.is-selected { outline: 2px solid var(--brand-gold); outline-offset: 3px; }
+.pricing-composition .plan-grid header { min-height: 42px; }
+.pricing-composition .plan-grid header small { max-width: 145px; text-align: right; }
+.pricing-composition .plan-price { margin: 48px 0 5px; }
+.pricing-composition .plan-price strong { font-size: clamp(34px, 3.3vw, 54px); }
+.pricing-composition .plan-capacity { color: var(--text-primary); display: block; font-size: 13px; margin-bottom: 20px; }
+.pricing-composition .plan-grid .button { margin-top: auto; }
+.pricing-composition .plan-pro { border-color: rgba(216, 185, 121, .62); box-shadow: 0 18px 55px rgba(216, 185, 121, .09); }
+.free-plan { background: linear-gradient(110deg, rgba(216, 185, 121, .12), rgba(255, 255, 255, .035)); border: 1px solid rgba(216, 185, 121, .46); border-radius: var(--radius-panel); margin-bottom: 12px; padding: 28px; }
+.free-plan > header { align-items: center; display: flex; justify-content: space-between; }
+.free-plan > header > div { display: grid; gap: 6px; }
+.free-plan > header span { color: var(--brand-gold); font: 700 10px/1 var(--font-mono); letter-spacing: .12em; }
+.free-plan > header small { color: var(--text-tertiary); font: 700 8px/1 var(--font-mono); letter-spacing: .1em; }
+.free-plan > header > strong { color: var(--text-secondary); font-size: 13px; }
+.free-plan-body { align-items: end; display: grid; gap: 30px; grid-template-columns: 1.15fr 1.6fr auto; margin-top: 24px; }
+.free-plan-body h2 { font-size: 25px; margin: 0 0 8px; }
+.free-plan-body p { color: var(--text-secondary); font-size: 12px; line-height: 1.6; margin: 0; max-width: 360px; }
+.free-plan-body ul { display: grid; gap: 7px 18px; grid-template-columns: 1fr 1fr; list-style: none; margin: 0; padding: 0; }
+.free-plan-body li { color: var(--text-secondary); font-size: 11px; }
+.free-plan-body li b { color: var(--brand-gold); font-family: var(--font-mono); margin-right: 7px; }
+.free-plan-body .button { white-space: nowrap; }
+.paid-plan-grid .plan-enterprise { grid-column: 1 / -1; min-height: auto !important; }
+.paid-plan-grid .plan-enterprise .plan-price { margin: 20px 0 5px; }
+.paid-plan-grid .plan-enterprise p { max-width: 560px; }
+.pricing-includes { align-items: center; border: 1px solid var(--border-visible); border-radius: var(--radius-panel); display: grid; gap: 34px; grid-template-columns: 1fr 1.25fr 1fr; margin-top: 16px; padding: 30px; }
+.pricing-includes > div span { color: var(--brand-gold); font: 700 9px/1.3 var(--font-mono); letter-spacing: .12em; }
+.pricing-includes h2 { font-size: 24px; margin: 9px 0 0; }
+.pricing-includes ul { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.pricing-includes li { color: var(--text-secondary); font-size: 12px; }
+.pricing-includes li i { background: var(--brand-gold); display: inline-block; height: 4px; margin-right: 10px; width: 4px; }
+.pricing-includes > p { color: var(--text-tertiary); font-size: 11px; line-height: 1.65; margin: 0; }
+
+.billing-confirmation { background: rgba(216, 185, 121, .07); border: 1px solid rgba(216, 185, 121, .3); border-radius: var(--radius-panel); margin-bottom: 18px; padding: 22px; }
+.billing-confirmation > span, .billing-plan-heading span, .billing-usage-card > div > span { color: var(--brand-gold); font: 700 8px/1 var(--font-mono); letter-spacing: .13em; }
+.billing-confirmation h2 { font-size: 22px; margin: 8px 0 4px; }
+.billing-confirmation p { color: var(--text-secondary); font-size: 12px; margin: 0; }
+.billing-confirmation .button { margin-top: 15px; }
+.billing-settings-grid { display: grid; gap: 16px; grid-template-columns: 1.1fr .9fr; }
+.billing-plan-card, .billing-usage-card { min-height: 390px; padding: 28px; }
+.billing-plan-heading { align-items: flex-start; display: flex; justify-content: space-between; }
+.billing-plan-heading h2, .billing-usage-card h2 { font-size: 28px; margin: 8px 0; }
+.billing-status { border: 1px solid var(--border-visible); border-radius: 999px; color: var(--text-secondary); font: 700 8px/1 var(--font-mono); letter-spacing: .1em; padding: 8px 10px; text-transform: uppercase; }
+.billing-status.status-active, .billing-status.status-trialing, .billing-status.status-developer { border-color: rgba(101, 217, 154, .35); color: var(--green); }
+.billing-status.status-past_due { border-color: rgba(255, 187, 102, .4); color: #ffbb66; }
+.billing-price-line { align-items: baseline; display: flex; gap: 8px; margin: 54px 0 6px; }
+.billing-price-line strong { font-size: 52px; letter-spacing: -.06em; }
+.billing-price-line span, .billing-plan-card > p, .billing-usage-card > p, .billing-usage-card > small { color: var(--text-tertiary); }
+.billing-warning { background: rgba(255, 187, 102, .08); border: 1px solid rgba(255, 187, 102, .25); padding: 12px; }
+.billing-usage-list { display: grid; gap: 26px; margin: 58px 0 34px; }
+.billing-usage-row > div:first-child { display: flex; font-size: 12px; justify-content: space-between; margin-bottom: 9px; }
+.billing-usage-row span { color: var(--text-tertiary); font-family: var(--font-mono); font-size: 9px; }
+.billing-usage-track { background: var(--border-visible); height: 5px; overflow: hidden; }
+.billing-usage-track i { background: linear-gradient(90deg, var(--brand-gold), var(--accent-orange)); display: block; height: 100%; }
+.refresh-required-notice { align-items: center; background: rgba(255, 107, 53, .07); border: 1px solid rgba(255, 107, 53, .34); display: flex; gap: 24px; justify-content: space-between; margin-bottom: 24px; padding: 22px; }
+.refresh-required-notice span { color: var(--accent-orange); font: 700 8px/1 var(--font-mono); letter-spacing: .13em; }
+.refresh-required-notice h2 { font-size: 20px; margin: 8px 0 4px; }
+.refresh-required-notice p { color: var(--text-secondary); font-size: 12px; margin: 0; max-width: 760px; }
+.profile-identity > img { border: 1px solid var(--border-visible); height: 58px; object-fit: cover; width: 58px; }
+
+.agent-revoke-confirm { display: flex !important; gap: 6px !important; }
+.agent-revoke-confirm button { background: transparent; border: 1px solid rgba(255,99,132,.28); color: #ff9eb2; cursor: pointer; font-family: var(--font-mono); font-size: 8px; padding: 8px 10px; }
+.agent-revoke-confirm button:last-child { border-color: var(--border-visible); color: var(--text-secondary); }
+
 /* Login, legal, 404 */
 .login-page,
 .legal-page,
@@ -1132,8 +1270,7 @@ select:focus {
 
 /* Responsive contract */
 @media (max-width: 1100px) {
-  .hero-copy h1 { font-size: clamp(52px, 7vw, 76px); }
-  .hero-brain { min-height: 540px; }
+  .hero-copy h1 { font-size: clamp(52px, 8.8vw, 96px); }
 }
 
 @media (max-width: 900px) {
@@ -1144,9 +1281,8 @@ select:focus {
   .mobile-menu-button { background: var(--bg-secondary); border-color: var(--border-visible); }
   .mobile-menu-button i { background: var(--text-primary); }
   .nav-dropdown-panel { background: transparent; border: 0; box-shadow: none; }
-  .home-hero { min-height: auto; }
+  .home-hero { min-height: auto; padding-top: 152px; }
   .hero-copy h1 { font-size: clamp(52px, 12vw, 78px); }
-  .hero-brain { min-height: 500px; }
   .hexagon-hero { min-height: 460px; }
   .app-sidebar { background: #050505; }
   .app-content { padding: 28px 18px 56px; }
@@ -1155,6 +1291,11 @@ select:focus {
   .project-source-grid,
   .truth-card-grid,
   .dashboard-grid { grid-template-columns: 1fr; }
+  .pricing-composition .plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pricing-includes { grid-template-columns: 1fr; }
+  .free-plan-body { align-items: start; grid-template-columns: 1fr 1fr; }
+  .free-plan-body .button { grid-column: 1 / -1; justify-self: start; }
+  .billing-settings-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
@@ -1172,8 +1313,6 @@ select:focus {
   .hero-copy h1 { font-size: clamp(46px, 14vw, 66px); }
   .hero-actions { align-items: stretch; }
   .hero-actions .button { width: 100%; }
-  .hero-proof-line { align-items: flex-start; }
-  .hero-brain { min-height: 430px; }
   .hexagon-hero { min-height: 400px; }
   .hexagon-label { display: none; }
   .floating-truth-card { max-width: 180px; }
@@ -1184,6 +1323,16 @@ select:focus {
   .demo-video-meta { grid-template-columns: repeat(2, 1fr); }
   .demo-video-meta span:nth-child(2) { border-right: 0; }
   .demo-video-meta span:nth-child(-n+2) { border-bottom: 1px solid var(--border-visible); }
+  .pricing-composition { padding-inline: 16px; }
+  .pricing-composition .plan-grid { grid-template-columns: 1fr; }
+  .pricing-composition .plan-grid > article { min-height: 360px; }
+  .free-plan { padding: 22px; }
+  .free-plan > header { align-items: start; flex-direction: column; gap: 12px; }
+  .free-plan-body { grid-template-columns: 1fr; }
+  .free-plan-body ul { grid-template-columns: 1fr; }
+  .free-plan-body .button { grid-column: auto; width: 100%; }
+  .billing-plan-card, .billing-usage-card { min-height: auto; padding: 20px; }
+  .agent-revoke-confirm { grid-column: 2 / -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

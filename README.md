@@ -1,6 +1,6 @@
 # HARIKOS AI
 
-**A verified project brain for AI coding agents.**
+**Verified project state for AI coding agents.**
 
 [Live Product](https://harikos-ai.vercel.app) · [GitHub](https://github.com/ashyeager/harikos.ai) · [Docs](./docs)
 
@@ -107,7 +107,7 @@ Local state lives in `.harikos/` (ignored by Git).
 See HARIKOS work end-to-end:
 
 ```bash
-pnpm demo
+pnpm exec tsx scripts/demo-transition.ts
 ```
 
 This creates an isolated test repository, migrates authentication from Clerk to Supabase, and verifies:
@@ -122,7 +122,7 @@ This creates an isolated test repository, migrates authentication from Clerk to 
 
 **Frontend:** Next.js App Router (TypeScript, Tailwind, shadcn/ui)  
 **Backend:** Supabase PostgreSQL + Supabase Auth  
-**GitHub Integration:** Read-only OAuth App (no code writes)  
+**GitHub Integration:** Read-only GitHub App (Contents and Metadata only)
 **Deployment:** Vercel  
 
 **Monorepo structure:**
@@ -140,22 +140,23 @@ See `docs/ARCHITECTURE.md` for full details.
 
 HARIKOS has one complete product with capacity-based plans:
 
-| Plan | Price | Active projects | Agent connections |
-|---|---:|---:|---:|
-| Core | $9/mo | 1 | 1 |
-| Pro | $29/mo | 5 | 5 |
-| Scale | $79/mo | 20 | 20 |
-| Enterprise | Custom | Custom | Custom |
+| Plan | Price | Active projects | Agent connections | Continuity |
+|---|---:|---:|---:|---|
+| Free | $0 | 1 | 1 | Initial scan + 1 manual rescan/month |
+| Core | $9/mo | 1 | 1 | Continuous reverification |
+| Pro | $29/mo | 5 | 5 | Continuous reverification |
+| Scale | $79/mo | 20 | 20 | Continuous reverification |
+| Enterprise | Custom | Custom | Custom | Custom agreement |
 
-New eligible users can start a 7-day Pro trial. Subscription lifecycle events are authoritative for entitlement.
+Free also includes 3 Context Packs and 10 Memory writes per calendar month. Eligible users may choose a 7-day Pro trial. Signed Paddle lifecycle events remain authoritative for paid entitlement.
 
 ---
 
 ## Deploy to Production
 
-1. **Create a Vercel project**
-   - Set "Root Directory" to `apps/web`
-   - Connect your GitHub repo
+1. **Use the linked Vercel project**
+   - Keep the checked-in monorepo build configuration
+   - Deploy from the canonical GitHub repository
 
 2. **Connect Supabase**
    - Create a Supabase project
@@ -228,7 +229,7 @@ and test fixtures remain available for engineering verification.
 
 ## Contributing
 
-This is a solo-built MVP. Feedback and questions welcome at the GitHub repo.
+HARIKOS is the truth layer for AI agents: one verified project state, available to every authorized agent.
 
 ---
 

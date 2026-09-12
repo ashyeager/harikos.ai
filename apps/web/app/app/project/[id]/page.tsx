@@ -34,12 +34,14 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
           </div>
         )}
       />
-      <div className={`overview-status-bar ${openContradictions.length ? "has-attention" : ""}`}>
-        <div><i /><span><strong>{openContradictions.length ? "Scan complete; review open drift" : "Last scan complete"}</strong><small>Scanned {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
+      <div className={`overview-status-bar ${openContradictions.length || snapshot.refreshRequiredAt ? "has-attention" : ""}`}>
+        <div><i /><span><strong>{snapshot.refreshRequiredAt ? "Repository changed; verification required" : openContradictions.length ? "Scan complete; review open drift" : "Last scan complete"}</strong><small>Scanned {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
         <div><span>FILES ANALYZED</span><strong>{snapshot.sourceCount}</strong></div>
         <div><span>VERIFIED</span><strong>{verifiedCount}</strong></div>
         <div><span>DRIFT</span><strong>{openContradictions.length}</strong></div>
       </div>
+
+      {snapshot.refreshRequiredAt ? <section className="refresh-required-notice" role="status"><div><span>REPOSITORY CHANGED</span><h2>This project needs verification.</h2><p>Your last verified state is preserved. Run a manual rescan if your monthly allowance is available, or upgrade to Core to keep HARIKOS continuously synchronized.</p></div><Link className="button button-primary" href="/pricing?plan=core">Upgrade to Core <span>&rarr;</span></Link></section> : null}
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-sm font-bold text-white flex items-center gap-2">
@@ -102,7 +104,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
               <>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] text-muted uppercase tracking-wider font-mono">{snapshot.changes[0].category}</span>
-                  <StatusBadge status={openContradictions.length ? "contradicted" : "verified"} />
+                  <StatusBadge status="verified" />
                 </div>
                 <p className="text-sm text-white leading-relaxed mb-6">{snapshot.changes[0].summary}</p>
                 <div className="bg-ink-elevated p-4 flex items-center justify-between border border-line mb-6 rounded-sm font-mono text-xs">

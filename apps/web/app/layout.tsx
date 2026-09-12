@@ -14,30 +14,31 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "HARIKOS AI — A Project Brain for AI Coding Agents",
+    default: "HARIKOS — Verified Project State for AI Coding Agents",
     template: "%s — HARIKOS AI",
   },
   description:
-    "Build fast with AI. HARIKOS keeps the project straight with shared Truth, Memory, Context, and an agent-neutral bridge.",
+    "Continuously verified project state, evidence, memory, and task-specific context for AI coding agents.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://harikos-ai.vercel.app"),
+  icons: { icon: "/harikos-mark.svg", shortcut: "/harikos-mark.svg", apple: "/harikos-mark.svg" },
   alternates: { canonical: "/" },
   openGraph: {
-    title: "HARIKOS AI — A Project Brain for AI Coding Agents",
-    description: "One shared, continuously verified project brain for Codex, Claude, Cursor, and you.",
+    title: "HARIKOS — Verified Project State for AI Coding Agents",
+    description: "The truth layer for AI coding agents: current evidence, memory, changes, and task-specific context.",
     siteName: "HARIKOS AI",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "HARIKOS AI — A Project Brain for AI Coding Agents",
-    description: "Build fast with AI. HARIKOS keeps the project straight.",
+    title: "HARIKOS — Verified Project State for AI Coding Agents",
+    description: "One verified project state. Every agent.",
   },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={`${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable}`} data-scroll-behavior="smooth" lang="en">
-      <body>{children}</body>
+      <body><a className="skip-link" href="#main-content">Skip to content</a>{children}</body>
     </html>
   );
 }

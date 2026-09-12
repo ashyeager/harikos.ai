@@ -8,7 +8,7 @@ export function MarketingShell({ children, footer = true }: { children: ReactNod
   return (
     <div className="marketing-root">
       <SiteNav />
-      {children}
+      <div id="main-content" tabIndex={-1}>{children}</div>
       {footer ? <SiteFooter /> : null}
       <RevealObserver />
     </div>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title description">
+  <title id="title">HARIKOS mark</title>
+  <desc id="description">A black architectural H joined by a champagne gold diagonal.</desc>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf8"/>
+      <stop offset="1" stop-color="#f2ede2"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1d59f"/>
+      <stop offset="1" stop-color="#b9904c"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="92" height="92" rx="22" fill="url(#tile)"/>
+  <path d="M24 22 39 31v36L24 76Z" fill="#171719"/>
+  <path d="m72 20-15 10v37l15 9Z" fill="#171719"/>
+  <path d="m39 35 18 14v14L39 49Z" fill="url(#gold)"/>
+</svg>

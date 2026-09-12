@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { scanCloudProject } from "../../../../../lib/cloud-projects";
 import { getAuthIdentity } from "../../../../../lib/auth";
-import { ProductAccessError } from "../../../../../lib/entitlements";
+import { ProductAccessError, ProductQuotaError } from "../../../../../lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -19,6 +19,7 @@ export async function POST(
     return NextResponse.json(await scanCloudProject(session, id));
   } catch (error) {
     if (error instanceof ProductAccessError) return NextResponse.json({ error: error.message, code: error.code }, { status: 402 });
+    if (error instanceof ProductQuotaError) return NextResponse.json({ error: error.message, code: error.code }, { status: 429 });
     return NextResponse.json(
       { error: "Repository scan failed." },
       { status: 500 },

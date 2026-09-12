@@ -19,12 +19,15 @@ Use `pnpm verify:github-app` to verify App authentication without printing crede
 
 ## Billing provider
 
-HARIKOS launches with Core ($9/month), Pro ($29/month), and Scale ($79/month),
-plus custom Enterprise agreements. New eligible users receive a 7-day Pro trial.
+HARIKOS provides a HARIKOS-owned Free plan without Paddle, plus Core ($9/month),
+Pro ($29/month), Scale ($79/month), and custom Enterprise agreements. Eligible
+users may choose a 7-day Pro trial after experiencing Free.
 Paddle Billing is the single provider. Configure `PADDLE_API_KEY`,
 `PADDLE_WEBHOOK_SECRET`, `PADDLE_CORE_PRICE_ID`, `PADDLE_PRO_PRICE_ID`, and
 `PADDLE_SCALE_PRICE_ID`; set `PADDLE_ENVIRONMENT=sandbox` outside live billing.
 The Pro recurring price must contain a 7-day trial with payment method collection.
+Free must never require or create a Paddle customer. Paddle merchant setup is
+intentionally deferred until this product release is complete.
 Register
 `https://<production-domain>/api/billing/webhook` for subscription lifecycle
 events and grant the API key permission to create transactions and retrieve

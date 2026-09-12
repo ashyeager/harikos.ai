@@ -12,6 +12,7 @@ export function AppShell({ snapshot, children }: { snapshot?: ProjectSnapshot; c
     sha: snapshot.repository.headSha,
     scannedAt: snapshot.scannedAt,
     mode: snapshot.mode,
+    refreshRequiredAt: snapshot.refreshRequiredAt ?? null,
     openContradictions: snapshot.contradictions.filter((item) => item.status === "open").length,
   } : undefined;
   return <AppChrome project={project}>{children}</AppChrome>;

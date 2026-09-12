@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { checkProjectAssumption, composeContextPack } from "@harikos/core";
 
-import { authenticateAgentToken, beginAgentSession, createAgentMemory, createCloudMemorySchema, finishAgentSession, loadCloudSnapshotForAgent, listAgentMemories, recordAgentOutcome, outcomeSchema } from "../../../../lib/cloud-projects";
-import { ProductAccessError } from "../../../../lib/entitlements";
+import { authenticateAgentToken, beginAgentSession, createAgentMemory, createCloudMemorySchema, finishAgentSession, loadCloudSnapshotForAgent, listAgentMemories, recordAgentOutcome, outcomeSchema, saveAgentContextPack } from "../../../../lib/cloud-projects";
+import { ProductAccessError, ProductQuotaError } from "../../../../lib/entitlements";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -78,7 +78,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
         const task = typeof args.task === "string" ? args.task : undefined;
         if (!task) return rpc(body.id, { isError: true, content: [{ type: "text", text: "task is required" }] });
         const memories = await listAgentMemories(projectId);
-        return rpc(body.id, { content: [{ type: "text", text: composeContextPack(snapshot, task, () => new Date(), memories).text }] });
+        const pack = composeContextPack(snapshot, task, () => new Date(), memories);
+        await saveAgentContextPack(projectId, pack);
+        return rpc(body.id, { content: [{ type: "text", text: pack.text }] });
       }
       return rpc(body.id, { isError: true, content: [{ type: "text", text: "Unknown tool." }] });
     }
@@ -87,6 +89,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
   } catch (error) {
     if (error instanceof ProductAccessError) {
       return NextResponse.json({ error: error.message, code: error.code }, { status: 402 });
+    }
+    if (error instanceof ProductQuotaError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 429 });
     }
     const cause = error instanceof Error ? error.cause : undefined;
     const code =

@@ -3,11 +3,11 @@ import type * as CloudProjects from "../../../../lib/cloud-projects";
 
 vi.mock("../../../../lib/cloud-projects", async (importOriginal) => {
   const actual = await importOriginal<typeof CloudProjects>();
-  return { ...actual, authenticateAgentToken: vi.fn(), createAgentMemory: vi.fn(), loadCloudSnapshotForAgent: vi.fn() };
+  return { ...actual, authenticateAgentToken: vi.fn(), createAgentMemory: vi.fn(), listAgentMemories: vi.fn(), loadCloudSnapshotForAgent: vi.fn(), recordAgentOutcome: vi.fn(), saveAgentContextPack: vi.fn() };
 });
 
-import { authenticateAgentToken, createAgentMemory, loadCloudSnapshotForAgent } from "../../../../lib/cloud-projects";
-import { ProductAccessError } from "../../../../lib/entitlements";
+import { authenticateAgentToken, createAgentMemory, listAgentMemories, loadCloudSnapshotForAgent, recordAgentOutcome, saveAgentContextPack } from "../../../../lib/cloud-projects";
+import { ProductAccessError, ProductQuotaError } from "../../../../lib/entitlements";
 import { GET, POST } from "./route";
 
 function call(body: unknown, token = "test-token", origin?: string) {
@@ -21,6 +21,7 @@ function call(body: unknown, token = "test-token", origin?: string) {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(authenticateAgentToken).mockResolvedValue({ projectId: "project", connectionId: "connection" });
+  vi.mocked(listAgentMemories).mockResolvedValue([]);
 });
 
 describe("remote MCP transport", () => {
@@ -84,6 +85,33 @@ describe("remote MCP transport", () => {
     const response = await call({ jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "record_memory", arguments: { type: "decision", content: "Use Supabase" } } });
     expect(response.status).toBe(200);
     expect(createAgentMemory).toHaveBeenCalledWith("project", "connection", expect.objectContaining({ content: "Use Supabase" }));
+  });
+
+  it("keeps MCP read tools available and persists context packs so their quota is enforced", async () => {
+    const snapshot = { repository: { name: "repo", headSha: "abc" }, truths: [], contradictions: [], changes: [] } as never;
+    vi.mocked(loadCloudSnapshotForAgent).mockResolvedValue(snapshot);
+    const read = await call({ jsonrpc: "2.0", id: 10, method: "tools/call", params: { name: "get_project_truth", arguments: {} } });
+    expect(read.status).toBe(200);
+    expect(saveAgentContextPack).not.toHaveBeenCalled();
+    const context = await call({ jsonrpc: "2.0", id: 11, method: "tools/call", params: { name: "get_context_pack", arguments: { task: "Fix the auth redirect" } } });
+    expect(context.status).toBe(200);
+    expect(saveAgentContextPack).toHaveBeenCalledWith("project", expect.objectContaining({ task: "Fix the auth redirect" }));
+  });
+
+  it("returns the Free quota response when an MCP memory or context write is exhausted", async () => {
+    vi.mocked(loadCloudSnapshotForAgent).mockResolvedValue({ repository: { name: "repo", headSha: "abc" }, truths: [], contradictions: [], changes: [] } as never);
+    vi.mocked(createAgentMemory).mockRejectedValueOnce(new ProductQuotaError("Your plan's memory write limit for this calendar month has been reached."));
+    const memory = await call({ jsonrpc: "2.0", id: 12, method: "tools/call", params: { name: "record_memory", arguments: { type: "note", content: "Quota test" } } });
+    expect(memory.status).toBe(429);
+    vi.mocked(saveAgentContextPack).mockRejectedValueOnce(new ProductQuotaError("Your plan's context pack limit for this calendar month has been reached."));
+    const context = await call({ jsonrpc: "2.0", id: 13, method: "tools/call", params: { name: "get_context_pack", arguments: { task: "Quota test" } } });
+    expect(context.status).toBe(429);
+  });
+
+  it("counts outcome write-backs against the same Free memory-write quota", async () => {
+    vi.mocked(recordAgentOutcome).mockRejectedValueOnce(new ProductQuotaError("Your plan's memory write limit for this calendar month has been reached."));
+    const response = await call({ jsonrpc: "2.0", id: 14, method: "tools/call", params: { name: "record_outcome", arguments: { sessionId: "1a111111-1111-4111-8111-111111111111", summary: "Could not reproduce", status: "failed" } } });
+    expect(response.status).toBe(429);
   });
 
   it("denies MCP access when the token owner has no active entitlement", async () => {

@@ -1,0 +1,161 @@
+/* Public marketing theme only. Product workspaces retain their graphite palette. */
+.marketing-root {
+  color-scheme: light;
+  --bg-primary: #f7f5ef;
+  --bg-secondary: #faf9f5;
+  --bg-tertiary: #eeece5;
+  --bg-hover: rgba(24, 25, 23, .04);
+  --text-primary: #191b19;
+  --text-secondary: #4e514b;
+  --text-tertiary: #66695f;
+  --paper: #191b19;
+  --paper-soft: #4e514b;
+  --muted: #4e514b;
+  --muted-dark: #66695f;
+  --ink-950: #f7f5ef;
+  --ink-900: #faf9f5;
+  --ink-850: #faf9f5;
+  --ink-800: #eeece5;
+  --ink-750: #e9e6dc;
+  --brand-gold: #d8c393;
+  --gold: #d8c393;
+  --gold-accent: #786438;
+  --accent-orange: #786438;
+  --accent-orange-hover: #65542f;
+  --orange-accent: #b64e24;
+  --orange: #b64e24;
+  --amber: #a34924;
+  --green: #26704a;
+  --red: #a53b35;
+  --border-visible: rgba(30, 33, 27, .16);
+  --border-strong: rgba(30, 33, 27, .28);
+  --border-primary: #dfddd4;
+  --border-secondary: #e9e7df;
+  --line: var(--border-visible);
+  --line-strong: var(--border-strong);
+  --panel: #faf9f5;
+  --panel-solid: #faf9f5;
+  --system-bg: #f7f5ef;
+  --system-surface: #faf9f5;
+  --system-elevated: #eeece5;
+  --system-ink: #191b19;
+  --system-ink-soft: #4e514b;
+  --system-muted: #66695f;
+  --system-line: var(--border-visible);
+  --system-line-strong: var(--border-strong);
+  --system-orange: #786438;
+  --shadow-sm: 0 2px 8px rgba(25, 27, 23, .04);
+  --shadow-md: 0 8px 24px rgba(25, 27, 23, .05);
+  --shadow-lg: 0 16px 40px rgba(25, 27, 23, .06);
+  --shadow-panel: var(--shadow-md);
+  --shadow-warm: 0 0 0 transparent;
+  --shadow-glow: 0 0 0 transparent;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.marketing-root :is(.home-hero, .public-hero, .pricing-hero, .public-section-accent,
+  .final-cta-section, .product-cta, .legal-page, .parent-company, .site-footer,
+  .security-disclaimer, .plan-grid, .pricing-note) {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--line);
+}
+.marketing-root :is(.site-nav-shell, .site-nav-shell.is-scrolled, .site-nav,
+  .mobile-menu, .site-mobile-menu) {
+  background: #faf9f5;
+  color: var(--text-primary);
+  border-color: var(--line);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.marketing-root :is(.hero-grid-overlay, .public-hero-grid, .cta-grid) {
+  background-image: none;
+}
+.marketing-root :is(.button-primary, .button-dark) {
+  background: #191b19;
+  color: #faf9f5;
+  border-color: #191b19;
+  box-shadow: none;
+}
+.marketing-root :is(.button-primary, .button-dark):hover {
+  background: #353831;
+  color: #faf9f5;
+  box-shadow: none;
+}
+.marketing-root :is(.button-secondary, .button-ghost) {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+.marketing-root :is(.button-secondary, .button-ghost):hover {
+  background: #eeece5;
+  color: var(--text-primary);
+}
+.marketing-root :is(.system-pill, .example-label, .boundary-label) {
+  background: #eeece5;
+  color: #65542f;
+  border-color: #d8c393;
+  box-shadow: none;
+}
+.marketing-root :is(.truth-hero-panel, .memory-stack article, .context-pack-hero,
+  .before-build-example, .agent-core, .agent-node, .config-preview,
+  .request-response section, .boundary-core, .about-piece, .plan-grid > article,
+  .pricing-table, .evidence-deep-grid > section article, .cinematic-loop,
+  .cinematic-topbar, .cinematic-stage, .cinematic-task, .cinematic-files,
+  .cinematic-truth, .temporal-topbar, .temporal-code, .temporal-claims,
+  .handoff-agent, .handoff-records, .handoff-brain, .handoff-context,
+  .compression-task, .context-pack-mini, .interactive-terminal, .terminal-bar,
+  .terminal-body, .terminal-presets, .product-brain-frame) {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.marketing-root :is(.agent-network, .lifecycle-visual, .security-boundary,
+  .about-fragment, .memory-stack, .compression-field) {
+  background: var(--bg-secondary);
+  box-shadow: none;
+}
+.marketing-root :is(.config-preview pre, .api-tool-table code,
+  .request-response pre, .terminal-command, .terminal-output,
+  .footer-columns strong, .brand, .brand-wordmark) { color: var(--text-primary); }
+.marketing-root :is(.lifecycle-core, .about-equation strong, .cta-orbit span) {
+  background: #d8c393;
+  color: #191b19;
+  box-shadow: none;
+}
+.marketing-root :is(.architecture-loop i, .evidence-path i, .memory-stack-rail i,
+  .agent-core > i, .system-pill i, .life-node i, .walkthrough aside i,
+  .public-memory-timeline article > i, .memory-control-grid i) { box-shadow: none; }
+.marketing-root .public-memory-timeline article > i { background: #faf9f5; }
+.marketing-root .before-build-example .check-fail { color: var(--red); }
+.marketing-root :is(.text-white, .text-paper) { color: var(--text-primary) !important; }
+.marketing-root :is(.bg-black, .bg-ink, .bg-ink-soft) { background-color: var(--bg-secondary) !important; }
+.marketing-root :is(a, button, summary):focus-visible {
+  outline: 2px solid #65542f;
+  outline-offset: 4px;
+}
+.marketing-root ::selection { background: #d8c393; color: #191b19; }
+.marketing-root :is(.nav-dropdown-panel, .nav-dropdown-intro, .site-nav-links.is-open) {
+  background: #faf9f5;
+  color: var(--text-primary);
+  border-color: var(--line);
+  backdrop-filter: none;
+}
+.marketing-root .nav-dropdown-grid a:hover { background: #eeece5; }
+.marketing-root :is(.hero-copy h1 span, .hero-slogan) {
+  color: var(--text-primary);
+  background-image: none;
+  -webkit-text-fill-color: currentColor;
+  text-shadow: none;
+}
+.marketing-root .demo-video-frame {
+  --text-primary: #f7f5ef;
+  --text-secondary: #d0d0ca;
+  --text-tertiary: #a4a69e;
+  --line: rgba(255, 255, 255, .16);
+  background: #191b19;
+  color: #f7f5ef;
+}

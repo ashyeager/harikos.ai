@@ -3,21 +3,28 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { cloudBillingWebhookEvents, cloudSubscriptions, cloudUsers, desc, eq, isNull, lt, openCloudDatabase, or, readCloudDatabaseConfig } from "@harikos/db";
 
 import { getAuthIdentity, type AuthIdentity } from "./auth";
-import { PLAN_CONFIG, type Plan } from "./entitlements";
+import { type PaidPlan, type Plan } from "./entitlements";
 
 const PADDLE_API = "https://api.paddle.com";
 const PADDLE_SANDBOX_API = "https://sandbox-api.paddle.com";
 type PaddleSubscription = { id?: string; customer_id?: string; status?: string; items?: Array<{ price?: { id?: string } }>; custom_data?: { harikosUserId?: string; plan?: string }; started_at?: string | null; next_billed_at?: string | null; scheduled_change?: { action?: string; effective_at?: string } | null };
+
+export class ManagedSubscriptionError extends Error {
+  constructor() {
+    super("This account already has a managed subscription.");
+    this.name = "ManagedSubscriptionError";
+  }
+}
 function paddleApiUrl(): string { return process.env.PADDLE_ENVIRONMENT === "sandbox" ? PADDLE_SANDBOX_API : PADDLE_API; }
 function paddleApiKey(): string { const key = process.env.PADDLE_API_KEY?.trim(); if (!key) throw new Error("Paddle billing is not configured."); return key; }
-function planPriceId(plan: Plan): string | undefined { const keys: Record<Exclude<Plan, "enterprise">, string> = { core: "PADDLE_CORE_PRICE_ID", pro: "PADDLE_PRO_PRICE_ID", scale: "PADDLE_SCALE_PRICE_ID" }; return plan === "enterprise" ? undefined : process.env[keys[plan]]?.trim(); }
-function planFromPrice(priceId: string | undefined): Plan | undefined { return (["core", "pro", "scale"] as const).find((plan) => planPriceId(plan) === priceId); }
+function planPriceId(plan: PaidPlan): string | undefined { const keys: Record<Exclude<PaidPlan, "enterprise">, string> = { core: "PADDLE_CORE_PRICE_ID", pro: "PADDLE_PRO_PRICE_ID", scale: "PADDLE_SCALE_PRICE_ID" }; return plan === "enterprise" ? undefined : process.env[keys[plan]]?.trim(); }
+function planFromPrice(priceId: string | undefined): PaidPlan | undefined { return (["core", "pro", "scale"] as const).find((plan) => planPriceId(plan) === priceId); }
 async function paddleFetch(path: string, init: RequestInit): Promise<unknown> { const response = await fetch(`${paddleApiUrl()}${path}`, { ...init, headers: { Authorization: `Bearer ${paddleApiKey()}`, "Content-Type": "application/json", ...(init.headers ?? {}) }, cache: "no-store" }); if (!response.ok) throw new Error("Paddle billing request failed."); return response.json(); }
 async function cloudUser(identity: AuthIdentity) { const databaseUrl = readCloudDatabaseConfig(); if (!databaseUrl) throw new Error("PostgreSQL is not configured."); const connection = await openCloudDatabase(databaseUrl, { migrate: false }); const [user] = await connection.db.select().from(cloudUsers).where(eq(cloudUsers.supabaseUserId, identity.id)); return { connection, user }; }
 
 export async function createCheckoutSession(identity: AuthIdentity, selectedPlan: Plan = "pro"): Promise<string> {
-  if (selectedPlan === "enterprise") throw new Error("Enterprise checkout is arranged directly."); const priceId = planPriceId(selectedPlan); if (!priceId) throw new Error("Paddle price is not configured."); const { connection, user } = await cloudUser(identity);
-  try { if (!user) throw new Error("HARIKOS user profile is not available."); const [current] = await connection.db.select({ status: cloudSubscriptions.status }).from(cloudSubscriptions).where(eq(cloudSubscriptions.userId, user.id)).orderBy(desc(cloudSubscriptions.updatedAt)).limit(1); if (current && ["trialing", "active", "past_due"].includes(current.status)) throw new Error("This account already has a managed subscription."); const response = await paddleFetch("/transactions", { method: "POST", body: JSON.stringify({ items: [{ price_id: priceId, quantity: 1 }], custom_data: { harikosUserId: user.supabaseUserId, plan: selectedPlan } }) }) as { data?: { checkout?: { url?: string } } }; const url = response.data?.checkout?.url; if (!url || !url.startsWith("https://")) throw new Error("Paddle did not return a hosted checkout URL."); return url; } finally { await connection.close(); }
+  if (selectedPlan === "free" || selectedPlan === "enterprise") throw new Error("This plan is not available through hosted checkout."); const priceId = planPriceId(selectedPlan); if (!priceId) throw new Error("Paddle price is not configured."); const { connection, user } = await cloudUser(identity);
+  try { if (!user) throw new Error("HARIKOS user profile is not available."); const [current] = await connection.db.select({ status: cloudSubscriptions.status }).from(cloudSubscriptions).where(eq(cloudSubscriptions.userId, user.id)).orderBy(desc(cloudSubscriptions.updatedAt)).limit(1); if (current && ["trialing", "active", "past_due"].includes(current.status)) throw new ManagedSubscriptionError(); const response = await paddleFetch("/transactions", { method: "POST", body: JSON.stringify({ items: [{ price_id: priceId, quantity: 1 }], custom_data: { harikosUserId: user.supabaseUserId, plan: selectedPlan } }) }) as { data?: { checkout?: { url?: string } } }; const url = response.data?.checkout?.url; if (!url || !url.startsWith("https://")) throw new Error("Paddle did not return a hosted checkout URL."); return url; } finally { await connection.close(); }
 }
 export async function createPortalSession(identity: AuthIdentity): Promise<string> {
   const { connection, user } = await cloudUser(identity);
@@ -33,7 +40,7 @@ export async function handlePaddleWebhook(payload: string, signature: string | n
   if (!event.event_id || !event.event_type?.startsWith("subscription.") || !subscription?.id) return;
   const supabaseUserId = subscription.custom_data?.harikosUserId;
   const priceId = subscription.items?.[0]?.price?.id;
-  const plan = planFromPrice(priceId) ?? (subscription.custom_data?.plan && subscription.custom_data.plan in PLAN_CONFIG ? subscription.custom_data.plan as Plan : undefined);
+  const plan = planFromPrice(priceId) ?? (subscription.custom_data?.plan && ["core", "pro", "scale", "enterprise"].includes(subscription.custom_data.plan) ? subscription.custom_data.plan as PaidPlan : undefined);
   if (!supabaseUserId || !plan || !subscription.customer_id || !subscription.status) throw new Error("Paddle billing event is incomplete.");
   const databaseUrl = readCloudDatabaseConfig();
   if (!databaseUrl) throw new Error("PostgreSQL is not configured.");

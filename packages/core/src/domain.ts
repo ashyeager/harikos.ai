@@ -132,6 +132,7 @@ export const projectSnapshotSchema = z.object({
   contradictions: z.array(truthContradictionSchema),
   changes: z.array(projectChangeSchema),
   mode: z.enum(["fixture", "local", "github"]),
+  refreshRequiredAt: z.string().datetime({ offset: true }).nullable().optional(),
 });
 
 export const contextPackSchema = z.object({

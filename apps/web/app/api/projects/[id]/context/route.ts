@@ -5,7 +5,7 @@ import { z } from "zod";
 import { listCloudMemories, saveCloudContextPack } from "../../../../../lib/cloud-projects";
 import { projectSnapshot } from "../../../../../lib/project-data";
 import { getAuthIdentity } from "../../../../../lib/auth";
-import { requireProductAccess, ProductAccessError } from "../../../../../lib/entitlements";
+import { requireProductAccess, ProductAccessError, ProductQuotaError } from "../../../../../lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -32,6 +32,7 @@ export async function POST(
   } catch (error) {
     const invalidInput = error instanceof Error && error.name === "ZodError";
     if (error instanceof ProductAccessError) return NextResponse.json({ error: error.message, code: error.code }, { status: 402 });
+    if (error instanceof ProductQuotaError) return NextResponse.json({ error: error.message, code: error.code }, { status: 429 });
     return NextResponse.json(
       { error: invalidInput ? "A task between 3 and 1,000 characters is required." : "Context generation failed." },
       { status: invalidInput ? 400 : 500 },

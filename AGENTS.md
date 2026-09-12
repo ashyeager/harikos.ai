@@ -1,696 +1,91 @@
-# AGENTS.md — HARIKOS AI Repository Instructions
+# AGENTS.md — HARIKOS production rules
 
-**Version:** V4 — Paid SaaS Product Lock
-**Date:** September 11, 2026
+**Authority:** September 2026 product lock. These instructions supersede older phase, local-first, demo, open-source, and pricing documents.
 
-These instructions apply to Codex, Claude Code, Cursor, Hermes, Copilot agents, and any other coding agent working inside the HARIKOS repository.
+## Product
 
----
-
-# 1. Read First
-
-Before meaningful product/architecture work, read:
-
-1. `docs/harikos_ai_prd.md`
-2. `docs/ARCHITECTURE.md`
-3. `docs/BUILD_STATE.md` if present
-4. relevant `docs/adr/*`
-
-These documents define the current product.
-
-Older documents describing:
-
-- local-first as the main product;
-- SQLite as the SaaS database;
-- no auth;
-- no billing;
-- memory later;
-- agent integration later;
-- CLI/MCP as the primary UX;
-- Project Truth dashboard as the entire product;
-
-are superseded.
-
----
-
-# 2. Product Definition
-
-HARIKOS is:
-
-> **A shared, continuously verified project brain for AI coding agents and AI-native builders.**
-
-Marketing core:
-
-> **Build fast with AI. HARIKOS keeps the project straight.**
-
-Supporting:
-
-> **One shared, continuously verified project brain for Codex, Claude, Cursor, and you.**
-
-Optional punch line:
-
-> **Vibe code without losing the plot.**
-
-HARIKOS combines:
+HARIKOS is verified project state for AI coding agents: the truth layer for AI agents.
 
 ```text
-TRUTH
-MEMORY
-CONTEXT
-AGENT BRIDGE
+GitHub repository -> scan -> Evidence -> current Truth -> Changes and contradictions
+-> persistent Memory -> task-specific Context -> MCP agent -> outcome/write-back
+-> repository change -> reverification
 ```
 
-Project Truth is the verification layer, not the entire product.
+Truth and Memory are separate. Truth is what current evidence supports. Memory records what happened. Agent statements never become Truth without evidence. Preserve provenance, uncertainty, contradictions, supersession, and temporal history.
 
----
+HARIKOS is a cloud-first, closed-source SaaS. `apps/web` is the only production web app. Do not create alternate frontends, local/demo customer modes, fake production state, generic chat, or another coding agent.
 
-# 3. MVP Means a Real SaaS
+## Plans and entitlement
 
-The MVP is not complete until the real loop works:
+`apps/web/lib/entitlements.ts` is the single server-side plan authority.
+
+- Free: $0; 1 active project; 1 active agent; initial scan plus 1 manual rescan per UTC calendar month; 3 Context Packs/month; 10 Memory writes/month; no automatic push reverification.
+- Core: $9/month; 1 project; 1 agent; continuous reverification and ongoing usage.
+- Pro: $29/month; 5 projects; 5 agents; continuous reverification; optional one-time 7-day trial for eligible accounts.
+- Scale: $79/month; 20 projects; 20 agents; high usage.
+- Enterprise: custom contact path; do not invent enterprise capabilities.
+
+A new authenticated nondeveloper without a valid paid subscription receives Free. Free does not require Paddle. Free users can complete the real GitHub -> scan -> Truth/Evidence -> one agent -> Context loop. Reading existing Truth, Evidence, Memory, Context history, and read-style MCP remains available after write quota exhaustion.
+
+Paddle is the only paid billing authority. Signed webhooks determine trial and paid state. Never grant entitlement from browser redirects or client data. Missing Paddle configuration must produce an honest temporary-unavailable state.
+
+Developer access uses an immutable Supabase UUID allowlist or persisted server-side role. It bypasses payment and quotas while retaining authentication, ownership, GitHub authorization, isolation, and token security.
+
+## Authentication and data
+
+Use Supabase Auth with current SSR cookie patterns. Resolve identity server-side for protected operations. Validate redirect targets. GitHub login and GitHub App repository authorization are separate.
+
+Supabase PostgreSQL stores users, subscription state, GitHub installations, repositories, projects, scans, claims, evidence, contradictions, changes, memories, Context Packs, agent connections, sessions, outcomes, and usage state. Inspect remote schema and checked-in migrations before DDL. Prefer additive migration and preserve data. Use RLS where appropriate and retain application-level ownership checks.
+
+Never commit or expose `.env` files, private keys, service-role keys, OAuth secrets, Paddle secrets, GitHub secrets, webhook secrets, user tokens, or agent tokens.
+
+## GitHub and scans
+
+Preserve the working GitHub App path and least privileges: Contents Read and Metadata Read. Validate installation ownership and repository selection. Use short-lived installation tokens.
+
+Verify webhook signatures. Paid and developer default-branch pushes reverify the project. Free pushes record that the repository changed and requires refresh; they do not run unlimited scans. A successful allowed manual scan clears the refresh-required state. Never present stale state as continuously verified.
+
+Do not rewrite the Truth engine speculatively. Fix proven defects narrowly. Do not ingest secret paths or execute arbitrary repository code.
+
+## MCP
+
+The production remote endpoint is `apps/web/app/api/mcp/[projectId]/route.ts`. Maintain semantic tools for project Truth, Memory search, recent changes, Context Packs, assumption checks, Memory/outcome write-back, and agent sessions. Reuse tools rather than duplicating them.
+
+Tokens are high entropy, hashed, project-scoped, shown once, and revocable. Every call checks token, project scope, ownership, and entitlement. Free read tools remain useful; Context and Memory writes enforce the same persistent quotas as the browser product. Revoked tokens fail immediately.
+
+## Product experience
+
+Marketing uses warm ivory, near-black type, and champagne gold. Product surfaces use graphite. Orange denotes changes, contradictions, or warnings; green denotes verified. Preserve the approved architectural H logo. The homepage uses:
+
+- “Your agents can read the code. HARIKOS tells them what’s actually true.”
+- “Continuously verified project state, evidence, memory, and task-specific context for AI coding agents.”
+- “One verified project state. Every agent.”
+- Primary CTA: “Start Free.”
+
+Do not redesign established routes without explicit instruction. Keep the multi-page public site and refine existing app flows. Use real data or honest loading, empty, disabled, refresh-required, and error states. No fake repos, users, scans, billing, metrics, customers, memories, agents, testimonials, or integrations.
+
+## Repository work
+
+Before modifying, read `docs/harikos_ai_prd.md`, `docs/ARCHITECTURE.md`, `docs/SETUP.md`, relevant ADRs, current manifests, schema/migrations, and the affected implementation. Check `git status`, branch, and diff. Preserve uncommitted work.
+
+Before deleting or replacing code, trace imports, runtime use, scripts/tests, Vercel use, and package consumers. Delete only when dead, duplicate, superseded, or unsafe is proven. Local development, fixtures, tests, mock servers, and verification tools remain legitimate engineering infrastructure.
+
+Never use `git reset --hard`, `git clean -fd`, force-push, or destructive data migration without explicit authorization.
+
+## Verification and release
+
+Run the configured layers appropriate to the change:
 
 ```text
-login
-→ entitlement
-→ GitHub
-→ repo
-→ scan
-→ Truth/Evidence
-→ persistent Memory
-→ agent connection
-→ Context
-→ agent write-back
-→ persisted history
-→ billing
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm test:e2e
+git diff --check
 ```
 
-No demo-only dashboard counts as completion.
+Do not treat a Next build that skips checks as proof; run typecheck separately. Browser-check desktop and mobile, public routes, login boundaries, real data states, and console errors.
 
----
-
-# 4. Reality-Only Rule
-
-Never fabricate or hard-code production state.
-
-Do not ship:
-
-- fake repositories;
-- fake scans;
-- fake connected agents;
-- fake memories;
-- fake customers;
-- fake metrics;
-- fake billing;
-- dead CTA buttons;
-- pretend integrations;
-- success states without backend success.
-
-Production UI must render:
-
-```text
-REAL DATA
-or
-HONEST EMPTY / LOADING / ERROR STATE
-```
-
-Fixtures belong in tests/dev isolation only.
-
----
-
-# 5. Core Domain Invariants
-
-## Truth != Memory
-
-Memory records what happened.
-
-Truth represents what is currently supported by project evidence.
-
-## Evidence
-
-Important verified claims must be inspectable.
-
-## Temporal Truth
-
-Preserve current and historical state.
-
-## Contradictions
-
-Do not flatten conflicting evidence.
-
-## Agent claims are not authority
-
-`record_memory("we use X")` does not mean Truth becomes X.
-
-## Deterministic first
-
-Use source/config/Git/tests for deterministic facts before LLM inference.
-
-## Agent-neutral
-
-Do not bind HARIKOS to one coding agent.
-
-## Minimal useful context
-
-Do not dump the entire project brain into every task.
-
----
-
-# 6. Memory Is MVP
-
-Memory is no longer a later roadmap feature.
-
-MVP memory types:
-
-```text
-decision
-attempt
-failed_attempt
-fix
-bug
-root_cause
-constraint
-discovery
-outcome
-incident
-note
-```
-
-Memory must persist across browser sessions and agent sessions.
-
-Agent memory can be:
-
-```text
-active
-superseded
-archived
-```
-
-Do not build sophisticated decay/consolidation yet.
-
----
-
-# 7. Agent Bridge Is MVP
-
-Remote agent connection is no longer “later.”
-
-Implement/use one agent-neutral Remote MCP bridge.
-
-Users must be able to:
-
-```text
-create token
-→ configure coding agent
-→ agent calls HARIKOS
-→ retrieve Truth/Memory/Context
-→ record Memory/Outcome
-→ revoke token
-```
-
-Never display a created secret token again after initial creation.
-
-Store secure token hash/prefix where practical.
-
----
-
-# 8. MVP MCP Tools
-
-Maintain real tools equivalent to:
-
-```text
-get_project_truth
-search_project_memory
-get_recent_changes
-get_context_pack
-record_memory
-record_outcome
-check_assumption
-```
-
-If existing Phase 1 tools already cover these semantics, adapt/reuse rather than duplicate.
-
----
-
-# 9. Authentication Is MVP
-
-Preferred:
-
-> Supabase Auth.
-
-Required:
-
-- GitHub social login;
-- persistent session;
-- protected routes;
-- logout;
-- server authorization;
-- user/profile row.
-
-Do not confuse GitHub social login with GitHub App repository access.
-
----
-
-# 10. PostgreSQL Is MVP
-
-Main SaaS state:
-
-> Supabase PostgreSQL.
-
-Persist:
-
-```text
-users/profile
-billing
-projects
-repositories
-installations
-scans
-claims
-evidence
-contradictions
-memories
-changes
-contexts
-agent connections
-agent sessions
-outcomes
-usage
-```
-
-SQLite may remain for tests/legacy tools only.
-
----
-
-# 11. GitHub Is MVP
-
-Preferred repository integration:
-
-> GitHub App.
-
-Use minimum permissions.
-
-Never require ordinary users to paste PATs.
-
-Use `RepositorySource`.
-
-Truth Engine must not directly depend on Octokit/GitHub internals.
-
----
-
-# 12. Billing Is MVP
-
-Billing is no longer a non-goal.
-
-Launch plans:
-
-```text
-Core ($9/month): 1 active project, 1 active agent connection
-Pro ($29/month): 5 active projects, 5 active agent connections
-Scale ($79/month): 20 active projects, 20 active agent connections
-Enterprise: custom agreement; no enterprise product features in this phase
-```
-
-There is no permanent Free plan. New eligible users may start a 7-day Pro trial.
-
-Use:
-
-- Paddle hosted Checkout;
-- signed Paddle webhooks;
-- Paddle subscription management;
-- centralized entitlements.
-
-Do not grant paid features from client redirect state.
-
-Paddle billing state is authoritative.
-
----
-
-# 13. Centralized Entitlements
-
-Keep plan/limits in one domain module.
-
-Do not scatter plan checks.
-
-Enforce launch limits on the server:
-
-```text
-Core: 1 project / 1 agent
-Pro: 5 projects / 5 agents
-Scale: 20 projects / 20 agents
-```
-
-Pricing/limits must be changeable without rewriting the product.
-
----
-
-# 14. Preserve Existing Working Code
-
-Before replacing code, inspect it.
-
-Prefer:
-
-```text
-reuse
-adapt
-wrap
-migrate incrementally
-```
-
-over:
-
-```text
-delete and regenerate
-```
-
-Preserve good Phase 1 work:
-
-- scanner;
-- parsers;
-- claims/evidence;
-- Truth Resolver;
-- contradictions;
-- supersession;
-- memory;
-- context;
-- MCP;
-- fixtures;
-- tests.
-
----
-
-# 15. Product Routes
-
-Public:
-
-```text
-/
-pricing
-auth
-```
-
-Authenticated:
-
-```text
-/app/dashboard
-/app/projects
-/app/project/[id]
-/app/project/[id]/truth
-/app/project/[id]/memory
-/app/project/[id]/changes
-/app/project/[id]/agents
-/app/project/[id]/understand
-/app/project/[id]/context
-/app/settings/profile
-/app/settings/billing
-/app/settings/security
-```
-
-Routes may follow current repository conventions while preserving product semantics.
-
----
-
-# 16. Frontend During Functional Lock
-
-Do not burn engineering time on visual spectacle while the core flow is incomplete.
-
-Frontend in this phase must be:
-
-- usable;
-- honest;
-- wired to real data;
-- accessible;
-- not broken.
-
-Do not do a massive visual redesign unless explicitly requested after the functional MVP lock.
-
----
-
-# 17. GitHub Repository Rules
-
-Production repo access:
-
-- GitHub App;
-- server-side installation tokens;
-- selected repositories;
-- no permanent installation token storage;
-- minimum permissions;
-- authorization to current user.
-
-GitHub webhook updates should be verified by signature.
-
-If automatic updates are not actually configured, the UI says “Last scanned,” not “continuously monitored.”
-
----
-
-# 18. Repository Data Policy
-
-Default:
-
-```text
-GitHub
-→ fetch relevant files
-→ analyze
-→ derive structured knowledge
-→ discard unnecessary raw source
-```
-
-Never ingest live:
-
-```text
-.env
-private keys
-tokens
-credentials
-```
-
-Do not make privacy claims beyond reality.
-
----
-
-# 19. Billing Security
-
-Never:
-
-- trust Checkout success query params as entitlement;
-- expose Paddle API keys or webhook secrets;
-- skip webhook signature verification;
-- directly trust client-selected plan state.
-
-Billing webhook handling should be idempotent.
-
----
-
-# 20. Agent Token Security
-
-Agent tokens:
-
-- high entropy;
-- scoped;
-- revocable;
-- stored hashed where practical;
-- only plaintext once;
-- never committed/logged.
-
-MCP tools verify project authorization before returning data.
-
----
-
-# 21. Supabase Security
-
-Use current SSR patterns.
-
-Use RLS/permissions where appropriate.
-
-Never expose service-role key client-side.
-
-Never create permissive policies for private user/project data just to make development easier.
-
----
-
-# 22. No Overengineering
-
-Do not add:
-
-- Kubernetes;
-- Kafka;
-- Neo4j;
-- Elasticsearch;
-- giant vector DB;
-- microservices;
-- complex queues;
-- full enterprise RBAC;
-- multi-region architecture;
-
-for the MVP.
-
-One coherent full-stack application is preferred.
-
----
-
-# 23. Closed-Source Product Boundary
-
-HARIKOS is closed source for now. Do not scrape, copy, or vendor third-party
-repositories as a product strategy. Normal package-manager dependencies remain
-allowed when their licenses and notices are respected.
-
----
-
-# 24. Required Functional Tests
-
-At minimum test:
-
-## Auth
-- login;
-- logout;
-- route protection;
-- ownership.
-
-## Billing
-- webhook-derived entitlement;
-- webhook-derived trial and paid-plan gating;
-- portal boundary.
-
-## GitHub
-- installation/repo listing;
-- real repository analysis.
-
-## Truth
-- claim/evidence persistence;
-- Clerk → Supabase supersession.
-
-## Memory
-- create/persist/retrieve;
-- relevant memory in Context.
-
-## Agents
-- create token;
-- MCP request works;
-- record memory;
-- revoke token rejects.
-
-## Handoff
-- Agent A writes decision/failure/outcome;
-- Agent B receives relevant context.
-
----
-
-# 25. Git Safety
-
-Before meaningful changes:
-
-```text
-git status
-git branch
-git diff
-```
-
-Never without explicit approval:
-
-```bash
-git reset --hard
-git clean -fd
-git push --force
-```
-
-Preserve uncommitted work.
-
----
-
-# 26. Secret Safety
-
-Never commit:
-
-```text
-.env
-.env.local
-Supabase secrets
-Paddle secrets
-GitHub private key
-webhook secrets
-agent tokens
-AI API keys
-```
-
-Maintain `.env.example` with names only.
-
----
-
-# 27. Documentation
-
-Keep aligned:
-
-```text
-AGENTS.md
-docs/harikos_ai_prd.md
-docs/ARCHITECTURE.md
-docs/BUILD_STATE.md
-docs/adr/*
-```
-
-Do not leave old docs claiming Billing/Memory/Agents are “later.”
-
----
-
-# 28. Builder-With-Intent
-
-For major architecture changes report briefly:
-
-```text
-what changed
-why
-files
-data flow
-trade-off
-```
-
-Do not hide important architectural decisions behind generated code.
-
----
-
-# 29. Current Execution Priority
-
-```text
-1. inspect what is actually real
-2. fix auth
-3. fix Postgres persistence
-4. verify GitHub real repo flow
-5. verify Project Truth
-6. implement/persist Memory
-7. implement remote MCP agent connection
-8. implement Truth+Memory Context
-9. implement agent write-back/session/outcome
-10. implement Paddle subscription
-11. remove fake/dead production states
-12. browser/integration/security tests
-13. clean build
-14. push validated state
-15. frontend overhaul afterward
-```
-
-Do not rebuild working steps.
-
----
-
-# 30. North Star
-
-A real user should be able to:
-
-```text
-Sign in.
-
-Connect GitHub.
-
-HARIKOS understands the project.
-
-Connect Codex/Claude/Cursor.
-
-The agent remembers previous decisions and failures.
-
-HARIKOS checks current project facts against the code.
-
-The next agent receives current, relevant context.
-
-The user can inspect and control that memory.
-
-The user can pay for the product.
-```
-
-That is the MVP.
+Release from an isolated `codex/` branch. Push the branch, verify the Vercel Preview, and run a fresh final-diff security/correctness review. Only then merge/push to `main` without force and verify Production is READY at the exact expected SHA. Check `/`, `/pricing`, `/login`, `/api/status`, protected-route behavior, and configured authenticated/GitHub/MCP flows. Record evidence in `DAILY.md` without fabricating untested success.

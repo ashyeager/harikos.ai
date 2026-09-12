@@ -19,6 +19,8 @@ export function RepositorySelector() {
   const [connecting, setConnecting] = useState<string>();
   const [message, setMessage] = useState<string>();
   const [createdProjectId, setCreatedProjectId] = useState<string>();
+  const [reloadKey, setReloadKey] = useState(0);
+  const [connectingStage, setConnectingStage] = useState<"creating" | "scanning">();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -38,10 +40,11 @@ export function RepositorySelector() {
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, []);
+  }, [reloadKey]);
 
   async function connect(repository: RepositoryOption) {
     setConnecting(repository.githubRepositoryId);
+    setConnectingStage("creating");
     setMessage(undefined);
     try {
       const response = await fetch("/api/projects", {
@@ -57,6 +60,7 @@ export function RepositorySelector() {
       }
 
       setCreatedProjectId(body.id);
+      setConnectingStage("scanning");
 
       const scanResponse = await fetch(`/api/projects/${body.id}/scan`, { method: "POST" });
       const scanBody = (await scanResponse.json()) as { projectId?: string; error?: string };
@@ -72,17 +76,18 @@ export function RepositorySelector() {
       setMessage("Repository connection could not reach the server.");
     } finally {
       setConnecting(undefined);
+      setConnectingStage(undefined);
     }
   }
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-muted font-mono text-xs flex items-center justify-center gap-3 bg-ink border border-line">
+      <div aria-live="polite" className="p-8 text-center text-muted font-mono text-xs flex items-center justify-center gap-3 bg-ink border border-line" role="status">
         <svg className="animate-spin h-4 w-4 text-orange" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        Checking authorized repositories...
+        Checking authorized repositories…
       </div>
     );
   }
@@ -101,7 +106,7 @@ export function RepositorySelector() {
           <a href="/api/github/install/start" className="h-12 px-6 flex items-center justify-center gap-2 bg-white text-ink hover:bg-paper-soft font-mono font-bold text-xs tracking-wide transition-colors">
             Install GitHub App &rarr;
           </a>
-          {message && <p className="text-red text-xs" role="alert">{message}</p>}
+          {message ? <div className="flex flex-wrap items-center gap-4"><p className="text-red text-xs" role="alert">{message}</p><button className="button button-ghost" onClick={() => { setMessage(undefined); setLoading(true); setReloadKey((value) => value + 1); }} type="button">Retry repository lookup</button></div> : null}
           {createdProjectId && <a className="text-orange text-xs" href={`/app/project/${createdProjectId}`}>Open the created project →</a>}
         </div>
       </section>
@@ -131,15 +136,16 @@ export function RepositorySelector() {
               <span className="text-[10px] text-muted truncate">{repository.private ? "Private" : "Public"} &middot; {repository.defaultBranch}</span>
             </div>
             <b className="font-mono text-[9px] text-muted group-hover:text-orange transition-colors self-start md:self-auto mt-2 md:mt-0">
-              {connecting === repository.githubRepositoryId ? "Analyzing..." : "Connect \u2192"}
+              {connecting === repository.githubRepositoryId ? connectingStage === "scanning" ? "Scanning repository…" : "Creating project…" : "Connect \u2192"}
             </b>
           </button>
         ))}
       </div>
-      {(message || createdProjectId) && <div className="p-4 border-t border-line">
+      <div aria-live="polite" className={`p-4 border-t border-line ${(message || createdProjectId || connecting) ? "" : "sr-only"}`} role="status">
+        {connecting ? <p className="text-muted text-xs">{connectingStage === "scanning" ? "Project created. HARIKOS is scanning repository evidence…" : "Creating the project with verified repository ownership…"}</p> : null}
         {message && <p className="text-red text-xs" role="alert">{message}</p>}
         {createdProjectId && <a className="text-orange text-xs" href={`/app/project/${createdProjectId}`}>Open the created project →</a>}
-      </div>}
+      </div>
     </section>
   );
 }

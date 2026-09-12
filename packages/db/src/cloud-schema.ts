@@ -107,6 +107,7 @@ export const cloudProjects = harikosCloud.table(
       .notNull()
       .references(() => cloudUsers.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    refreshRequiredAt: timestamp("refresh_required_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -150,6 +151,7 @@ export const cloudScans = harikosCloud.table(
       .notNull()
       .references(() => cloudProjects.id, { onDelete: "cascade" }),
     status: text("status").notNull(),
+    initial: boolean("initial").notNull().default(false),
     commitSha: text("commit_sha").notNull(),
     startedAt: timestamp("started_at", { withTimezone: true })
       .defaultNow()

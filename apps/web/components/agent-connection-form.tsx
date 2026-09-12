@@ -15,6 +15,7 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string>();
   const [endpoint, setEndpoint] = useState("");
+  const [confirmingRevoke, setConfirmingRevoke] = useState<string>();
   const config = token ? `Endpoint: ${endpoint}\nAuthorization: Bearer ${token}` : "";
 
   async function create() {
@@ -45,6 +46,7 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
       const body = await response.json().catch(() => ({})) as { error?: string };
       if (!response.ok) throw new Error(body.error ?? "Connection could not be revoked.");
       setConnections((current) => current.map((connection) => connection.id === id ? { ...connection, revokedAt: new Date().toISOString() } : connection));
+      setConfirmingRevoke(undefined);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Connection could not be revoked.");
     } finally {
@@ -64,9 +66,9 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
         <div className="panel-heading"><div><span>NEW CONNECTION</span><h2>Generate project access</h2></div><b>PLAINTEXT ONCE</b></div>
         <div className="agent-create-body">
           <label htmlFor="agent-name">Connection name</label>
-          <input id="agent-name" maxLength={100} onChange={(event) => setName(event.target.value)} placeholder="e.g. Codex laptop" value={name} />
+          <input autoComplete="off" id="agent-name" maxLength={100} name="connectionName" onChange={(event) => setName(event.target.value)} placeholder="e.g. Codex laptop" value={name} />
           <p>Name the agent and device so access remains easy to audit and revoke.</p>
-          <button className="button button-dark full-button" disabled={pending !== undefined} onClick={create} type="button">{pending === "create" ? "Generating securely..." : "Generate connection token"} <span>&rarr;</span></button>
+          <button className="button button-dark full-button" disabled={pending !== undefined} onClick={create} type="button">{pending === "create" ? "Generating securely…" : "Generate connection token"} <span>&rarr;</span></button>
           {error ? <p className="inline-error" role="alert">{error}</p> : null}
         </div>
       </article>
@@ -83,7 +85,7 @@ export function AgentConnectionForm({ projectId, initialConnections }: { project
             <span className="agent-mark">{connection.name.slice(0, 2).toUpperCase()}</span>
             <div><strong>{connection.name}</strong><small>{connection.tokenPrefix}… · created {formatUtcDate(connection.createdAt)}</small></div>
             <div className="agent-use-state"><span className={connection.revokedAt ? "revoked" : connection.lastUsedAt ? "used" : "unused"}>{connection.revokedAt ? "REVOKED" : connection.lastUsedAt ? "USED" : "AWAITING FIRST REQUEST"}</span>{connection.lastUsedAt ? <small>{formatUtcDateTime(connection.lastUsedAt)}</small> : null}</div>
-            {!connection.revokedAt ? <button disabled={pending !== undefined} onClick={() => revoke(connection.id)} type="button">{pending === connection.id ? "Revoking..." : "Revoke"}</button> : null}
+            {!connection.revokedAt ? confirmingRevoke === connection.id ? <div className="agent-revoke-confirm" role="group" aria-label={`Confirm revocation for ${connection.name}`}><button disabled={pending !== undefined} onClick={() => revoke(connection.id)} type="button">{pending === connection.id ? "Revoking…" : "Confirm revoke"}</button><button disabled={pending !== undefined} onClick={() => setConfirmingRevoke(undefined)} type="button">Cancel</button></div> : <button disabled={pending !== undefined} onClick={() => setConfirmingRevoke(connection.id)} type="button">Revoke</button> : null}
           </div>
         ))}
       </article>

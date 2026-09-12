@@ -1,14 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className={`brand ${compact ? "brand-compact" : ""}`} aria-label="HARIKOS AI home">
-      <span className="brand-mark" aria-hidden="true">
-        <i className="brand-mark-frame" />
-        <i className="brand-mark-accent" />
-        <i className="brand-mark-signal" />
-      </span>
-      <span>{compact ? "HARIKOS" : "HARIKOS AI"}</span>
+      <Image alt="" aria-hidden="true" className="brand-logo" height={36} priority src="/harikos-mark.svg" width={36} />
+      <span>HARIKOS</span>
     </Link>
   );
 }

@@ -41,7 +41,7 @@ import {
 import { z } from "zod";
 
 import type { AuthIdentity } from "./auth";
-import { requireAgentQuota, requireProductAccess, requireProjectQuota } from "./entitlements";
+import { pushHandlingFor, requireAgentQuota, requireContextPackQuota, requireMemoryWriteQuota, requireProductAccess, requireProjectQuota, requireScanQuota, resolveEntitlement } from "./entitlements";
 
 export const createCloudProjectSchema = z.object({
   installationId: z.string().regex(/^\d+$/u),
@@ -331,6 +331,7 @@ export async function listCloudProjects(identity: AuthIdentity) {
         repository: cloudRepositories.name,
         private: cloudRepositories.private,
         lastCommitSha: cloudRepositories.lastCommitSha,
+        refreshRequiredAt: cloudProjects.refreshRequiredAt,
       })
       .from(cloudProjects)
       .innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id))
@@ -422,6 +423,7 @@ async function authorizedProject(connection: Awaited<ReturnType<typeof openCloud
       private: cloudRepositories.private,
       githubRepositoryId: cloudRepositories.githubRepositoryId,
       lastCommitSha: cloudRepositories.lastCommitSha,
+      refreshRequiredAt: cloudProjects.refreshRequiredAt,
         installationId: cloudRepositoryInstallations.installationId,
         ownerSupabaseUserId: cloudUsers.supabaseUserId,
     })
@@ -509,13 +511,14 @@ export async function scanCloudProject(
   let scanId: string | undefined;
   try {
     const project = await authorizedProject(connection, identity, projectId);
-    await requireProductAccess({ id: identity?.id ?? project.ownerSupabaseUserId });
+    const scanQuota = await requireScanQuota({ id: identity?.id ?? project.ownerSupabaseUserId }, projectId);
     const previous = await loadPreviousTruths(connection, projectId);
     const [scan] = await connection.db
       .insert(cloudScans)
       .values({
         projectId,
         status: "running",
+        initial: scanQuota.initialScan,
         commitSha: project.lastCommitSha ?? project.defaultBranch,
       })
       .returning();
@@ -653,6 +656,10 @@ export async function scanCloudProject(
         .update(cloudRepositories)
         .set({ lastCommitSha: snapshot.repository.headSha })
         .where(eq(cloudRepositories.projectId, projectId));
+      await tx
+        .update(cloudProjects)
+        .set({ refreshRequiredAt: null, updatedAt: new Date() })
+        .where(eq(cloudProjects.id, projectId));
     });
     return snapshot;
   } catch (error) {
@@ -694,8 +701,20 @@ export async function findCloudProjectForWebhook(repositoryId: string, installat
   } finally { await connection.close(); }
 }
 
-export async function scanCloudProjectFromWebhook(projectId: string): Promise<ProjectSnapshot> {
-  return scanCloudProject(undefined, projectId);
+export async function scanCloudProjectFromWebhook(projectId: string): Promise<{ action: "scanned" | "refresh_required" }> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const project = await authorizedProject(connection, undefined, projectId);
+    const entitlement = await resolveEntitlement({ id: project.ownerSupabaseUserId });
+    if (pushHandlingFor(entitlement) === "mark_refresh_required") {
+      await connection.db.update(cloudProjects).set({ refreshRequiredAt: new Date(), updatedAt: new Date() }).where(eq(cloudProjects.id, projectId));
+      return { action: "refresh_required" };
+    }
+  } finally {
+    await connection.close();
+  }
+  await scanCloudProject(undefined, projectId);
+  return { action: "scanned" };
 }
 
 export async function saveCloudContextPack(
@@ -706,7 +725,23 @@ export async function saveCloudContextPack(
   const connection = await openConfiguredCloudDatabase();
   try {
     await authorizedProject(connection, identity, projectId);
-    await requireProductAccess(identity);
+    await requireContextPackQuota(identity);
+    await connection.db.insert(cloudContextPacks).values({
+      projectId,
+      task: pack.task,
+      payload: pack,
+      tokenEstimate: pack.tokenEstimate,
+    });
+  } finally {
+    await connection.close();
+  }
+}
+
+export async function saveAgentContextPack(projectId: string, pack: ContextPack): Promise<void> {
+  const connection = await openConfiguredCloudDatabase();
+  try {
+    const project = await authorizedProject(connection, undefined, projectId);
+    await requireContextPackQuota({ id: project.ownerSupabaseUserId });
     await connection.db.insert(cloudContextPacks).values({
       projectId,
       task: pack.task,
@@ -780,7 +815,7 @@ export async function createCloudMemory(
   const connection = await openConfiguredCloudDatabase();
   try {
     await authorizedProject(connection, identity, projectId);
-    await requireProductAccess(identity);
+    await requireMemoryWriteQuota(identity);
     const [memory] = await connection.db.insert(cloudMemories).values({
       projectId,
       type: parsed.type,
@@ -816,6 +851,8 @@ export async function createAgentMemory(
   const parsed = createCloudMemorySchema.parse(maybeInput ?? connectionIdOrInput);
   const connection = await openConfiguredCloudDatabase();
   try {
+    const project = await authorizedProject(connection, undefined, projectId);
+    await requireMemoryWriteQuota({ id: project.ownerSupabaseUserId });
     if (parsed.sessionId && !connectionId) {
       throw new Error("An agent connection is required when recording session memory.");
     }
@@ -971,6 +1008,8 @@ export async function recordAgentOutcome(projectId: string, connectionId: string
   const parsed = outcomeSchema.parse(input);
   const connection = await openConfiguredCloudDatabase();
   try {
+    const project = await authorizedProject(connection, undefined, projectId);
+    await requireMemoryWriteQuota({ id: project.ownerSupabaseUserId });
     const [session] = await connection.db.select().from(cloudAgentSessions).where(and(eq(cloudAgentSessions.id, sessionId), eq(cloudAgentSessions.projectId, projectId), eq(cloudAgentSessions.agentConnectionId, connectionId)));
     if (!session) throw new Error("Agent session not found.");
     const [outcome] = await connection.db.insert(cloudOutcomes).values({ projectId, sessionId, summary: parsed.summary, status: parsed.status, metadata: parsed.metadata }).returning();
@@ -1035,6 +1074,7 @@ async function loadCloudSnapshotInternal(
         createdAt: item.createdAt.toISOString(),
       })),
       mode: "github",
+      refreshRequiredAt: project.refreshRequiredAt?.toISOString() ?? null,
     });
   } finally {
     await connection.close();

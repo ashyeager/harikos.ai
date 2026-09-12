@@ -31,8 +31,8 @@ export async function POST(request: Request) {
     const project = await findCloudProjectForWebhook(String(repositoryId), String(installationId));
     if (!project) return NextResponse.json({ received: true, matched: false });
     if (body.ref !== `refs/heads/${project.defaultBranch}`) return NextResponse.json({ received: true, matched: false, reason: "non_default_branch" });
-    await scanCloudProjectFromWebhook(project.projectId);
-    return NextResponse.json({ received: true, matched: true });
+    const result = await scanCloudProjectFromWebhook(project.projectId);
+    return NextResponse.json({ received: true, matched: true, ...result });
   } catch {
     return NextResponse.json({ error: "GitHub webhook processing failed." }, { status: 500 });
   }

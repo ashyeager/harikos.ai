@@ -3,13 +3,14 @@ import Link from "next/link";
 
 import { AgentHandoff, CinematicLoop, ContextCompression, InteractiveTerminal, TemporalTruth } from "../components/marketing/interactive-system";
 import { MarketingShell } from "../components/marketing/marketing-shell";
-import { ProjectBrain } from "../components/marketing/project-brain";
+import { ProductDemo } from "../components/marketing/product-demo";
 import { ExampleLabel } from "../components/marketing/public-page";
 import { SectionHeading } from "../components/marketing/section-heading";
+import { getAuthIdentity } from "../lib/auth";
 
 export const metadata: Metadata = {
-  title: "HARIKOS AI — A Project Brain for AI Coding Agents",
-  description: "Build fast with AI. HARIKOS keeps the project straight with shared Truth, Memory, Context, and an agent-neutral bridge.",
+  title: "HARIKOS — Verified Project State for AI Coding Agents",
+  description: "Continuously verified project state, evidence, memory, and task-specific context for AI coding agents.",
 };
 
 const pillars = [
@@ -27,34 +28,29 @@ const faq = [
   ["Can I inspect why HARIKOS believes something?", "Yes. Verified claims expose their evidence, file paths, line references, confidence, commit, and temporal history."],
 ] as const;
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const authenticated = Boolean(await getAuthIdentity());
+  const freeHref = authenticated ? "/app/projects" : `/login?next=${encodeURIComponent("/app/projects")}`;
+  const proHref = authenticated ? "/pricing?plan=pro" : `/login?next=${encodeURIComponent("/pricing?plan=pro")}`;
   return (
     <MarketingShell>
       <main>
         <section className="home-hero">
           <div className="hero-grid-overlay" aria-hidden="true" />
           <div className="hero-copy">
-            <div className="system-pill"><i /> PROJECT BRAIN / ILLUSTRATIVE <span>V0.1</span></div>
-            <h1>BUILD FAST WITH AI.<br /><span>HARIKOS KEEPS THE<br />PROJECT STRAIGHT.</span></h1>
-            <p>One shared, continuously verified project brain for Codex, Claude, Cursor, and you.</p>
+            <div className="system-pill"><i /> CONTINUOUSLY VERIFIED PROJECT STATE</div>
+            <p className="hero-slogan">One verified project state. Every agent.</p>
+            <h1>Your agents can read the code. <span>HARIKOS tells them what&apos;s actually true.</span></h1>
+            <p className="hero-support">Continuously verified project state, evidence, memory, and task-specific context for AI coding agents.</p>
             <div className="hero-actions">
-              <Link className="button button-primary button-large" href="/login">Connect repository <span>↗</span></Link>
-              <Link className="button button-secondary button-large" href="/product"><i aria-hidden="true">▶</i> See the Project Brain</Link>
+              <Link className="button button-primary button-large" href={freeHref}>Start Free <span>↗</span></Link>
+              <Link className="button button-secondary button-large" href="#product-demo"><i aria-hidden="true">▶</i> See HARIKOS in action</Link>
             </div>
-            <div className="hero-proof-line">
-              <span><i /> READ-ONLY GITHUB ACCESS</span>
-              <span><i /> EVIDENCE ON EVERY TRUTH</span>
-              <span><i /> AGENT-NEUTRAL MCP</span>
-            </div>
+            <Link className="hero-trial-link" href={proHref}>Prefer more capacity? Start a 7-day Pro trial <span aria-hidden="true">↗</span></Link>
           </div>
-          <div className="hero-brain">
-            <ProjectBrain />
-            <div className="floating-truth-card truth-card-auth"><span>TRUTH / AUTH</span><strong>Supabase Auth</strong><small><i /> VERIFIED · 99%</small></div>
-            <div className="floating-truth-card truth-card-memory"><span>MEMORY / DECISION</span><strong>Keep billing server-side</strong><small>2m ago · Codex</small></div>
-            <div className="floating-file-chip"><i /> middleware.ts <span>18–34</span></div>
-          </div>
-          <div className="hero-scroll-cue"><span>SCROLL TO TRACE THE SYSTEM</span><i /></div>
         </section>
+
+        <ProductDemo />
 
         <section className="signal-ribbon" aria-label="HARIKOS product systems">
           {pillars.map(([number, label]) => <div key={number}><span>{number}</span><strong>{label}</strong><i /></div>)}
@@ -85,18 +81,6 @@ export default function LandingPage() {
         <section className="mechanic-section section-shell">
           <SectionHeading eyebrow="THE PROJECT BRAIN IN MOTION" title={<>A repository changes.<br /><span>HARIKOS carries the meaning forward.</span></>} copy="This illustrative loop shows the product mechanic: evidence updates Truth, a useful decision becomes Memory, and the next agent starts with current Context." />
           <div data-reveal><CinematicLoop /></div>
-        </section>
-
-        <section className="demo-video-section section-shell">
-          <SectionHeading eyebrow="PRODUCT DEMO / 30 SECONDS" title={<>See the handoff.<br /><span>Keep the context.</span></>} copy="A short, illustrative walkthrough of repository evidence becoming current Truth, durable Memory, and a focused handoff for the next coding agent." />
-          <div className="demo-video-frame" data-reveal>
-            <div className="demo-video-chrome"><span><i /><i /><i /></span><strong>HARIKOS / PROJECT LOOP</strong><small>ILLUSTRATIVE</small></div>
-            <video aria-label="Illustrative HARIKOS project brain product walkthrough" autoPlay controls loop muted playsInline poster="/harikos-demo-poster.svg" preload="metadata">
-              <source src="/harikos-product-demo.mp4" type="video/mp4" />
-            </video>
-            <div className="demo-video-meta"><span>01 / EVIDENCE</span><span>02 / TRUTH</span><span>03 / MEMORY</span><span>04 / CONTEXT</span></div>
-          </div>
-          <p className="demo-disclaimer">Illustrative product flow. No live repository or customer data is shown.</p>
         </section>
 
         <section className="truth-story section-shell">
@@ -167,10 +151,10 @@ export default function LandingPage() {
         </section>
 
         <section className="pricing-preview section-shell">
-          <SectionHeading eyebrow="PRICING / SIMPLE BY DESIGN" title={<>Start with one project.<br /><span>Scale the shared brain.</span></>} copy="Every plan includes the complete HARIKOS intelligence loop. Begin with a 7-day Pro trial and scale capacity as the work grows." />
+          <SectionHeading eyebrow="PRICING / SIMPLE BY DESIGN" title={<>Start with one project.<br /><span>Scale the shared brain.</span></>} copy="Start Free with one repository, one agent, 10 Memory writes, 3 Context Packs, and 1 manual rescan each month. Upgrade when the work grows." />
           <div className="pricing-preview-grid" data-reveal>
-            <article><span>CORE / FOR ONE PROJECT</span><div><strong>$9</strong><small>/ month</small></div><p>One active project and agent connection with the complete Truth, Memory, Context, and MCP loop.</p><Link className="button button-secondary" href="/login">Start with Core <span>↗</span></Link></article>
-            <article className="pricing-pro"><span>PRO / 7-DAY TRIAL</span><div><strong>$29</strong><small>/ month</small></div><p>Up to five projects and agent connections with higher Memory and Context capacity.</p><Link className="button button-primary" href="/login">Start Pro trial <span>↗</span></Link></article>
+            <article><span>FREE / START HERE</span><div><strong>$0</strong><small>/ forever</small></div><p>One repository, one active agent, 10 Memory writes, 3 Context Packs, and 1 manual rescan each month.</p><Link className="button button-secondary" href={freeHref}>Start Free <span>↗</span></Link></article>
+            <article className="pricing-pro"><span>PRO / 7-DAY TRIAL</span><div><strong>$29</strong><small>/ month</small></div><p>Up to five projects and agent connections with higher Memory and Context capacity.</p><Link className="button button-primary" href={proHref}>Start Pro trial <span>↗</span></Link></article>
           </div>
           <Link className="section-text-link" href="/pricing">Compare plan details <span>↗</span></Link>
         </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 
 export function RescanProjectButton({ projectId }: { projectId: string }) {
@@ -16,9 +17,9 @@ export function RescanProjectButton({ projectId }: { projectId: string }) {
         `/api/projects/${encodeURIComponent(projectId)}/scan`,
         { method: "POST" },
       );
-      const body = (await response.json()) as { error?: string };
+      const body = (await response.json()) as { error?: string; code?: string };
       if (!response.ok) {
-        setError(body.error ?? "The repository scan failed.");
+        setError(body.code === "QUOTA_EXCEEDED" ? "You've used this month's manual rescan. Core keeps your project continuously verified." : body.error ?? "The repository scan failed.");
         return;
       }
       router.refresh();
@@ -43,13 +44,13 @@ export function RescanProjectButton({ projectId }: { projectId: string }) {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Refreshing truth...
+            Refreshing truth…
           </>
         ) : (
           <>Rescan repository <span className="font-sans ml-1">&#8635;</span></>
         )}
       </button>
-      {error ? <p className="text-red text-xs mt-1" role="alert">{error}</p> : null}
+      {error ? <p className="text-red text-xs mt-1" role="alert">{error} {error.includes("manual rescan") ? <Link className="text-orange" href="/pricing?plan=core">Upgrade to Core</Link> : null}</p> : null}
     </div>
   );
 }

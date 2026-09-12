@@ -11,16 +11,17 @@ test("every public product route renders without horizontal overflow", async ({ 
     const response = await page.goto(route);
     expect(response?.ok(), `${route} should return a successful response`).toBe(true);
     await expect(page.locator("main")).toBeVisible();
-    await expect(page).toHaveTitle(/HARIKOS AI/u);
+    await expect(page).toHaveTitle(/HARIKOS/u);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${route} should fit the viewport`).toBe(true);
   }
 });
 
 test("the public story, product interaction, sign-in boundary, and protected redirect work", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /BUILD FAST WITH AI/i })).toBeVisible();
-  await page.getByRole("link", { name: /See the Project Brain/i }).click();
-  await page.waitForURL("**/product");
+  await expect(page.getByRole("heading", { name: /Your agents can read the code/i })).toBeVisible();
+  await page.getByRole("link", { name: /See HARIKOS in action/i }).click();
+  await expect(page.locator("#product-demo video")).toBeVisible();
+  await page.goto("/product");
   await expect(page.getByRole("heading", { name: /One system for what changed/i })).toBeVisible();
 
   await page.goto("/developers");

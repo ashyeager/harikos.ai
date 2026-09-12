@@ -64,12 +64,20 @@ try {
         or (table_name = 'agent_connections' and column_name in ('token_hash', 'token_prefix', 'revoked_at'))
         or (table_name = 'agent_sessions' and column_name in ('project_id', 'agent_connection_id', 'status'))
         or (table_name = 'outcomes' and column_name in ('project_id', 'session_id', 'status'))
+        or (table_name = 'projects' and column_name = 'refresh_required_at')
+        or (table_name = 'scans' and column_name = 'initial')
       )
   `) as Array<{ table_name: string; column_name: string }>;
 
-  const drizzleMigrations = (await sql`
-    select count(*)::int as count from drizzle.__drizzle_migrations
-  `) as Array<{ count: number }>;
+  let drizzleMigrationCount = 0;
+  try {
+    const drizzleMigrations = (await sql`
+      select count(*)::int as count from drizzle.__drizzle_migrations
+    `) as Array<{ count: number }>;
+    drizzleMigrationCount = drizzleMigrations[0]?.count ?? 0;
+  } catch (error) {
+    if (!(typeof error === "object" && error !== null && "code" in error && error.code === "42P01")) throw error;
+  }
 
   let authenticatedRoleBlocked = false;
   try {
@@ -91,7 +99,7 @@ try {
         rlsEnabledOnEveryTable: tables.every((table) => table.rowsecurity),
         anonOrAuthenticatedTableGrants: grants.length,
         requiredMetadataColumns: requiredColumns.length,
-        drizzleMigrationCount: drizzleMigrations[0]?.count ?? 0,
+        drizzleMigrationCount,
         authenticatedRoleBlocked,
       },
       null,

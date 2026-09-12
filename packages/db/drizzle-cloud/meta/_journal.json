@@ -29,6 +29,13 @@
       "when": 1789030800000,
       "tag": "0003_internal_developer_role",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789128000000,
+      "tag": "0004_free_plan_usage",
+      "breakpoints": true
     }
   ]
 }
