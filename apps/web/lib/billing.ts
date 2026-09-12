@@ -4,6 +4,7 @@ import { cloudBillingWebhookEvents, cloudSubscriptions, cloudUsers, desc, eq, is
 
 import { getAuthIdentity, type AuthIdentity } from "./auth";
 import { type PaidPlan, type Plan } from "./entitlements";
+import { sendAccountEmail } from "./email";
 
 const PADDLE_API = "https://api.paddle.com";
 const PADDLE_SANDBOX_API = "https://sandbox-api.paddle.com";
@@ -19,12 +20,13 @@ function paddleApiUrl(): string { return process.env.PADDLE_ENVIRONMENT === "san
 function paddleApiKey(): string { const key = process.env.PADDLE_API_KEY?.trim(); if (!key) throw new Error("Paddle billing is not configured."); return key; }
 function planPriceId(plan: PaidPlan): string | undefined { const keys: Record<Exclude<PaidPlan, "enterprise">, string> = { core: "PADDLE_CORE_PRICE_ID", pro: "PADDLE_PRO_PRICE_ID", scale: "PADDLE_SCALE_PRICE_ID" }; return plan === "enterprise" ? undefined : process.env[keys[plan]]?.trim(); }
 function planFromPrice(priceId: string | undefined): PaidPlan | undefined { return (["core", "pro", "scale"] as const).find((plan) => planPriceId(plan) === priceId); }
+export function canStartProTrial(history: Array<{ status: string; trialStart: Date | null }>): boolean { return !history.some((item) => item.trialStart !== null || ["trialing", "active", "past_due"].includes(item.status)); }
 async function paddleFetch(path: string, init: RequestInit): Promise<unknown> { const response = await fetch(`${paddleApiUrl()}${path}`, { ...init, headers: { Authorization: `Bearer ${paddleApiKey()}`, "Content-Type": "application/json", ...(init.headers ?? {}) }, cache: "no-store" }); if (!response.ok) throw new Error("Paddle billing request failed."); return response.json(); }
 async function cloudUser(identity: AuthIdentity) { const databaseUrl = readCloudDatabaseConfig(); if (!databaseUrl) throw new Error("PostgreSQL is not configured."); const connection = await openCloudDatabase(databaseUrl, { migrate: false }); const [user] = await connection.db.select().from(cloudUsers).where(eq(cloudUsers.supabaseUserId, identity.id)); return { connection, user }; }
 
 export async function createCheckoutSession(identity: AuthIdentity, selectedPlan: Plan = "pro"): Promise<string> {
   if (selectedPlan === "free" || selectedPlan === "enterprise") throw new Error("This plan is not available through hosted checkout."); const priceId = planPriceId(selectedPlan); if (!priceId) throw new Error("Paddle price is not configured."); const { connection, user } = await cloudUser(identity);
-  try { if (!user) throw new Error("HARIKOS user profile is not available."); const [current] = await connection.db.select({ status: cloudSubscriptions.status }).from(cloudSubscriptions).where(eq(cloudSubscriptions.userId, user.id)).orderBy(desc(cloudSubscriptions.updatedAt)).limit(1); if (current && ["trialing", "active", "past_due"].includes(current.status)) throw new ManagedSubscriptionError(); const response = await paddleFetch("/transactions", { method: "POST", body: JSON.stringify({ items: [{ price_id: priceId, quantity: 1 }], custom_data: { harikosUserId: user.supabaseUserId, plan: selectedPlan } }) }) as { data?: { checkout?: { url?: string } } }; const url = response.data?.checkout?.url; if (!url || !url.startsWith("https://")) throw new Error("Paddle did not return a hosted checkout URL."); return url; } finally { await connection.close(); }
+  try { if (!user) throw new Error("HARIKOS user profile is not available."); const history = await connection.db.select({ status: cloudSubscriptions.status, trialStart: cloudSubscriptions.trialStart }).from(cloudSubscriptions).where(eq(cloudSubscriptions.userId, user.id)).orderBy(desc(cloudSubscriptions.updatedAt)); if (history.some((item) => ["trialing", "active", "past_due"].includes(item.status)) || (selectedPlan === "pro" && !canStartProTrial(history))) throw new ManagedSubscriptionError(); const response = await paddleFetch("/transactions", { method: "POST", body: JSON.stringify({ items: [{ price_id: priceId, quantity: 1 }], custom_data: { harikosUserId: user.supabaseUserId, plan: selectedPlan } }) }) as { data?: { checkout?: { url?: string } } }; const url = response.data?.checkout?.url; if (!url || !url.startsWith("https://")) throw new Error("Paddle did not return a hosted checkout URL."); return url; } finally { await connection.close(); }
 }
 export async function createPortalSession(identity: AuthIdentity): Promise<string> {
   const { connection, user } = await cloudUser(identity);
@@ -46,15 +48,22 @@ export async function handlePaddleWebhook(payload: string, signature: string | n
   if (!databaseUrl) throw new Error("PostgreSQL is not configured.");
   const connection = await openCloudDatabase(databaseUrl, { migrate: false });
   const occurredAt = new Date(event.occurred_at ?? Date.now());
+  let emailTarget: { userId: string; email: string | null } | undefined;
+  let wasTrial = false;
   try { await connection.db.transaction(async (tx) => {
     const [seen] = await tx.select().from(cloudBillingWebhookEvents).where(eq(cloudBillingWebhookEvents.providerEventId, event.event_id!));
     if (seen) return;
     const [user] = await tx.select().from(cloudUsers).where(eq(cloudUsers.supabaseUserId, supabaseUserId));
     if (!user) throw new Error("HARIKOS user profile is not available for this billing event.");
+    emailTarget = { userId: user.id, email: user.email };
     const status = subscription.status;
-    const values = { userId: user.id, provider: "paddle", providerCustomerId: subscription.customer_id, providerSubscriptionId: subscription.id, providerPriceId: priceId ?? null, plan, status, trialStart: status === "trialing" ? new Date(subscription.started_at ?? Date.now()) : null, trialEnd: status === "trialing" ? new Date(subscription.next_billed_at ?? Date.now()) : null, currentPeriodStart: subscription.started_at ? new Date(subscription.started_at) : null, currentPeriodEnd: subscription.next_billed_at ? new Date(subscription.next_billed_at) : null, providerOccurredAt: occurredAt, cancelAtPeriodEnd: subscription.scheduled_change?.action === "cancel", updatedAt: new Date() };
+    const [existingSubscription] = await tx.select({ trialStart: cloudSubscriptions.trialStart, trialEnd: cloudSubscriptions.trialEnd }).from(cloudSubscriptions).where(eq(cloudSubscriptions.providerSubscriptionId, subscription.id));
+    wasTrial = status === "trialing" || Boolean(existingSubscription?.trialStart);
+    const values = { userId: user.id, provider: "paddle", providerCustomerId: subscription.customer_id, providerSubscriptionId: subscription.id, providerPriceId: priceId ?? null, plan, status, trialStart: status === "trialing" ? new Date(subscription.started_at ?? Date.now()) : existingSubscription?.trialStart ?? null, trialEnd: status === "trialing" ? new Date(subscription.next_billed_at ?? Date.now()) : existingSubscription?.trialEnd ?? null, currentPeriodStart: subscription.started_at ? new Date(subscription.started_at) : null, currentPeriodEnd: subscription.next_billed_at ? new Date(subscription.next_billed_at) : null, providerOccurredAt: occurredAt, cancelAtPeriodEnd: subscription.scheduled_change?.action === "cancel", updatedAt: new Date() };
     await tx.insert(cloudSubscriptions).values(values).onConflictDoUpdate({ target: cloudSubscriptions.providerSubscriptionId, set: values, where: or(isNull(cloudSubscriptions.providerOccurredAt), lt(cloudSubscriptions.providerOccurredAt, occurredAt)) });
     await tx.insert(cloudBillingWebhookEvents).values({ provider: "paddle", providerEventId: event.event_id!, eventType: event.event_type!, receivedAt: new Date() });
   }); } finally { await connection.close(); }
+  if (emailTarget && subscription.status === "trialing") void sendAccountEmail({ userId: emailTarget.userId, to: emailTarget.email, kind: "trial_started", eventKey: `trial_started:${subscription.id}` });
+  if (emailTarget && wasTrial && ["canceled", "cancelled"].includes(subscription.status)) void sendAccountEmail({ userId: emailTarget.userId, to: emailTarget.email, kind: "trial_expired", eventKey: `trial_expired:${subscription.id}` });
 }
 export async function requireBillingIdentity(): Promise<AuthIdentity> { const identity = await getAuthIdentity(); if (!identity) throw new Error("Authentication required."); return identity; }

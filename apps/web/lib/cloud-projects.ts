@@ -42,6 +42,7 @@ import { z } from "zod";
 
 import type { AuthIdentity } from "./auth";
 import { pushHandlingFor, requireAgentQuota, requireContextPackQuota, requireMemoryWriteQuota, requireProductAccess, requireProjectQuota, requireScanQuota, resolveEntitlement } from "./entitlements";
+import { sendAccountEmail } from "./email";
 
 export const createCloudProjectSchema = z.object({
   installationId: z.string().regex(/^\d+$/u),
@@ -180,7 +181,9 @@ async function ensureCloudUser(
 export async function syncCloudUser(identity: AuthIdentity): Promise<void> {
   const connection = await openConfiguredCloudDatabase();
   try {
-    await ensureCloudUser(connection, identity);
+    const [existing] = await connection.db.select({ id: cloudUsers.id }).from(cloudUsers).where(eq(cloudUsers.supabaseUserId, identity.id));
+    const user = await ensureCloudUser(connection, identity);
+    if (!existing) void sendAccountEmail({ userId: user.id, to: user.email, kind: "welcome", eventKey: `welcome:${user.id}` });
   } finally {
     await connection.close();
   }

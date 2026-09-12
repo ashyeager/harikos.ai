@@ -2,13 +2,10 @@
 
 import { useEffect, useRef } from "react";
 
-// Keep this manifest as the stable media contract. When production renders are
-// available, only this object changes to /media/harikos-product-demo.webm,
-// /media/harikos-product-demo.mp4, and /media/harikos-product-poster.webp.
 const productDemoMedia = {
-  poster: "/harikos-demo-poster.svg",
+  poster: "/media/harikos-product-poster.svg",
   sources: [
-    { src: "/harikos-product-demo.mp4", type: "video/mp4" },
+    { src: "/media/harikos-product-demo.mp4", type: "video/mp4" },
   ],
 } as const;
 

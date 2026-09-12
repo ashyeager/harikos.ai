@@ -72,6 +72,14 @@ export const cloudBillingWebhookEvents = harikosCloud.table("billing_webhook_eve
   receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const cloudEmailEvents = harikosCloud.table("email_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => cloudUsers.id, { onDelete: "cascade" }),
+  eventKey: text("event_key").notNull().unique(),
+  eventType: text("event_type").notNull(),
+  sentAt: timestamp("sent_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [index("email_events_user_idx").on(table.userId)]);
+
 export const cloudRepositoryInstallations = harikosCloud.table(
   "repository_installations",
   {
@@ -357,6 +365,7 @@ export const cloudSchema = {
   agentConnections: cloudAgentConnections,
   subscriptions: cloudSubscriptions,
   billingWebhookEvents: cloudBillingWebhookEvents,
+  emailEvents: cloudEmailEvents,
   agentSessions: cloudAgentSessions,
   outcomes: cloudOutcomes,
 };

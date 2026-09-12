@@ -63,7 +63,7 @@ export default async function PricingPage({ searchParams }: { searchParams: Prom
       <aside className="pricing-includes">
         <div><span>INCLUDED IN CORE, PRO, AND SCALE</span><h2>The full project intelligence loop.</h2></div>
         <ul>{sharedCapabilities.map((capability) => <li key={capability}><i />{capability}</li>)}</ul>
-        <p>Pro&apos;s 7-day trial is created by Paddle and collects a payment method. Access starts only after HARIKOS receives Paddle&apos;s signed subscription state.</p>
+        <p>Pro&apos;s optional 7-day trial starts without a card. Access begins only after HARIKOS receives Paddle&apos;s signed subscription state, and each account is eligible once.</p>
       </aside>
     </section>
 

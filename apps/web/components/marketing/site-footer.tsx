@@ -15,7 +15,7 @@ export function SiteFooter() {
       <div className="site-footer-top">
         <div className="footer-brand-block">
           <Brand />
-          <p>A shared, continuously verified project brain for AI coding agents and builders.</p>
+          <p>Verified project state shared across coding agents, sessions, and repository changes.</p>
           <span><i /> PRODUCT PRINCIPLE / EVIDENCE FIRST</span>
         </div>
         <div className="footer-columns">
@@ -29,8 +29,8 @@ export function SiteFooter() {
       </div>
       <div className="site-footer-bottom">
         <span>HARIKOS AI — A HARIKOS product.</span>
-        <span>One project. One current understanding.</span>
-        <a href="https://harikos.vercel.app/" rel="noreferrer" target="_blank">HARIKOS <b>→</b></a>
+          <span><a href="https://www.instagram.com/harikos.ai/" rel="noreferrer" target="_blank">Instagram @harikos.ai</a> · <a href="mailto:zeusyeager469@gmail.com">zeusyeager469@gmail.com</a></span>
+          <a href="https://harikos.vercel.app/" rel="noreferrer" target="_blank">HARIKOS <b>→</b></a>
       </div>
     </footer>
   );

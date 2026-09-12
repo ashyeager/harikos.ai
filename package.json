@@ -4,7 +4,9 @@
   "private": true,
   "description": "Cloud project truth for AI coding agents.",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -b packages/db packages/core packages/cli && npm run build --workspace=apps/web",
     "build:web": "npm run build --workspace=apps/web",
@@ -19,10 +21,12 @@
     "test:e2e": "playwright test",
     "pretest": "npm run build:phase1"
   },
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "dependencies": {
     "clsx": "^2.1.1",
-    "framer-motion": "^13.1.1",
     "lucide-react": "^1.34.0",
     "next": "16.3.3",
     "react": "^19",
@@ -47,4 +51,3 @@
     "vitest": "^4.1.11"
   }
 }
-

@@ -177,3 +177,16 @@
 - Preview deployment `dpl_2UfJWoB8uKKaUpQnwfewsEn7Kqe4` reached READY. Public routes and `/api/status` passed; the authenticated browser check remained on the protected production domain rather than weakening Preview protection.
 - Production deployment `dpl_8NzhjiEC1eKnHL7mLQu6c7xWjLXb` reached READY for release commit `3ac11c55b8c32e5a98d09159535baa46e3b6697d`. GitHub recorded the deployment against that exact SHA.
 - Production verification passed for `/`, `/product`, `/developers`, `/pricing`, `/login`, `/api/status`, the unauthenticated app redirect, the authenticated billing/projects/project surfaces, GitHub installation discovery, live Truth/Evidence, and the corrected Context action. No new error-level Vercel logs were present.
+
+## FINAL PRODUCTION PRODUCT / UI / COMMERCIAL LOCK
+
+- Baseline: canonical `origin/main` `fd359eb8782d51e0846c0b4e1f8fe6720c24ecbb`, released from isolated branch `codex/final-visual-revamp`.
+- Replaced Inter, Space Grotesk, and JetBrains Mono imports with Geist Sans and Geist Mono. Consolidated seven overlapping legacy style layers into one component layer plus shared base and scoped public theme files.
+- Restricted the rendered palette to neutral black, white, grey, and champagne gold; raised microscopic operational labels and retained explicit text/icon status semantics.
+- Rebuilt the homepage around “Many agents. One verified project state,” the final product video, one system flow, Truth/Memory/Context, one contradiction example, MCP, pricing, and one final CTA.
+- Replaced the rejected glowing sphere with a skeletal project-state spear. Desktop uses lazy Three.js with capped DPR, a stopped offscreen loop, disposal, subtle motion, and reduced-motion handling; mobile uses the static structural fallback.
+- Moved the final product video to `/public/media/harikos-product-demo.mp4`, preserved its full 16:9 frame with `object-fit: contain`, and removed the superseded root media copies.
+- Kept the real Free workspace. Pro now advertises the optional one-time 7-day Paddle trial with no card required; signed webhook state remains the only trial entitlement authority.
+- Added server-only, fail-soft Resend delivery for welcome, trial-started, trial-ending, and trial-expired messages. `harikos.email_events` provides durable idempotency; the additive migration is applied with RLS enabled and direct anon/authenticated grants revoked.
+- Added the daily authenticated Vercel trial-reminder job and documented `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `CRON_SECRET` without values.
+- Verification: lint passed; separate typecheck passed; 25 test files / 78 tests passed; production build passed with 40 routes; 6/6 desktop/mobile Playwright journeys passed; `git diff --check` passed.

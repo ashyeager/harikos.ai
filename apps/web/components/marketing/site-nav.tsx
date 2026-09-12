@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { Brand } from "../brand";
 
 const productLinks = [
-  ["Project Brain", "/product", "Truth, Memory, Context, and the agent bridge"],
+  ["Product", "/product", "Truth, Memory, Context, and the agent bridge"],
   ["Truth", "/truth", "Current facts backed by repository evidence"],
   ["Memory", "/memory", "Decisions and outcomes that survive sessions"],
   ["Context", "/context", "The smallest useful brief for the task"],
@@ -62,8 +62,8 @@ export function SiteNav() {
             </button>
             <div aria-hidden={!productOpen} className="nav-dropdown-panel" id="product-navigation" inert={!productOpen ? true : undefined}>
               <div className="nav-dropdown-intro">
-                <span>PROJECT BRAIN / 01</span>
-                <strong>Continuity for AI-built software.</strong>
+                <span>VERIFIED STATE / 01</span>
+                <strong>One current understanding for every agent.</strong>
               </div>
               <div className="nav-dropdown-grid">
                 {productLinks.map(([label, href, description]) => (

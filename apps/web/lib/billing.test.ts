@@ -1,7 +1,15 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
-import { verifyPaddleWebhook } from "./billing";
+import { canStartProTrial, verifyPaddleWebhook } from "./billing";
+
+describe("Pro trial eligibility", () => {
+  it("allows one trial per account", () => {
+    expect(canStartProTrial([])).toBe(true);
+    expect(canStartProTrial([{ status: "canceled", trialStart: new Date("2026-09-01T00:00:00Z") }])).toBe(false);
+    expect(canStartProTrial([{ status: "active", trialStart: null }])).toBe(false);
+  });
+});
 
 describe("Paddle webhook signature boundary", () => {
   it("accepts a valid raw-body signature and rejects tampering", () => {

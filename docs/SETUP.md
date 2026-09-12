@@ -25,7 +25,7 @@ users may choose a 7-day Pro trial after experiencing Free.
 Paddle Billing is the single provider. Configure `PADDLE_API_KEY`,
 `PADDLE_WEBHOOK_SECRET`, `PADDLE_CORE_PRICE_ID`, `PADDLE_PRO_PRICE_ID`, and
 `PADDLE_SCALE_PRICE_ID`; set `PADDLE_ENVIRONMENT=sandbox` outside live billing.
-The Pro recurring price must contain a 7-day trial with payment method collection.
+The Pro recurring price must contain a 7-day trial with `requires_payment_method=false`.
 Free must never require or create a Paddle customer. Paddle merchant setup is
 intentionally deferred until this product release is complete.
 Register
@@ -34,6 +34,10 @@ events and grant the API key permission to create transactions and retrieve
 temporary subscription management URLs. Paddle lifecycle state is authoritative;
 checkout redirects never grant entitlement. Keep provider credentials server-side
 and never commit them.
+
+## Transactional email
+
+Set `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `CRON_SECRET` on the server. HARIKOS sends the welcome and trial lifecycle messages through one fail-soft service and stores an idempotency event before delivery. A daily authenticated Vercel cron checks for trials ending within 48 hours. The browser never chooses the recipient. Email delivery failure never rolls back authentication or billing state.
 
 Internal developer access is stored as `role = 'developer'` on the immutable
 server-side `harikos.users` row. `HARIKOS_DEVELOPER_USER_IDS` is an optional

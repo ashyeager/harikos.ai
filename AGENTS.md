@@ -22,7 +22,7 @@ HARIKOS is a cloud-first, closed-source SaaS. `apps/web` is the only production 
 
 - Free: $0; 1 active project; 1 active agent; initial scan plus 1 manual rescan per UTC calendar month; 3 Context Packs/month; 10 Memory writes/month; no automatic push reverification.
 - Core: $9/month; 1 project; 1 agent; continuous reverification and ongoing usage.
-- Pro: $29/month; 5 projects; 5 agents; continuous reverification; optional one-time 7-day trial for eligible accounts.
+- Pro: $29/month; 5 projects; 5 agents; continuous reverification; optional one-time 7-day no-card trial for eligible accounts.
 - Scale: $79/month; 20 projects; 20 agents; high usage.
 - Enterprise: custom contact path; do not invent enterprise capabilities.
 

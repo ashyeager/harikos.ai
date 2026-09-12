@@ -20,7 +20,7 @@ Next.js App Router (`apps/web`)
 Supabase PostgreSQL (`packages/db`)
   users, subscriptions, installations, repositories, projects,
   scans, evidence, claims, contradictions, changes, memories,
-  context packs, agent connections, sessions, outcomes
+  context packs, agent connections, sessions, outcomes, email events
         |
         v
 Truth domain (`packages/core`)
@@ -76,6 +76,10 @@ Project-scoped tokens are high entropy, stored as hashes with a display prefix, 
 Paddle is the single paid billing authority. Hosted checkout handles payment details. Signed, idempotent webhooks persist customer, subscription, price, plan, status, trial, period, cancellation, and provider event data. Customer management uses Paddle URLs. Free and developer access do not require Paddle.
 
 Paddle merchant credentials and production catalog are external deployment configuration. Missing billing configuration produces an honest temporary-unavailable state and never fabricates a subscription.
+
+## Transactional email
+
+Resend is the single transactional email transport. Welcome and trial lifecycle messages derive their recipient from the authenticated server-side account or verified Paddle event. `harikos.email_events` provides durable idempotency, and delivery fails softly so an email outage cannot undo a successful account or billing transition.
 
 ## Deployment and verification
 

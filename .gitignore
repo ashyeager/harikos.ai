@@ -29,3 +29,5 @@ playwright-report/
 
 # Operating system files
 .DS_Store
+.env*
+!.env.example

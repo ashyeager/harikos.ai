@@ -32,7 +32,7 @@ All limits are server-side and centralized in `apps/web/lib/entitlements.ts`.
 
 - **Free — $0:** one active project, one active agent, initial scan plus one additional manual rescan per calendar month, three Context Packs per month, ten Memory writes per month, and no automatic push reverification. Existing Truth, Evidence, project data, Memory, and read-style MCP remain available.
 - **Core — $9/month:** one active project and one active agent with continuous push reverification and ongoing usage.
-- **Pro — $29/month:** five active projects and five active agents with continuous reverification. Eligible users may choose one seven-day Pro trial through Paddle.
+- **Pro — $29/month:** five active projects and five active agents with continuous reverification. Eligible users may choose one seven-day Pro trial through Paddle without adding a card at trial start.
 - **Scale — $79/month:** twenty active projects and twenty active agents with high usage limits.
 - **Enterprise — custom:** contact path only; no unsupported enterprise features are promised.
 

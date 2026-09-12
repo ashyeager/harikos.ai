@@ -1,13 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { MotionProvider } from "../components/motion-provider";
 
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
-const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-code", display: "swap" });
+const geist = Geist({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-code", display: "swap" });
 
 export const viewport: Viewport = {
   themeColor: "#050505",
@@ -38,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className={`${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable}`} data-scroll-behavior="smooth" lang="en">
+    <html className={`${geist.variable} ${geistMono.variable}`} data-scroll-behavior="smooth" lang="en">
       <body><MotionProvider><a className="skip-link" href="#main-content">Skip to content</a>{children}</MotionProvider></body>
     </html>
   );
