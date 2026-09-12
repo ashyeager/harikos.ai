@@ -11,10 +11,10 @@ import {
   count,
   desc,
   eq,
+  gte,
   isNull,
   openCloudDatabase,
   readCloudDatabaseConfig,
-  sql,
 } from "@harikos/db";
 
 import type { AuthIdentity } from "./auth";
@@ -106,10 +106,10 @@ export async function getPlanUsage(identity: Pick<AuthIdentity, "id">, now = new
     const [projects, agents, scans, contextPacks, memories, outcomes] = await Promise.all([
       connection.db.select({ value: count() }).from(cloudProjects).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(eq(cloudUsers.supabaseUserId, identity.id)),
       connection.db.select({ value: count() }).from(cloudAgentConnections).innerJoin(cloudProjects, eq(cloudAgentConnections.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), isNull(cloudAgentConnections.revokedAt))),
-      connection.db.select({ value: count() }).from(cloudScans).innerJoin(cloudProjects, eq(cloudScans.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), eq(cloudScans.status, "completed"), eq(cloudScans.initial, false), sql`${cloudScans.startedAt} >= ${monthStart}`)),
-      connection.db.select({ value: count() }).from(cloudContextPacks).innerJoin(cloudProjects, eq(cloudContextPacks.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), sql`${cloudContextPacks.createdAt} >= ${monthStart}`)),
-      connection.db.select({ value: count() }).from(cloudMemories).innerJoin(cloudProjects, eq(cloudMemories.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), sql`${cloudMemories.createdAt} >= ${monthStart}`)),
-      connection.db.select({ value: count() }).from(cloudOutcomes).innerJoin(cloudProjects, eq(cloudOutcomes.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), sql`${cloudOutcomes.createdAt} >= ${monthStart}`)),
+      connection.db.select({ value: count() }).from(cloudScans).innerJoin(cloudProjects, eq(cloudScans.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), eq(cloudScans.status, "completed"), eq(cloudScans.initial, false), gte(cloudScans.startedAt, monthStart))),
+      connection.db.select({ value: count() }).from(cloudContextPacks).innerJoin(cloudProjects, eq(cloudContextPacks.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), gte(cloudContextPacks.createdAt, monthStart))),
+      connection.db.select({ value: count() }).from(cloudMemories).innerJoin(cloudProjects, eq(cloudMemories.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), gte(cloudMemories.createdAt, monthStart))),
+      connection.db.select({ value: count() }).from(cloudOutcomes).innerJoin(cloudProjects, eq(cloudOutcomes.projectId, cloudProjects.id)).innerJoin(cloudUsers, eq(cloudProjects.ownerId, cloudUsers.id)).where(and(eq(cloudUsers.supabaseUserId, identity.id), gte(cloudOutcomes.createdAt, monthStart))),
     ]);
     return { activeProjects: Number(projects[0]?.value ?? 0), activeAgents: Number(agents[0]?.value ?? 0), manualScansThisMonth: Number(scans[0]?.value ?? 0), contextPacksThisMonth: Number(contextPacks[0]?.value ?? 0), memoryWritesThisMonth: Number(memories[0]?.value ?? 0) + Number(outcomes[0]?.value ?? 0), monthStartsAt: monthStart.toISOString() };
   } finally { await connection.close(); }
