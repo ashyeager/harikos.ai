@@ -53,7 +53,7 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
               key={suggestion.text}
               onClick={() => setQuestion(suggestion.text)}
               type="button"
-              className="px-4 py-3 bg-ink border border-line text-xs text-muted hover:text-white hover:bg-ink-soft hover:border-orange/50 transition-all font-mono text-left rounded-sm group flex items-center justify-between"
+              className="px-4 py-3 bg-ink border border-line text-xs text-muted hover:text-white hover:bg-ink-soft hover:border-orange/50 transition-colors font-mono text-left rounded-sm group flex items-center justify-between"
             >
               <span className="flex items-center gap-2">
                 <Icon size={14} className="group-hover:text-orange transition-colors" />
@@ -89,7 +89,7 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
           />
           <button
             className={cn(
-              "h-12 px-8 flex items-center justify-center gap-2 bg-white text-ink font-mono font-bold text-[10px] tracking-widest uppercase transition-colors whitespace-nowrap rounded-sm shadow-sm",
+              "h-12 px-8 flex items-center justify-center gap-2 bg-paper text-black font-mono font-bold text-[10px] tracking-widest uppercase transition-colors whitespace-nowrap rounded-sm shadow-sm",
               (loading || !question.trim()) ? "opacity-50 cursor-not-allowed" : "hover:bg-paper-soft"
             )}
             disabled={loading || !question.trim()}
@@ -125,7 +125,7 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
                 <button
                   key={item.id}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 font-mono text-[9px] tracking-widest uppercase transition-all rounded-sm",
+                    "flex items-center gap-1.5 px-3 py-1.5 font-mono text-[9px] tracking-widest uppercase transition-colors rounded-sm",
                     active
                       ? "bg-ink border-line text-orange font-bold shadow-sm"
                       : "text-muted hover:text-white hover:bg-ink-elevated border border-transparent"
@@ -154,7 +154,7 @@ export function UnderstandExplorer({ projectId }: { projectId: string }) {
       {answer ? (
         <article className="bg-ink border border-line flex flex-col rounded-sm overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500" aria-live="polite">
           <div className="flex items-center gap-4 border-b border-line px-6 py-4 bg-ink-soft">
-            <div className="w-8 h-8 flex items-center justify-center bg-orange/10 border border-orange/30 text-orange font-mono font-bold rounded-sm shadow-[0_0_10px_rgba(255,104,24,0.16)]">
+            <div className="w-8 h-8 flex items-center justify-center bg-orange/10 border border-orange/30 text-orange font-mono font-bold rounded-sm shadow-[0_0_10px_rgba(205,180,122,0.16)]">
               H
             </div>
             <div className="flex flex-col gap-1">

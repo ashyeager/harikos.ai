@@ -23,7 +23,7 @@ export function TruthBoard({ claims, projectId }: { claims: ProjectTruthClaim[];
 
   return (
     <>
-      <div className="filter-bar" role="tablist" aria-label="Truth status">
+      <div className="filter-bar" role="group" aria-label="Filter Truth by status">
         {filters.map(([key, label]) => (
           <button aria-pressed={filter === key} className={filter === key ? "selected-filter" : ""} key={key} onClick={() => setFilter(key)} type="button">
             {label} <b>{counts[key]}</b>

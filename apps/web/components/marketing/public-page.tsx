@@ -7,7 +7,7 @@ export function PublicHero({
   accent,
   copy,
   visual,
-  primary = ["Start 7-day trial", "/login"],
+  primary = ["Start Free", "/login?next=/app/projects"],
   secondary,
 }: {
   eyebrow: string;
@@ -75,7 +75,7 @@ export function ProductCTA({ title, copy = "Connect a repository and give every 
       <span className="eyebrow"><i />PROJECT BRAIN / READY</span>
       <h2>{title}</h2>
       <p>{copy}</p>
-      <div><Link className="button button-primary button-large" href="/login">Connect your repository <span aria-hidden="true">&rarr;</span></Link><Link className="button button-secondary button-large" href="/how-it-works">Trace the system</Link></div>
+      <div><Link className="button button-primary button-large" href="/login?next=/app/projects">Start Free <span aria-hidden="true">&rarr;</span></Link><Link className="button button-secondary button-large" href="/how-it-works">Trace the system</Link></div>
     </section>
   );
 }

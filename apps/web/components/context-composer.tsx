@@ -12,7 +12,7 @@ interface ContextResult {
 }
 
 export function ContextComposer({ projectId }: { projectId: string }) {
-  const [task, setTask] = useState("Modify authentication middleware");
+  const [task, setTask] = useState("");
   const [result, setResult] = useState<ContextResult>();
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState<string>();
@@ -76,12 +76,12 @@ export function ContextComposer({ projectId }: { projectId: string }) {
             disabled={loading}
             value={task}
             placeholder="Describe the feature, bug fix, or architecture change..."
-            className="min-h-[180px] p-4 bg-ink-soft border border-line text-white font-mono text-sm leading-relaxed outline-none focus:border-orange/50 focus:shadow-[0_0_15px_rgba(255,104,24,0.14)] transition-all resize-y rounded-sm placeholder:text-muted/50"
+            className="min-h-[180px] p-4 bg-ink-soft border border-line text-white font-mono text-sm leading-relaxed outline-none focus:border-orange/50 focus:shadow-[0_0_15px_rgba(205,180,122,0.14)] transition-colors resize-y rounded-sm placeholder:text-muted/50"
           />
           
           <div className="flex items-center justify-between">
             {error ? (
-              <p className="text-red text-xs p-2 border border-red/20 bg-red/10 rounded-sm flex items-center gap-2 font-mono">
+              <p aria-live="polite" className="text-red text-xs p-2 border border-red/20 bg-red/10 rounded-sm flex items-center gap-2 font-mono" role="alert">
                 <AlertCircle size={12} />
                 {error}
               </p>
@@ -89,7 +89,7 @@ export function ContextComposer({ projectId }: { projectId: string }) {
             
             <button 
               className={cn(
-                "h-12 px-8 flex items-center justify-center gap-3 bg-white text-ink font-mono font-bold text-[10px] tracking-widest uppercase rounded-sm shadow-sm transition-colors",
+                "h-12 px-8 flex items-center justify-center gap-3 bg-paper text-black font-mono font-bold text-[10px] tracking-widest uppercase rounded-sm shadow-sm transition-colors",
                 (loading || !task.trim()) ? "opacity-50 cursor-not-allowed" : "hover:bg-paper-soft"
               )}
               disabled={loading || !task.trim()} 

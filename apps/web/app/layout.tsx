@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
+import { MotionProvider } from "../components/motion-provider";
 
 import "./globals.css";
 
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={`${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable}`} data-scroll-behavior="smooth" lang="en">
-      <body><a className="skip-link" href="#main-content">Skip to content</a>{children}</body>
+      <body><MotionProvider><a className="skip-link" href="#main-content">Skip to content</a>{children}</MotionProvider></body>
     </html>
   );
 }

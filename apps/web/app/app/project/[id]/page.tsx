@@ -7,6 +7,7 @@ import { RescanProjectButton } from "../../../../components/rescan-project-butto
 import { StatusBadge } from "../../../../components/status-badge";
 import { TruthCard } from "../../../../components/truth-card";
 import { projectSnapshot } from "../../../../lib/project-data";
+import { formatUtcDateTime } from "../../../../lib/date-format";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
         copy={`${snapshot.repository.owner ? `${snapshot.repository.owner}/` : ""}${snapshot.repository.defaultBranch} · verified against ${snapshot.repository.headSha.slice(0, 8)}`}
         action={(
           <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <Link href={`/app/project/${snapshot.projectId}/context`} className="h-9 px-4 flex items-center justify-center gap-2 bg-white text-ink hover:bg-paper-soft font-mono font-bold text-[10px] tracking-wide transition-colors whitespace-nowrap rounded-sm shadow-sm">
+            <Link href={`/app/project/${snapshot.projectId}/context`} className="h-9 px-4 flex items-center justify-center gap-2 bg-paper text-black hover:bg-paper-soft font-mono font-bold text-[10px] tracking-wide transition-colors whitespace-nowrap rounded-sm shadow-sm">
               Prepare Context
             </Link>
             {snapshot.mode === "github" ? <RescanProjectButton projectId={snapshot.projectId} /> : null}
@@ -35,7 +36,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
         )}
       />
       <div className={`overview-status-bar ${openContradictions.length || snapshot.refreshRequiredAt ? "has-attention" : ""}`}>
-        <div><i /><span><strong>{snapshot.refreshRequiredAt ? "Repository changed; verification required" : openContradictions.length ? "Scan complete; review open drift" : "Last scan complete"}</strong><small>Scanned {new Date(snapshot.scannedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></span></div>
+        <div><i /><span><strong>{snapshot.refreshRequiredAt ? "Repository changed; verification required" : openContradictions.length ? "Scan complete; review open drift" : "Last scan complete"}</strong><small>Scanned {formatUtcDateTime(snapshot.scannedAt)}</small></span></div>
         <div><span>FILES ANALYZED</span><strong>{snapshot.sourceCount}</strong></div>
         <div><span>VERIFIED</span><strong>{verifiedCount}</strong></div>
         <div><span>DRIFT</span><strong>{openContradictions.length}</strong></div>
@@ -80,7 +81,7 @@ export default async function ProjectOverviewPage({ params }: { params: Promise<
               <Link className="flex items-center gap-4 py-2 group" href={`/app/project/${snapshot.projectId}/truth/${encodeURIComponent(claim.id)}`} key={claim.id}>
                 <span className="w-24 truncate text-[11px] text-muted capitalize group-hover:text-white transition-colors" title={claim.subject}>{claim.subject}</span>
                 <div className="flex-1 h-1 bg-line rounded-full overflow-hidden">
-                  <div className="h-full bg-orange rounded-full transition-all" style={{ width: `${Math.round(claim.confidence * 100)}%` }}></div>
+                  <div className="h-full bg-orange rounded-full transition-colors" style={{ width: `${Math.round(claim.confidence * 100)}%` }}></div>
                 </div>
                 <strong className="w-16 text-right font-mono text-[9px] text-muted group-hover:text-orange transition-colors">{claim.evidence.length} sources</strong>
               </Link>

@@ -13,7 +13,7 @@ export function TruthCard({
   return (
     <Link
       href={`/app/project/${projectId}/truth/${encodeURIComponent(claim.id)}`}
-      className="truth-card-link bg-ink border border-line p-5 flex flex-col group transition-all duration-300 hover:bg-ink-elevated hover:border-line-light relative overflow-hidden rounded-sm"
+      className="truth-card-link bg-ink border border-line p-5 flex flex-col group transition-colors duration-300 hover:bg-ink-elevated hover:border-line-light relative overflow-hidden rounded-sm"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-orange/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
@@ -44,7 +44,7 @@ export function TruthCard({
         <div className="flex items-center gap-3 mb-3">
           <div className="flex-1 h-1 bg-line rounded-full overflow-hidden">
             <div
-              className="h-full bg-orange rounded-full transition-all duration-1000 ease-out"
+              className="h-full bg-orange rounded-full transition-colors duration-1000 ease-out"
               style={{ width: `${Math.round(claim.confidence * 100)}%` }}
             />
           </div>

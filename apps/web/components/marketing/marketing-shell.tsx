@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-import { RevealObserver } from "./reveal-observer";
 import { SiteFooter } from "./site-footer";
 import { SiteNav } from "./site-nav";
 
@@ -10,7 +9,6 @@ export function MarketingShell({ children, footer = true }: { children: ReactNod
       <SiteNav />
       <div id="main-content" tabIndex={-1}>{children}</div>
       {footer ? <SiteFooter /> : null}
-      <RevealObserver />
     </div>
   );
 }

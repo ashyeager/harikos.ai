@@ -3,6 +3,7 @@ import { AppShell } from "../../../../../../components/app-shell";
 import { PageHeader } from "../../../../../../components/page-header";
 import { StatusBadge } from "../../../../../../components/status-badge";
 import { projectSnapshot } from "../../../../../../lib/project-data";
+import { formatUtcDate, formatUtcDateTime } from "../../../../../../lib/date-format";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +50,7 @@ export default async function TruthDetailPage({ params }: { params: Promise<{ id
             </div>
             <div className="flex flex-col gap-2">
               <small className="font-mono text-[8px] tracking-widest text-muted uppercase">CURRENT SINCE</small>
-              <strong className="text-white text-sm">{new Date(claim.validFrom).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</strong>
+              <strong className="text-white text-sm">{formatUtcDate(claim.validFrom)}</strong>
             </div>
           </div>
         </article>
@@ -58,7 +59,7 @@ export default async function TruthDetailPage({ params }: { params: Promise<{ id
           <div>
             <span className="font-mono text-[9px] tracking-widest text-muted uppercase block mb-4">VERIFIED AGAINST</span>
             <strong className="font-mono text-sm text-white break-all block mb-2">{snapshot.repository.headSha}</strong>
-            <small className="font-mono text-[10px] text-muted">{claim.lastVerifiedAt.replace("T", " ").slice(0, 16)} UTC</small>
+            <small className="font-mono text-[10px] text-muted">{formatUtcDateTime(claim.lastVerifiedAt)}</small>
           </div>
           
           <div className="w-full h-1 bg-line rounded-full overflow-hidden mt-6">

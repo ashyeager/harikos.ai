@@ -164,3 +164,13 @@
 - Replace the current approved product video only when the final asset is supplied.
 - Retain the older worktrees for now: the primary local `main` worktree contains a unique unpushed agent-configuration commit, so automated deletion would risk losing work.
 - After these operational items, begin the dedicated UI/UX revamp as a separate mission.
+
+## WHOLE-PRODUCT COHERENCE PASS
+
+- Unified the public ivory and authenticated graphite modes around the HARIKOS logo, Space Grotesk/Inter/JetBrains Mono type system, restrained radii, visible borders, and champagne-gold emphasis.
+- Replaced the legacy orange hexagon treatment with a graphite-and-gold project-state sphere, removed particle clutter and repeated section reveals, reduced ambient animation, capped WebGL density, and stopped the render loop entirely for reduced-motion users.
+- Fixed signed-in primary actions whose text could disappear against white backgrounds, added a coherent workspace recovery page, distinguished GitHub lookup failures from honest empty installation state, and made Context start from the user's real task instead of canned input.
+- Improved keyboard and screen-reader behavior for the public navigation, project/settings navigation, Truth filters, command palette, Memory composer, and asynchronous errors.
+- Standardized public entry copy around `Start Free` and normalized project timestamps through the shared UTC formatter.
+- Fresh gates: lint passed, typecheck passed, 25 test files / 77 tests passed, production build passed with 39 routes, and all 6 Playwright public journey checks passed on desktop and mobile.
+- Independent Sol review returned `ship` after the valid recovery-copy and Escape-focus findings were fixed. Its request to restore red/green status colors was declined because the locked palette explicitly requires ivory, black, grey, and gold with status conveyed through labels and icons.

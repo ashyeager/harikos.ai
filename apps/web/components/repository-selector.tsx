@@ -92,6 +92,10 @@ export function RepositorySelector() {
     );
   }
 
+  if (message && repositories.length === 0) {
+    return <section className="bg-ink border border-line mt-8 p-8" role="alert"><span className="font-mono text-[10px] tracking-widest text-muted uppercase">REPOSITORY LOOKUP</span><h2 className="text-lg font-bold text-white mt-2">Repositories could not be loaded.</h2><p className="text-muted text-sm mt-2">{message} Check your session or connection, then retry.</p><button className="button button-ghost mt-5" onClick={() => { setMessage(undefined); setLoading(true); setReloadKey((value) => value + 1); }} type="button">Retry repository lookup</button></section>;
+  }
+
   if (repositories.length === 0) {
     return (
       <section className="bg-ink border border-line mt-8">
@@ -103,10 +107,9 @@ export function RepositorySelector() {
           <p className="text-muted text-sm">
             Install the read-only HARIKOS GitHub App, choose repositories, then return here to analyze them.
           </p>
-          <a href="/api/github/install/start" className="h-12 px-6 flex items-center justify-center gap-2 bg-white text-ink hover:bg-paper-soft font-mono font-bold text-xs tracking-wide transition-colors">
+          <a href="/api/github/install/start" className="h-12 px-6 flex items-center justify-center gap-2 bg-paper text-black hover:bg-paper-soft font-mono font-bold text-xs tracking-wide transition-colors">
             Install GitHub App &rarr;
           </a>
-          {message ? <div className="flex flex-wrap items-center gap-4"><p className="text-red text-xs" role="alert">{message}</p><button className="button button-ghost" onClick={() => { setMessage(undefined); setLoading(true); setReloadKey((value) => value + 1); }} type="button">Retry repository lookup</button></div> : null}
           {createdProjectId && <a className="text-orange text-xs" href={`/app/project/${createdProjectId}`}>Open the created project →</a>}
         </div>
       </section>

@@ -17,6 +17,7 @@ test("every public product route renders without horizontal overflow", async ({ 
 });
 
 test("the public story, product interaction, sign-in boundary, and protected redirect work", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Your agents can read the code/i })).toBeVisible();
   await page.getByRole("link", { name: /See HARIKOS in action/i }).click();

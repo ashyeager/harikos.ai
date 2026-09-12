@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Brand } from "../brand";
 
@@ -20,6 +20,8 @@ export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [productOpen, setProductOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const productButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -36,13 +38,18 @@ export function SiteNav() {
   useEffect(() => {
     const close = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setOpen(false);
-        setProductOpen(false);
+        if (productOpen) {
+          setProductOpen(false);
+          productButtonRef.current?.focus();
+        } else if (open) {
+          setOpen(false);
+          mobileButtonRef.current?.focus();
+        }
       }
     };
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
-  }, []);
+  }, [open, productOpen]);
 
   return (
     <header className={`site-nav-shell ${scrolled ? "is-scrolled" : ""}`}>
@@ -50,10 +57,10 @@ export function SiteNav() {
         <Brand />
         <nav aria-label="Primary navigation" className={`site-nav-links ${open ? "is-open" : ""}`}>
           <div className={`nav-dropdown ${productOpen ? "is-open" : ""}`}>
-            <button aria-expanded={productOpen} aria-haspopup="true" onClick={() => setProductOpen((value) => !value)} type="button">
+            <button aria-controls="product-navigation" aria-expanded={productOpen} aria-haspopup="true" onClick={() => setProductOpen((value) => !value)} ref={productButtonRef} type="button">
               Product <span aria-hidden="true">⌄</span>
             </button>
-            <div className="nav-dropdown-panel">
+            <div aria-hidden={!productOpen} className="nav-dropdown-panel" id="product-navigation" inert={!productOpen ? true : undefined}>
               <div className="nav-dropdown-intro">
                 <span>PROJECT BRAIN / 01</span>
                 <strong>Continuity for AI-built software.</strong>
@@ -80,7 +87,7 @@ export function SiteNav() {
         <div className="site-nav-actions">
           <Link className="nav-sign-in" href="/login">Sign in</Link>
             <Link className="button button-primary button-small" href={`/login?next=${encodeURIComponent("/app/projects")}`}>Start Free <span>↗</span></Link>
-          <button aria-expanded={open} aria-label={open ? "Close navigation" : "Open navigation"} className={`mobile-menu-button ${open ? "is-open" : ""}`} onClick={() => setOpen((value) => !value)} type="button"><i /><i /></button>
+          <button aria-expanded={open} aria-label={open ? "Close navigation" : "Open navigation"} className={`mobile-menu-button ${open ? "is-open" : ""}`} onClick={() => setOpen((value) => !value)} ref={mobileButtonRef} type="button"><i /><i /></button>
         </div>
       </div>
     </header>

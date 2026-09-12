@@ -69,8 +69,10 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
               <h2 className="text-sm font-bold text-white">Record New Memory</h2>
             </div>
             <button 
+              aria-label="Close memory composer"
               onClick={() => setIsComposing(false)}
               className="text-muted hover:text-white transition-colors"
+              type="button"
             >
               ×
             </button>
@@ -86,7 +88,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
                     key={item.id}
                     onClick={() => setType(item.id)}
                     className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-sm border text-[10px] font-mono tracking-wide uppercase transition-all",
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-sm border text-[10px] font-mono tracking-wide uppercase transition-colors",
                       active 
                         ? `bg-ink-elevated border-line-light ${item.color} shadow-sm` 
                         : "bg-ink border-transparent text-muted hover:bg-ink-soft hover:border-line"
@@ -104,13 +106,13 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
               onChange={(event) => setContent(event.target.value)} 
               placeholder={`Describe this ${selectedType.label.toLowerCase()} so future agents don't repeat mistakes...`}
               value={content}
-              className="min-h-[160px] p-4 bg-ink-soft border border-line text-white text-sm leading-relaxed outline-none focus:border-orange/50 focus:shadow-[0_0_15px_rgba(255,104,24,0.14)] transition-all resize-y rounded-sm font-mono placeholder:text-muted/50"
+              className="min-h-[160px] p-4 bg-ink-soft border border-line text-white text-sm leading-relaxed outline-none focus:border-orange/50 focus:shadow-[0_0_15px_rgba(205,180,122,0.14)] transition-colors resize-y rounded-sm font-mono placeholder:text-muted/50"
               autoFocus
             />
             
             <div className="flex items-center justify-between">
               {error ? (
-                <p className="text-red text-xs flex items-center gap-2 font-mono">
+                <p aria-live="polite" className="text-red text-xs flex items-center gap-2 font-mono" role="alert">
                   <AlertCircle size={12} />
                   {error}
                 </p>
@@ -120,12 +122,13 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
                 <button
                   onClick={() => setIsComposing(false)}
                   className="px-4 py-2 text-xs font-medium text-muted hover:text-white transition-colors"
+                  type="button"
                 >
                   Cancel
                 </button>
                 <button 
                   className={cn(
-                    "h-9 px-6 flex items-center justify-center gap-2 bg-white text-ink font-mono font-bold text-[10px] uppercase tracking-widest transition-colors rounded-sm shadow-sm",
+                    "h-9 px-6 flex items-center justify-center gap-2 bg-paper text-black font-mono font-bold text-[10px] uppercase tracking-widest transition-colors rounded-sm shadow-sm",
                     (saving || !content.trim()) ? "opacity-50 cursor-not-allowed" : "hover:bg-paper-soft"
                   )}
                   disabled={saving || !content.trim()} 
@@ -151,7 +154,8 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
       ) : (
         <button 
           onClick={() => setIsComposing(true)}
-          className="w-full p-4 border border-dashed border-line hover:border-orange hover:bg-ink-soft text-muted hover:text-orange transition-all rounded-sm flex items-center justify-center gap-2 group"
+          className="w-full p-4 border border-dashed border-line hover:border-orange hover:bg-ink-soft text-muted hover:text-orange transition-colors rounded-sm flex items-center justify-center gap-2 group"
+          type="button"
         >
           <div className="w-6 h-6 rounded-sm bg-ink border border-line group-hover:border-orange/50 flex items-center justify-center transition-colors">
             <Plus size={12} />

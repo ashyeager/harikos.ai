@@ -5,6 +5,7 @@ import { StatusBadge } from "../../../../../components/status-badge";
 import { projectSnapshot } from "../../../../../lib/project-data";
 import { FileWarning, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { cn } from "../../../../../lib/utils";
+import { formatUtcDate } from "../../../../../lib/date-format";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function ChangesPage({ params }: { params: Promise<{ id: st
           <div className="panel-heading"><div><span>PROJECT TIMELINE</span><h2>What changed</h2></div></div>
           <div className="timeline">
             {snapshot.changes.map((change) => (
-              <article key={change.id}><i /><time>{new Date(change.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</time><div><strong>{change.summary}</strong><small>Commit {change.commitSha.slice(0, 8)} · {change.category}</small></div></article>
+              <article key={change.id}><i /><time>{formatUtcDate(change.createdAt)}</time><div><strong>{change.summary}</strong><small>Commit {change.commitSha.slice(0, 8)} · {change.category}</small></div></article>
             ))}
             <article><i className="quiet" /><time>INITIAL</time><div><strong>Initial Project Truth established</strong><small>{snapshot.sourceCount} bounded sources analyzed</small></div></article>
           </div>
