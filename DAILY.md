@@ -89,3 +89,78 @@
 - **ACTION REQUIRED:** make `ashyeager/harikos.ai` private before treating source confidentiality as complete.
 - Run Paddle sandbox lifecycle acceptance once those credentials exist, including trialing → active, cancellation/expiration, past due, reactivation, and denied MCP access after entitlement loss.
 - Run a dedicated UI/UX revamp only after this stabilized backend/product base; the current mission intentionally preserved the existing visual system.
+
+---
+
+# HARIKOS final product release — September 12, 2026
+
+## BASELINE
+
+- This continuation started from `origin/main` `689b4f3e460dfc569fb8f311a194dacf116cc9bd` with the release work isolated on `codex/frontend-iteration`.
+- Production was serving the earlier paid-only stabilization. Supabase Auth, PostgreSQL, and the GitHub App were configured; Paddle remained unconfigured.
+
+## PRODUCT AND STRUCTURE
+
+- `apps/web` remains the single production application. Existing 3D assets remain available on established secondary routes; the homepage no longer loads 3D.
+- The supplied HARIKOS mark is now the shared brand and favicon asset. Public pages use the approved warm ivory direction while the authenticated workspace keeps its graphite product surface.
+- Public navigation, the locked homepage copy and video placement, pricing, legal/support routes, settings, loading, empty, error, and accessibility states were corrected without replacing the product architecture.
+- Documentation now defines one current cloud SaaS product. Historical reports remain dated evidence rather than current policy.
+
+## AUTH AND GITHUB
+
+- Supabase cookie-backed authentication, safe redirects, server route protection, logout behavior, ownership checks, and the durable developer role passed focused tests.
+- Production authenticated acceptance retained Ash's real session and rendered the server-side `Developer access` state. Payment limits are bypassed; authentication, GitHub authorization, ownership, and project isolation remain enforced.
+- Production listed the two real authorized repositories already connected to the account. GitHub installation ownership, repository authorization, signed push handling, and paid/developer reverification remain intact.
+- Free projects record that a refresh is required after a push instead of silently consuming or bypassing the manual monthly rescan allowance.
+
+## TRUTH, MEMORY, CONTEXT, AND MCP
+
+- Existing deterministic Truth, inspectable Evidence, temporal history, contradictions, persistent Memory, task-specific Context, and agent outcome behavior were preserved.
+- The canonical remote endpoint remains `/api/mcp/[projectId]` with all nine semantic tools.
+- MCP authentication still enforces hashed scoped tokens, ownership, project isolation, revocation, and server-side entitlement. Context Pack creation, Memory writes, outcomes, and scans now share the same monthly usage authority as the web APIs.
+- A final review found a scan-count array access bug that could bypass the Free manual-rescan quota; it was fixed before release and covered by the focused entitlement/MCP suite.
+
+## BILLING AND ENTITLEMENT
+
+- HARIKOS Free is the default real plan: 1 active project, 1 active agent connection, the initial scan plus 1 manual rescan per calendar month, 3 Context Packs per month, and 10 Memory/outcome writes per month. Read access remains available when a write allowance is exhausted.
+- Paid catalog: Core `$9/month` for 1 project/1 agent with continuous verification, Pro `$29/month` for 5/5 with an optional 7-day trial, Scale `$79/month` for 20/20, and Enterprise custom.
+- `resolveEntitlement` and shared plan usage are the server authority for project creation, scans, agent connections, MCP, Context, Memory, and outcomes. UI state alone never grants access.
+- Paddle remains the only billing provider in code. Checkout, webhook-derived subscription state, and portal paths are implemented, but production reports `paddle:false`; no live paid billing claim is made.
+
+## DATABASE
+
+- Added and applied `20260912021524_free_plan_usage.sql` to Supabase project `nfhxdvfpctwwijhnrdkv` after a linked dry run showed only that migration pending.
+- Post-push migration history is aligned and a second dry run returned `Remote database is up to date.`
+- Schema verification found every expected application table, RLS enabled on all application tables, no anonymous/authenticated table grants, all expected metadata columns, and the authenticated role blocked from direct protected data access.
+
+## TESTS
+
+- `pnpm.cmd lint`: passed.
+- `pnpm.cmd typecheck`: passed separately.
+- `pnpm.cmd test`: 25 files, 77 tests passed.
+- Focused entitlement/MCP regression suite: 2 files, 21 tests passed.
+- `pnpm.cmd build`: passed with strict TypeScript and 39 routes.
+- `pnpm.cmd test:e2e`: 6 desktop/mobile Playwright checks passed against the production build.
+- `git diff --check` and secret review passed; no environment file or credential was committed.
+- The requested Sol review could not start because the account had reached its agent usage limit. A fresh Luna final-diff review completed; its valid quota-bypass finding was fixed and reverified.
+
+## PREVIEW
+
+- Final corrective Preview: `dpl_Exmvu9QNZ53bcWQRJpewhma3z2J7`, READY.
+- Public home, pricing, login, logo, and video checks passed; unauthenticated `/app/dashboard` redirected to `/login`.
+- Preview `/api/status` reported Supabase Auth and PostgreSQL available, with GitHub and Paddle unavailable in the Preview environment as configured.
+
+## PRODUCTION
+
+- Application release commit before this evidence-only report: `87a5271d0eb63b7dd095037a712d8d566f128552`.
+- Production deployment `dpl_38FnN6HAH566kPSKrntJemifC47R` is READY and aliased to `https://harikos-ai.vercel.app`.
+- Live `/api/status` reports Supabase Auth true, GitHub App true, PostgreSQL true, and Paddle false.
+- Public routes, protected-route redirect, authenticated project access, and the corrected Billing page were verified. Billing renders `Developer access` with real workspace totals. The only error log in the inspected interval predated the corrective deployment; the corrected request completed successfully.
+
+## REMAINING MANUAL BLOCKERS
+
+- **ACTION REQUIRED:** configure and approve the Paddle merchant account, products/prices, API key, webhook secret, checkout domain, and production webhook before accepting paid customers; then run sandbox and production lifecycle acceptance.
+- **ACTION REQUIRED:** make `ashyeager/harikos.ai` private before treating source confidentiality as complete.
+- Replace the current approved product video only when the final asset is supplied.
+- Retain the older worktrees for now: the primary local `main` worktree contains a unique unpushed agent-configuration commit, so automated deletion would risk losing work.
+- After these operational items, begin the dedicated UI/UX revamp as a separate mission.
