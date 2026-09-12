@@ -174,3 +174,6 @@
 - Standardized public entry copy around `Start Free` and normalized project timestamps through the shared UTC formatter.
 - Fresh gates: lint passed, typecheck passed, 25 test files / 77 tests passed, production build passed with 39 routes, and all 6 Playwright public journey checks passed on desktop and mobile.
 - Independent Sol review returned `ship` after the valid recovery-copy and Escape-focus findings were fixed. Its request to restore red/green status colors was declined because the locked palette explicitly requires ivory, black, grey, and gold with status conveyed through labels and icons.
+- Preview deployment `dpl_2UfJWoB8uKKaUpQnwfewsEn7Kqe4` reached READY. Public routes and `/api/status` passed; the authenticated browser check remained on the protected production domain rather than weakening Preview protection.
+- Production deployment `dpl_8NzhjiEC1eKnHL7mLQu6c7xWjLXb` reached READY for release commit `3ac11c55b8c32e5a98d09159535baa46e3b6697d`. GitHub recorded the deployment against that exact SHA.
+- Production verification passed for `/`, `/product`, `/developers`, `/pricing`, `/login`, `/api/status`, the unauthenticated app redirect, the authenticated billing/projects/project surfaces, GitHub installation discovery, live Truth/Evidence, and the corrected Context action. No new error-level Vercel logs were present.
