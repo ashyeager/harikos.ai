@@ -29,7 +29,7 @@ export function SiteFooter() {
       </div>
       <div className="site-footer-bottom">
         <span>HARIKOS AI — A HARIKOS product.</span>
-          <span>ZEUS YEAGER · <a href="mailto:zeusyeager469@gmail.com">zeusyeager469@gmail.com</a> · <a href="https://www.instagram.com/harikos.ai/" rel="noreferrer" target="_blank">Instagram @harikos.ai</a></span>
+          <span><a href="mailto:ashyeagerhq@mail.com">ashyeagerhq@mail.com</a> · <a href="https://www.instagram.com/harikos.ai/" rel="noreferrer" target="_blank">Instagram HARIKOS.AI</a> · <a href="https://x.com/harikosai" rel="noreferrer" target="_blank">X HARIKOS.AI</a></span>
           <a href="https://harikos.vercel.app/" rel="noreferrer" target="_blank">HARIKOS <b>→</b></a>
       </div>
     </footer>
