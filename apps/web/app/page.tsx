@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { HomepageSystemFlow } from "../components/marketing/homepage-system-flow";
 import { InteractiveTerminal } from "../components/marketing/interactive-system";
 import { MarketingShell } from "../components/marketing/marketing-shell";
 import { ProductDemo } from "../components/marketing/product-demo";
-import { ProjectBrain } from "../components/marketing/project-brain";
 import { SectionHeading } from "../components/marketing/section-heading";
 import { getAuthIdentity } from "../lib/auth";
 
@@ -13,78 +13,82 @@ export const metadata: Metadata = {
   description: "Keep project truth, memory, and task context consistent across coding agents, sessions, and repository changes.",
 };
 
-const concepts = [
-  ["TRUTH", "What the repository supports now.", "Verified claims stay linked to inspectable evidence.", "/truth"],
-  ["MEMORY", "What happened before.", "Decisions, failed attempts, fixes, and outcomes survive the session.", "/memory"],
-  ["CONTEXT", "What matters for this task.", "Each agent receives a focused brief instead of a project-wide dump.", "/context"],
+const plans = [
+  ["Free", "$0", "1 project · 1 agent", "Initial scan + 1 manual rescan per UTC month"],
+  ["Core", "$9", "1 project · 1 agent", "Continuous reverification and ongoing usage"],
+  ["Pro", "$29", "5 projects · 5 agents", "Continuous reverification with an optional eligible trial"],
+  ["Scale", "$79", "20 projects · 20 agents", "Continuous reverification and high usage"],
 ] as const;
 
 export default async function LandingPage() {
   const authenticated = Boolean(await getAuthIdentity());
   const startHref = authenticated ? "/app/projects" : `/login?next=${encodeURIComponent("/app/projects")}`;
-  const proHref = authenticated ? "/pricing?plan=pro" : `/login?next=${encodeURIComponent("/pricing?plan=pro")}`;
-  return <MarketingShell><main>
-    <section className="home-hero final-home-hero">
-      <div className="hero-copy">
-        <div className="system-pill"><i /> VERIFIED PROJECT STATE</div>
-        <h1>Many agents.<br /><span>One verified project state.</span></h1>
-        <p className="hero-support">HARIKOS keeps project truth, memory, and task context consistent across coding agents, sessions, and repository changes.</p>
-        <div className="hero-actions">
-          <Link className="button button-primary button-large" href={startHref}>Start Free <span>↗</span></Link>
-          <Link className="button button-secondary button-large" href="#product-demo">See HARIKOS in action</Link>
-        </div>
-      </div>
-      <div className="final-hero-object"><ProjectBrain /></div>
-    </section>
 
-    <ProductDemo />
+  return (
+    <MarketingShell>
+      <main>
+        <section className="home-hero final-home-hero">
+          <div className="hero-copy">
+            <p className="home-hero-kicker">HARIKOS / VERIFIED PROJECT STATE</p>
+            <h1>Many agents. One verified project state.</h1>
+            <p className="hero-support">Continuously verified project state, evidence, memory, and task-specific context for AI coding agents.</p>
+            <div className="hero-actions">
+              <Link className="button button-primary button-large" href={startHref}>Start Free <span aria-hidden="true">↗</span></Link>
+              <Link className="button button-secondary button-large" href="#product-demo">Watch the product walkthrough <span aria-hidden="true">↓</span></Link>
+            </div>
+          </div>
+        </section>
 
-    <section className="problem-section section-shell final-problem">
-      <SectionHeading eyebrow="THE PROBLEM" title={<>Your repo changed.<br /><span>Your agents should know.</span></>} copy="Different agents and sessions accumulate fragmented context. Documentation drifts, assumptions survive, and the next agent repeats work the last one already finished." />
-      <div className="final-problem-grid">
-        <article><span>SESSION 01</span><strong>Decision made</strong><p>The project moved to Supabase Auth.</p></article>
-        <article><span>SESSION 02</span><strong>Context lost</strong><p>The next agent still follows an outdated README.</p></article>
-        <article><span>REPOSITORY</span><strong>Evidence changed</strong><p>The implementation is current. The shared understanding is not.</p></article>
-      </div>
-    </section>
+        <ProductDemo />
 
-    <section className="section-shell final-flow">
-      <SectionHeading eyebrow="HOW HARIKOS WORKS" title={<>Repository signal becomes<br /><span>shared current understanding.</span></>} />
-      <div className="final-flow-row">
-        {["Repository", "Evidence", "Verified state", "Agent"].map((item, index) => <div key={item}><span>0{index + 1}</span><strong>{item}</strong>{index < 3 ? <i aria-hidden="true">→</i> : null}</div>)}
-      </div>
-    </section>
+        <section className="problem-section section-shell final-problem">
+          <SectionHeading eyebrow="THE PROBLEM" title={<>Your repository moved forward.<br /><span>Your agents did not.</span></>} copy="Sessions end. Documentation drifts. The next agent inherits an incomplete story and repeats work that evidence could have settled." />
+          <div className="final-problem-grid">
+            <article><span>SESSION 01</span><strong>A decision lands</strong><p>The project moves to Supabase Auth and the implementation changes with it.</p></article>
+            <article><span>SESSION 02</span><strong>The thread breaks</strong><p>The next agent begins from an outdated README and a partial handoff.</p></article>
+            <article><span>HARIKOS</span><strong>Evidence reconnects it</strong><p>Current code, previous decisions, and the task at hand remain distinguishable.</p></article>
+          </div>
+        </section>
 
-    <section className="pillars-section section-shell final-concepts">
-      <SectionHeading eyebrow="THE CORE SYSTEM" title={<>Memory remembers.<br /><span>Evidence verifies.</span></>} copy="HARIKOS keeps history useful without confusing it with what the repository supports now." />
-      <div className="final-concept-grid">
-        {concepts.map(([label, title, copy, href], index) => <Link href={href} key={label}><span>0{index + 1}</span><strong>{label}</strong><h3>{title}</h3><p>{copy}</p><b>Explore {label.toLowerCase()} ↗</b></Link>)}
-      </div>
-    </section>
+        <section className="section-shell final-flow">
+          <SectionHeading eyebrow="HOW HARIKOS WORKS" title={<>From repository signal<br /><span>to an agent&apos;s next move.</span></>} copy="Choose a step to follow the information that HARIKOS carries through the project loop." />
+          <HomepageSystemFlow />
+        </section>
 
-    <section className="contradiction-section section-shell final-contradiction">
-      <div className="contradiction-copy"><span className="eyebrow"><i /> CONTRADICTION / EXPLICIT</span><h2>The repository gets the final say.</h2><p>HARIKOS preserves disagreement instead of flattening it into false certainty.</p></div>
-      <div className="final-contradiction-card">
-        <div><span>README.md</span><code>Authentication: Clerk</code><b>CONTRADICTED</b></div>
-        <i aria-hidden="true">≠</i>
-        <div><span>middleware.ts</span><code>createServerClient()</code><b>VERIFIED</b></div>
-        <strong>Current Truth: Supabase Auth</strong>
-      </div>
-    </section>
+        <section className="pillars-section section-shell final-concepts">
+          <SectionHeading eyebrow="THE CONNECTED SYSTEM" title={<>Current fact. Useful history.<br /><span>Relevant context.</span></>} copy="Truth, Memory, and Context have different jobs. HARIKOS keeps their boundaries clear while letting them travel together." />
+          <div className="knowledge-weave">
+            <article className="knowledge-node knowledge-truth"><span>01</span><div><small>TRUTH / CURRENT</small><h3>What the repository supports now.</h3><p>Inspectable claims stay connected to source evidence, confidence, and time.</p></div><Link href="/truth">Explore Truth <b aria-hidden="true">↗</b></Link></article>
+            <article className="knowledge-node knowledge-memory"><span>02</span><div><small>MEMORY / HISTORY</small><h3>What happened before.</h3><p>Decisions, failed attempts, and outcomes persist without being promoted to fact.</p></div><Link href="/memory">Explore Memory <b aria-hidden="true">↗</b></Link></article>
+            <article className="knowledge-node knowledge-context"><span>03</span><div><small>CONTEXT / TASK</small><h3>What this agent needs next.</h3><p>A Context Pack selects the smallest useful set of current Truth, constraints, evidence, and relevant Memory.</p></div><Link href="/context">Explore Context <b aria-hidden="true">↗</b></Link></article>
+          </div>
+        </section>
 
-    <section className="developer-section section-shell final-agents">
-      <div className="story-copy"><span className="eyebrow"><i /> AGENTS / MCP</span><h2>Every agent starts from the same current context.</h2><p>Connect Codex, Claude, Cursor, or another MCP client with one revocable project-scoped token.</p><Link href="/developers">Explore the agent bridge <span>↗</span></Link></div>
-      <InteractiveTerminal />
-    </section>
+        <section className="contradiction-section section-shell final-contradiction">
+          <div className="contradiction-copy"><span className="eyebrow"><i /> CHANGE / CONTRADICTION</span><h2>When sources disagree, the conflict stays visible.</h2><p>HARIKOS records the competing evidence, tracks the change, and shows why the current project state won.</p></div>
+          <div className="final-contradiction-card">
+            <div><span>README.md / PREVIOUS</span><code>Authentication: Clerk</code><b>STALE DOCUMENTATION</b></div>
+            <i aria-hidden="true">≠</i>
+            <div><span>middleware.ts / CURRENT</span><code>createServerClient()</code><b>CODE EVIDENCE</b></div>
+            <strong>RESOLUTION / SUPABASE AUTH VERIFIED</strong>
+          </div>
+        </section>
 
-    <section className="pricing-preview section-shell final-pricing">
-      <SectionHeading eyebrow="START FREE" title={<>One project.<br /><span>The complete HARIKOS loop.</span></>} copy="Connect a repository, inspect Truth and Evidence, create Context, and keep useful Memory. Try Pro free for seven days when you need more capacity—no card required." />
-      <div className="pricing-preview-grid">
-        <article><span>FREE</span><div><strong>$0</strong><small>/ forever</small></div><p>One project and one agent with the complete initial verified-state workflow.</p><Link className="button button-secondary" href={startHref}>Start Free <span>↗</span></Link></article>
-        <article className="pricing-pro"><span>PRO TRIAL</span><div><strong>7 days</strong><small> / no card</small></div><p>Try Pro capacity before choosing the $29 monthly plan.</p><Link className="button button-primary" href={proHref}>Try Pro free <span>↗</span></Link></article>
-      </div>
-    </section>
+        <section className="developer-section section-shell final-agents">
+          <div className="story-copy"><span className="eyebrow"><i /> MULTI-AGENT / MCP</span><h2>One project state, available to every authorized agent.</h2><p>Connect Codex, Claude, Cursor, or another MCP client through a revocable project-scoped token. Read current state, create task Context, and write back useful outcomes inside the same boundary.</p><Link href="/developers">Explore the agent bridge <span aria-hidden="true">↗</span></Link></div>
+          <InteractiveTerminal />
+        </section>
 
-    <section className="final-cta-section final-home-cta"><div><span className="eyebrow"><i /> PROJECT STATE / READY</span><h2>Stop re-explaining your project to every agent.</h2><p>Give every coding agent one current, evidence-backed understanding.</p><div><Link className="button button-primary button-large" href={startHref}>Start Free <span>↗</span></Link><Link className="button button-secondary button-large" href="/how-it-works">See how it works</Link></div></div></section>
-  </main></MarketingShell>;
+        <section className="pricing-preview section-shell final-pricing">
+          <SectionHeading eyebrow="PRICING / START FREE" title={<>Start with one real project.<br /><span>Grow when the work demands it.</span></>} copy="Free includes one active project, one active agent, an initial scan plus one manual rescan per UTC calendar month, three Context Packs, and ten Memory writes per month. Paid plans add capacity and continuous reverification." />
+          <div className="home-plan-grid">
+            {plans.map(([name, price, capacity, detail]) => <article key={name}><span>{name}</span><strong>{price}<small>/ month</small></strong><p>{capacity}</p><small>{detail}</small></article>)}
+          </div>
+          <div className="home-pricing-actions"><Link className="button button-primary button-large" href={startHref}>Start Free <span aria-hidden="true">↗</span></Link><Link className="button button-secondary button-large" href="/pricing">See all plan details</Link></div>
+        </section>
+
+        <section className="final-cta-section final-home-cta"><div><span className="eyebrow"><i /> PROJECT STATE / READY</span><h2>Stop re-explaining your project to every agent.</h2><p>Give every coding agent one current, evidence-backed understanding.</p><div><Link className="button button-primary button-large" href={startHref}>Start Free <span aria-hidden="true">↗</span></Link><Link className="button button-secondary button-large" href="/how-it-works">See how it works</Link></div></div></section>
+      </main>
+    </MarketingShell>
+  );
 }

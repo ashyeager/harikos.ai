@@ -20,7 +20,7 @@ test("the public story, product interaction, sign-in boundary, and protected red
   test.setTimeout(90_000);
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Many agents.*One verified project state/i })).toBeVisible();
-  await page.getByRole("link", { name: /See HARIKOS in action/i }).click();
+  await page.getByRole("link", { name: /Watch the product walkthrough/i }).click();
   await expect(page.locator("#product-demo video")).toBeVisible();
   await page.goto("/product");
   await expect(page.getByRole("heading", { name: /One system for what changed/i })).toBeVisible();
