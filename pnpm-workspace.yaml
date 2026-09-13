@@ -8,3 +8,8 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@next/*'
   - next
+  - baseline-browser-mapping@2.11.23
+
+overrides:
+  baseline-browser-mapping: 2.11.23
+  browserslist: 4.28.9

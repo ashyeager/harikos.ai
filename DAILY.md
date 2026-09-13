@@ -196,3 +196,5 @@
 - Corrected email delivery ordering: request handlers await the fail-soft delivery attempt, Resend's idempotency key protects retries, and `harikos.email_events` records only acknowledged sends.
 - Cardless-trial conversion now requests Paddle's payment-method update transaction and uses its hosted checkout URL.
 - Production configuration audit confirms Paddle, Resend, and the cron secret are not yet present in Vercel. Billing and lifecycle email remain honestly unavailable until those external credentials and catalog objects are configured.
+- Corrective Preview `dpl_63NdZ49J2bKd1fFoQUuA3ubVUYgm` for commit `1532be62acfe42008473fd797088934537caebf5` reached READY. All 13 public route families, `/api/status`, and the final MP4 returned 200; unauthenticated `/app/dashboard` redirected to `/login`; no new error-level runtime logs were present.
+- Final dependency review upgraded Next.js from 16.3.3 to 16.3.5 and pinned patched transitive Browserslist and baseline-browser-mapping releases. `pnpm audit --prod` now reports no known vulnerabilities.
