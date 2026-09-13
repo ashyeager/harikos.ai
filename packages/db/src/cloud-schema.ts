@@ -80,6 +80,14 @@ export const cloudEmailEvents = harikosCloud.table("email_events", {
   sentAt: timestamp("sent_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [index("email_events_user_idx").on(table.userId)]);
 
+export const cloudTrialReservations = harikosCloud.table("trial_reservations", {
+  userId: uuid("user_id").primaryKey().references(() => cloudUsers.id, { onDelete: "cascade" }),
+  reservedAt: timestamp("reserved_at", { withTimezone: true }).defaultNow().notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  providerTransactionId: text("provider_transaction_id").unique(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+});
+
 export const cloudRepositoryInstallations = harikosCloud.table(
   "repository_installations",
   {
@@ -366,6 +374,7 @@ export const cloudSchema = {
   subscriptions: cloudSubscriptions,
   billingWebhookEvents: cloudBillingWebhookEvents,
   emailEvents: cloudEmailEvents,
+  trialReservations: cloudTrialReservations,
   agentSessions: cloudAgentSessions,
   outcomes: cloudOutcomes,
 };

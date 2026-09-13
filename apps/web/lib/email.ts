@@ -13,11 +13,12 @@ export async function sendAccountEmail(input: { userId: string; to: string | nul
   if (!apiKey || !from || !databaseUrl || !input.to) return;
   const connection = await openCloudDatabase(databaseUrl, { migrate: false });
   try {
-    const inserted = await connection.db.insert(cloudEmailEvents).values({ userId: input.userId, eventKey: input.eventKey, eventType: input.kind }).onConflictDoNothing().returning({ id: cloudEmailEvents.id });
-    if (!inserted[0]) return;
+    const [existing] = await connection.db.select({ id: cloudEmailEvents.id }).from(cloudEmailEvents).where(eq(cloudEmailEvents.eventKey, input.eventKey));
+    if (existing) return;
     const message = copy[input.kind];
     const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": input.eventKey }, body: JSON.stringify({ from, to: [input.to], subject: message.subject, html: `<div style="font-family:Arial,sans-serif;background:#f6f6f3;color:#171717;padding:40px"><h1>${message.heading}</h1><p>${message.body}</p><p><a href="https://harikos-ai.vercel.app/app/projects">Open HARIKOS</a></p></div>` }) });
-    if (!response.ok) { await connection.db.delete(cloudEmailEvents).where(eq(cloudEmailEvents.eventKey, input.eventKey)); throw new Error("Resend delivery failed."); }
+    if (!response.ok) throw new Error("Resend delivery failed.");
+    await connection.db.insert(cloudEmailEvents).values({ userId: input.userId, eventKey: input.eventKey, eventType: input.kind }).onConflictDoNothing();
   } catch { /* Email is intentionally fail-soft and retries on the next lifecycle event. */ }
   finally { await connection.close(); }
 }

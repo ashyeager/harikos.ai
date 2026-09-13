@@ -201,7 +201,7 @@
 .spear-fallback span { background: #cdb47a; height: 7px; position: absolute; right: 13px; top: 142px; width: 7px; }
 .final-hero-object [data-webgl="ready"] .spear-fallback { opacity: .08; }
 .demo-video-section { max-width: 1250px; padding-left: 32px; padding-right: 32px; }
-.demo-video-frame { margin-inline: auto; max-width: 1180px; }
+.demo-video-frame { margin-inline: auto; max-width: 980px; }
 .demo-video-frame video { aspect-ratio: 16/9; display: block; height: auto; object-fit: contain; width: 100%; }
 .final-problem-grid, .final-concept-grid { display: grid; gap: 1px; grid-template-columns: repeat(3,minmax(0,1fr)); }
 .final-problem-grid article, .final-concept-grid > a { border-top: 1px solid #c8c8c8; padding: 34px 34px 40px 0; }

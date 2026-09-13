@@ -190,3 +190,9 @@
 - Added server-only, fail-soft Resend delivery for welcome, trial-started, trial-ending, and trial-expired messages. `harikos.email_events` provides durable idempotency; the additive migration is applied with RLS enabled and direct anon/authenticated grants revoked.
 - Added the daily authenticated Vercel trial-reminder job and documented `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `CRON_SECRET` without values.
 - Verification: lint passed; separate typecheck passed; 25 test files / 78 tests passed; production build passed with 40 routes; 6/6 desktop/mobile Playwright journeys passed; `git diff --check` passed.
+- Replaced the initial walkthrough with the supplied final 1280x720, 10-second product video and reduced the desktop frame to 980px so the complete composition remains visible without cropping.
+- Corrected the Pro trial integration to use Paddle's documented cardless flow: validate a 7-day `requires_payment_method:false` price, create the customer and address, then create a server-side `status:billed` transaction. The UI waits for the signed subscription webhook before showing entitlement.
+- Added a durable, expiring per-user trial reservation to prevent concurrent trial claims. The `harikos.trial_reservations` migration and the previously added transactional-email migration are now registered in Drizzle's journal and verified on the linked Supabase database.
+- Corrected email delivery ordering: request handlers await the fail-soft delivery attempt, Resend's idempotency key protects retries, and `harikos.email_events` records only acknowledged sends.
+- Cardless-trial conversion now requests Paddle's payment-method update transaction and uses its hosted checkout URL.
+- Production configuration audit confirms Paddle, Resend, and the cron secret are not yet present in Vercel. Billing and lifecycle email remain honestly unavailable until those external credentials and catalog objects are configured.

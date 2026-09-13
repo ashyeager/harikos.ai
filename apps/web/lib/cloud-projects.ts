@@ -183,7 +183,7 @@ export async function syncCloudUser(identity: AuthIdentity): Promise<void> {
   try {
     const [existing] = await connection.db.select({ id: cloudUsers.id }).from(cloudUsers).where(eq(cloudUsers.supabaseUserId, identity.id));
     const user = await ensureCloudUser(connection, identity);
-    if (!existing) void sendAccountEmail({ userId: user.id, to: user.email, kind: "welcome", eventKey: `welcome:${user.id}` });
+    if (!existing) await sendAccountEmail({ userId: user.id, to: user.email, kind: "welcome", eventKey: `welcome:${user.id}` });
   } finally {
     await connection.close();
   }

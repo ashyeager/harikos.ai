@@ -36,6 +36,20 @@
       "when": 1789128000000,
       "tag": "0004_free_plan_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789221600000,
+      "tag": "0005_transactional_email",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789225200000,
+      "tag": "0006_trial_reservations",
+      "breakpoints": true
     }
   ]
 }

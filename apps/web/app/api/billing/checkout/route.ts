@@ -9,7 +9,11 @@ const requestSchema = z.object({ plan: z.enum(["core", "pro", "scale"]).default(
 export async function POST(request: Request) {
   const identity = await requireBillingIdentity().catch(() => undefined);
   if (!identity) return NextResponse.json({ error: "Authentication required.", code: "AUTHENTICATION_REQUIRED" }, { status: 401 });
-  try { return NextResponse.json({ url: await createCheckoutSession(identity, requestSchema.parse(await request.json().catch(() => ({}))).plan as Plan) }); }
+  try {
+    const plan = requestSchema.parse(await request.json().catch(() => ({}))).plan as Plan;
+    const countryCode = request.headers.get("x-vercel-ip-country")?.toUpperCase() ?? process.env.PADDLE_DEFAULT_COUNTRY_CODE?.trim().toUpperCase();
+    return NextResponse.json({ url: await createCheckoutSession(identity, plan, countryCode && /^[A-Z]{2}$/u.test(countryCode) ? { countryCode } : undefined) });
+  }
   catch (error) {
     const invalid = error instanceof z.ZodError;
     const managed = error instanceof ManagedSubscriptionError;

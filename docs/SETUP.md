@@ -25,6 +25,9 @@ users may choose a 7-day Pro trial after experiencing Free.
 Paddle Billing is the single provider. Configure `PADDLE_API_KEY`,
 `PADDLE_WEBHOOK_SECRET`, `PADDLE_CORE_PRICE_ID`, `PADDLE_PRO_PRICE_ID`, and
 `PADDLE_SCALE_PRICE_ID`; set `PADDLE_ENVIRONMENT=sandbox` outside live billing.
+Deployed requests use Vercel's trusted country header when creating the required
+Paddle billing address. `PADDLE_DEFAULT_COUNTRY_CODE` is an optional two-letter
+fallback for local or non-Vercel environments.
 The Pro recurring price must contain a 7-day trial with `requires_payment_method=false`.
 Free must never require or create a Paddle customer. Paddle merchant setup is
 intentionally deferred until this product release is complete.
