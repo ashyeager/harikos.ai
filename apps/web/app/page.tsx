@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { HomepageSystemFlow } from "../components/marketing/homepage-system-flow";
-import { InteractiveTerminal } from "../components/marketing/interactive-system";
+import { CinematicLoop, InteractiveTerminal } from "../components/marketing/interactive-system";
 import { MarketingShell } from "../components/marketing/marketing-shell";
 import { ProductDemo } from "../components/marketing/product-demo";
+import { ProjectBrain } from "../components/marketing/project-brain";
 import { SectionHeading } from "../components/marketing/section-heading";
 import { getAuthIdentity } from "../lib/auth";
 
@@ -53,6 +54,15 @@ export default async function LandingPage() {
         <section className="section-shell final-flow">
           <SectionHeading eyebrow="HOW HARIKOS WORKS" title={<>From repository signal<br /><span>to an agent&apos;s next move.</span></>} copy="Choose a step to follow the information that HARIKOS carries through the project loop." />
           <HomepageSystemFlow />
+        </section>
+
+        <section className="section-shell home-motion-showcase">
+          <SectionHeading eyebrow="PROJECT STATE / IN MOTION" title={<>See the system resolve.<br /><span>Then watch it stay current.</span></>} copy="Two focused views show the same HARIKOS loop: a shared project state formed from connected evidence, and the lifecycle that updates it when the repository changes." />
+          <div className="home-brain-stage">
+            <div className="home-brain-copy"><span>ILLUSTRATIVE SYSTEM VIEW</span><h3>One state shared across the project.</h3><p>The layered mesh represents Evidence, Truth, Memory, Context, and agent access staying connected without collapsing into one undifferentiated record.</p><Link href="/product">Explore the product <b aria-hidden="true">↗</b></Link></div>
+            <div className="home-brain-visual"><ProjectBrain /></div>
+          </div>
+          <div className="home-loop-stage"><span className="example-label">ILLUSTRATIVE PRODUCT MECHANIC</span><CinematicLoop /></div>
         </section>
 
         <section className="pillars-section section-shell final-concepts">
