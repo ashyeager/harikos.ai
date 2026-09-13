@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { HomepageSystemFlow } from "../components/marketing/homepage-system-flow";
+import { ProjectStateFlow } from "../components/marketing/homepage-system-flow";
 import { CinematicLoop, InteractiveTerminal } from "../components/marketing/interactive-system";
 import { MarketingShell } from "../components/marketing/marketing-shell";
 import { ProductDemo } from "../components/marketing/product-demo";
@@ -53,7 +53,7 @@ export default async function LandingPage() {
 
         <section className="section-shell final-flow">
           <SectionHeading eyebrow="HOW HARIKOS WORKS" title={<>From repository signal<br /><span>to an agent&apos;s next move.</span></>} copy="Choose a step to follow the information that HARIKOS carries through the project loop." />
-          <HomepageSystemFlow />
+          <ProjectStateFlow />
         </section>
 
         <section className="section-shell home-motion-showcase">

@@ -7,10 +7,11 @@ const stages = [
   { label: "Repository", file: "AUTHORIZED SOURCE", title: "A bounded repository scan finds relevant change.", body: "HARIKOS reads authorized repository signal without executing project code or treating every file as useful evidence.", output: "Relevant sources selected" },
   { label: "Evidence", file: "SOURCE / LINES / COMMIT", title: "Evidence keeps the claim inspectable.", body: "A claim keeps its source, lines, commit, confidence, and authority so agents can check the basis for a conclusion.", output: "Evidence linked to current commit" },
   { label: "Verified state", file: "CURRENT PROJECT STATE", title: "Current Truth separates proof from assumption.", body: "Current evidence supports the active claim. Earlier state stays in history rather than disappearing from the project story.", output: "Current claim verified" },
-  { label: "Agent", file: "MCP / PROJECT-SCOPED", title: "The next agent receives the right slice of state.", body: "A Context Pack combines relevant Truth, evidence, constraints, changes, and Memory for the task in front of the agent.", output: "Context Pack ready for task" },
+  { label: "Context", file: "TASK / RELEVANT STATE", title: "Context selects what this task needs.", body: "A Context Pack combines only the relevant Truth, evidence, constraints, changes, and Memory for the task in front of the agent.", output: "Context Pack assembled" },
+  { label: "Agent", file: "MCP / PROJECT-SCOPED", title: "The next agent receives one current understanding.", body: "An authorized agent reads the same project-scoped state and can write back a bounded outcome without turning its own claims into Truth.", output: "Agent context ready" },
 ] as const;
 
-export function HomepageSystemFlow() {
+export function ProjectStateFlow() {
   const [active, setActive] = useState(0);
   const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const reducedMotion = useReducedMotion();
