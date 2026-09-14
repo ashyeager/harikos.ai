@@ -1,17 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const globalItems = [["Dashboard", "/app/dashboard", "GD"], ["Projects", "/app/projects", "GP"], ["Profile", "/app/settings/profile", "SP"], ["Billing", "/app/settings/billing", "SB"], ["Security", "/app/settings/security", "SS"]] as const;
+const globalItems = [["Dashboard", "/app/dashboard", "G D", "NAVIGATION"], ["Projects", "/app/projects", "G P", "NAVIGATION"], ["Profile", "/app/settings/profile", "", "ACCOUNT"], ["Billing", "/app/settings/billing", "", "ACCOUNT"], ["Security", "/app/settings/security", "", "ACCOUNT"], ["Pricing", "/pricing", "", "HELP"], ["Developers", "/developers", "", "HELP"]] as const;
 
 export function CommandPalette({ projectId }: { projectId?: string }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [active, setActive] = useState(0);
+  const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
   function closePalette() {
     setOpen(false);
+    setQuery("");
+    setActive(0);
     window.requestAnimationFrame(() => triggerRef.current?.focus());
   }
   useEffect(() => {
@@ -22,6 +27,11 @@ export function CommandPalette({ projectId }: { projectId?: string }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+  useEffect(() => {
+    setOpen(false);
+    setQuery("");
+    setActive(0);
+  }, [pathname]);
   function trapFocus(event: React.KeyboardEvent<HTMLElement>) {
     if (event.key !== "Tab") return;
     const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? []);
@@ -32,8 +42,8 @@ export function CommandPalette({ projectId }: { projectId?: string }) {
     if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
   }
   const items = useMemo(() => {
-    const projectItems = projectId ? [["Project overview", `/app/project/${projectId}`, "PO"], ["Project Truth", `/app/project/${projectId}/truth`, "PT"], ["Memory", `/app/project/${projectId}/memory`, "PM"], ["Changes", `/app/project/${projectId}/changes`, "PC"], ["Agents", `/app/project/${projectId}/agents`, "PA"], ["Context", `/app/project/${projectId}/context`, "PX"], ["Understand", `/app/project/${projectId}/understand`, "PU"]] as const : [];
+    const projectItems = projectId ? [["Project overview", `/app/project/${projectId}`, "", "CURRENT PROJECT"], ["Truth and Evidence", `/app/project/${projectId}/truth`, "G T", "CURRENT PROJECT"], ["Memory", `/app/project/${projectId}/memory`, "", "CURRENT PROJECT"], ["Changes", `/app/project/${projectId}/changes`, "", "CURRENT PROJECT"], ["Agents", `/app/project/${projectId}/agents`, "", "CURRENT PROJECT"], ["Context", `/app/project/${projectId}/context`, "G C", "CURRENT PROJECT"], ["Understand", `/app/project/${projectId}/understand`, "", "CURRENT PROJECT"]] as const : [];
     return [...projectItems, ...globalItems].filter(([label]) => label.toLowerCase().includes(query.toLowerCase()));
   }, [projectId, query]);
-  return <><button aria-label="Open command palette" className="command-trigger" onClick={() => setOpen(true)} ref={triggerRef} type="button"><span>COMMANDS</span><kbd>CTRL K</kbd></button>{open ? <div className="command-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) closePalette(); }} role="presentation"><section aria-label="Command palette" aria-modal="true" className="command-palette" onKeyDown={trapFocus} ref={dialogRef} role="dialog"><header><span>&gt;_</span><input autoComplete="off" autoFocus aria-label="Filter commands" onChange={(event) => setQuery(event.target.value)} placeholder="Go to a page…" value={query} /><kbd>ESC</kbd></header><div>{items.length ? items.map(([label, href, shortcut]) => <Link href={href} key={href} onClick={closePalette}><i>{shortcut}</i><strong>{label}</strong><span>&rarr;</span></Link>) : <p>No matching command.</p>}</div><footer><span>Navigate</span><span>Enter to open</span><span>Esc to close</span></footer></section></div> : null}</>;
+  return <><button aria-haspopup="dialog" aria-label="Open command palette" className="command-trigger" onClick={() => setOpen(true)} ref={triggerRef} type="button"><span>COMMANDS</span><kbd>CTRL K</kbd></button>{open ? <div className="command-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) closePalette(); }} role="presentation"><section aria-label="Command palette" aria-modal="true" className="command-palette" onKeyDown={(event) => { trapFocus(event); if ((event.key === "ArrowDown" || event.key === "ArrowUp") && items.length) { event.preventDefault(); const next = (active + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length; setActive(next); dialogRef.current?.querySelectorAll<HTMLAnchorElement>("a[data-command]")[next]?.focus(); } }} ref={dialogRef} role="dialog"><header><span>&gt;_</span><input autoComplete="off" autoFocus aria-label="Filter commands" onChange={(event) => { setQuery(event.target.value); setActive(0); }} onKeyDown={(event) => { if (event.key === "ArrowDown" && items.length) { event.preventDefault(); dialogRef.current?.querySelector<HTMLAnchorElement>("a[data-command]")?.focus(); } }} placeholder="Search pages and project tools…" value={query} /><kbd>ESC</kbd></header><div>{items.length ? items.map(([label, href, shortcut, group], index) => <Link aria-current={pathname === href ? "page" : undefined} className={active === index ? "is-active" : ""} data-command href={href} key={href} onFocus={() => setActive(index)}><small>{group}</small><strong>{label}</strong>{shortcut ? <kbd>{shortcut}</kbd> : <span>&rarr;</span>}</Link>) : <div className="command-empty"><strong>No matching command.</strong><button onClick={() => setQuery("")} type="button">Clear search</button></div>}</div><footer><span>↑↓ Navigate</span><span>Enter Open</span><span>Esc Close</span></footer></section></div> : null}</>;
 }

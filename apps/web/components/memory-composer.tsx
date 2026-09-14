@@ -5,6 +5,7 @@ import type { CloudMemory } from "../lib/cloud-projects";
 import { History, Cpu, FileWarning, Lightbulb, AlertCircle, Save, CheckCircle2, Bot, Plus } from "lucide-react";
 import { cn } from "../lib/utils";
 import { formatUtcDateTime } from "../lib/date-format";
+import { useToast } from "./ux-provider";
 
 const memoryTypes = [
   { id: "decision", label: "Decision", icon: CheckCircle2, color: "text-green" },
@@ -29,6 +30,8 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const [isComposing, setIsComposing] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(20);
+  const { notify } = useToast();
 
   async function save() {
     if (!content.trim()) return;
@@ -47,6 +50,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
       }
       setMemories((current) => [body.memory!, ...current]);
       setContent("");
+      notify({ message: "Memory recorded.", tone: "success" });
       setIsComposing(false);
     } catch {
       setError("Memory could not reach the server.");
@@ -178,7 +182,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
         
         <div className="p-6">
           <div className="relative border-l border-line ml-3 flex flex-col gap-8 pb-4">
-            {memories.length ? memories.map((memory) => {
+            {memories.length ? memories.slice(0, visibleCount).map((memory) => {
               const memType = memoryTypes.find(t => t.id === memory.type) || memoryTypes[10];
               const Icon = memType.icon;
               
@@ -222,6 +226,7 @@ export function MemoryComposer({ projectId, initialMemories }: { projectId: stri
               </div>
             )}
           </div>
+          {visibleCount < memories.length ? <button className="button button-ghost load-more-button mt-6" onClick={() => setVisibleCount((count) => count + 20)} type="button">Load 20 more memories <span>↓</span></button> : null}
         </div>
       </section>
     </div>

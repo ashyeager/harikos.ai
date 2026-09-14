@@ -290,3 +290,15 @@
 .contact-identity h3 { color: #0a0a0a; font-size: clamp(38px,5vw,68px); letter-spacing: -.055em; margin: 12px 0; }
 .contact-identity a { color: #0a0a0a; font-size: clamp(16px,2vw,21px); font-weight: 600; width: fit-content; }
 .contact-identity a:hover { color: #8e7540; }
+
+/* Public glass navigation and surface-polarity theme */
+.marketing-root .site-nav-shell { background:rgba(255,255,255,.78); border-bottom:1px solid rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px) }
+.marketing-root .site-nav-shell.is-scrolled { background:rgba(255,255,255,.9); border-bottom-color:rgba(0,0,0,.16); box-shadow:0 10px 36px rgba(0,0,0,.07) }
+.marketing-root :is(a,button,[role="tab"]):hover { border-color:rgba(205,180,122,.72) }
+[data-theme="dark"] .marketing-root{--bg-primary:#0a0a0a;--bg-secondary:#0a0a0a;--bg-tertiary:rgba(255,255,255,.05);--text-primary:#fff;--text-secondary:#fff;--text-tertiary:#fff;--paper:#fff;--paper-soft:#fff;--muted:#fff;--muted-dark:#fff;--line:rgba(255,255,255,.16);--line-strong:rgba(255,255,255,.3);background:#0a0a0a;color:#fff}
+[data-theme="dark"] .marketing-root :is(.home-hero,.public-hero,.pricing-hero,.public-section,.section-shell,.site-footer,.parent-company,.final-cta-section,.product-cta){background:#0a0a0a;color:#fff;border-color:rgba(255,255,255,.16)}
+[data-theme="dark"] .marketing-root :is(h1,h2,h3,h4,p,small,label,li,summary,a,button,strong,span){color:#fff}
+[data-theme="dark"] .marketing-root :is(.eyebrow,.example-label,code,b,.is-active>span,.contact-identity>span){color:#cdb47a}
+[data-theme="dark"] .marketing-root .site-nav-shell,[data-theme="dark"] .marketing-root .site-nav-shell.is-scrolled{background:rgba(10,10,10,.86);border-bottom-color:rgba(255,255,255,.16);box-shadow:0 10px 36px rgba(0,0,0,.24)}
+[data-theme="dark"] .marketing-root .button-primary{background:#fff;color:#0a0a0a}[data-theme="dark"] .marketing-root .button-secondary{background:#0a0a0a;border-color:rgba(255,255,255,.28);color:#fff}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.marketing-root .site-nav-shell{background:#fff}[data-theme="dark"] .marketing-root .site-nav-shell{background:#0a0a0a}}

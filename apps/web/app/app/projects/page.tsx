@@ -5,6 +5,7 @@ import { RepositorySelector } from "../../../components/repository-selector";
 import { listCloudProjects } from "../../../lib/cloud-projects";
 import { integrationStatus } from "../../../lib/config";
 import { getAuthIdentity } from "../../../lib/auth";
+import { EmptyState } from "../../../components/ui-primitives";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,7 @@ export default async function ProjectsPage() {
           </Link>
         ))}
         {cloudProjects.length === 0 ? (
-          <p className="empty-projects">No connected projects yet. Install the GitHub App and choose a repository above.</p>
+          <EmptyState compact eyebrow="NO PROJECTS / FIRST RUN" title="Create your first verified project state." description="Connect a repository to create your first HARIKOS project." action={<a className="button button-dark" href="/api/github/install/start">Connect repository <span>→</span></a>} />
         ) : null}
       </section>
 

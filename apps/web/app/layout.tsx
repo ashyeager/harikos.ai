@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { MotionProvider } from "../components/motion-provider";
+import { UXProvider } from "../components/ux-provider";
 
 import "./globals.css";
 
@@ -37,8 +38,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className={`${geist.variable} ${geistMono.variable}`} data-scroll-behavior="smooth" lang="en">
-      <body><MotionProvider><a className="skip-link" href="#main-content">Skip to content</a>{children}</MotionProvider></body>
+    <html className={`${geist.variable} ${geistMono.variable}`} data-scroll-behavior="smooth" lang="en" suppressHydrationWarning>
+      <body><MotionProvider><UXProvider><a className="skip-link" href="#main-content">Skip to content</a>{children}</UXProvider></MotionProvider></body>
     </html>
   );
 }

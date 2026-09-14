@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Terminal, Copy, CheckCircle2, ChevronRight, FileCode, Cpu, Code2, AlertCircle } from "lucide-react";
 import { cn } from "../lib/utils";
+import { LoadingButton } from "./ui-primitives";
+import { useToast } from "./ux-provider";
 
 interface ContextResult {
   text: string;
@@ -17,6 +19,7 @@ export function ContextComposer({ projectId }: { projectId: string }) {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState<string>();
   const [error, setError] = useState<string>();
+  const { notify } = useToast();
 
   async function prepare() {
     if (!task.trim()) return;
@@ -48,6 +51,7 @@ export function ContextComposer({ projectId }: { projectId: string }) {
     try {
       await navigator.clipboard.writeText(result.text);
       setCopied(label);
+      notify({ message: "Context copied.", tone: "success" });
       window.setTimeout(() => setCopied(undefined), 1600);
     } catch {
       setError("Clipboard access was not available. Select the context text manually.");
@@ -70,8 +74,10 @@ export function ContextComposer({ projectId }: { projectId: string }) {
         </div>
         
         <div className="px-8 pb-8 flex flex-col gap-4">
+          <label className="font-mono text-[10px] tracking-widest text-white uppercase" htmlFor="context-task">Development task</label>
           <textarea 
             aria-label="Development task" 
+            id="context-task"
             onChange={(event) => { setTask(event.target.value); setResult(undefined); setCopied(undefined); }}
             disabled={loading}
             value={task}
@@ -87,26 +93,19 @@ export function ContextComposer({ projectId }: { projectId: string }) {
               </p>
             ) : <div />}
             
-            <button 
+            <LoadingButton
               className={cn(
                 "h-12 px-8 flex items-center justify-center gap-3 bg-paper text-black font-mono font-bold text-[10px] tracking-widest uppercase rounded-sm shadow-sm transition-colors",
                 (loading || !task.trim()) ? "opacity-50 cursor-not-allowed" : "hover:bg-paper-soft"
               )}
               disabled={loading || !task.trim()} 
+              loading={loading}
+              loadingLabel="Generating Context…"
               onClick={prepare} 
               type="button"
             >
-              {loading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-ink/20 border-t-ink rounded-full animate-spin" />
-                  Resolving...
-                </>
-              ) : (
-                <>
-                  Prepare Context Pack <ChevronRight size={14} />
-                </>
-              )}
-            </button>
+              Prepare Context Pack <ChevronRight size={14} />
+            </LoadingButton>
           </div>
         </div>
       </section>

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { Brand } from "../brand";
+import { ThemeToggle } from "../ux-provider";
 
 const productLinks = [
   ["Product", "/product", "Truth, Memory, Context, and the agent bridge"],
@@ -85,6 +86,7 @@ export function SiteNav() {
           </div>
         </nav>
         <div className="site-nav-actions">
+          <ThemeToggle />
           <Link className="nav-sign-in" href="/login">Sign in</Link>
             <Link className="button button-primary button-small" href={`/login?next=${encodeURIComponent("/app/projects")}`}>Start Free <span>↗</span></Link>
           <button aria-expanded={open} aria-label={open ? "Close navigation" : "Open navigation"} className={`mobile-menu-button ${open ? "is-open" : ""}`} onClick={() => setOpen((value) => !value)} ref={mobileButtonRef} type="button"><i /><i /></button>
