@@ -224,6 +224,8 @@
 .home-brain-copy { border-right: 1px solid #303030; display: flex; flex-direction: column; justify-content: center; padding: clamp(34px,5vw,72px); }
 .home-brain-copy > span { color: #cdb47a; font: 600 10px/1 var(--font-mono); letter-spacing: .1em; }.home-brain-copy h3 { color: #fff; font-size: clamp(36px,4.3vw,64px); letter-spacing: -.055em; line-height: .98; margin: 30px 0 20px; }.home-brain-copy p { color: rgba(255,255,255,.82); line-height: 1.7; margin: 0 0 34px; }.home-brain-copy a { color: #fff; font-size: 13px; font-weight: 650; }
 .home-brain-visual { align-items: center; background: radial-gradient(circle at center,rgba(205,180,122,.09),transparent 52%); display: flex; justify-content: center; min-width: 0; overflow: hidden; }.home-brain-visual .project-state-sphere { height: 620px; max-width: 720px; }.home-brain-visual .hexagon-label { background: rgba(14,14,14,.88); }
+.home-brain-visual,.product-brain-frame{background:radial-gradient(circle at center,rgba(205,180,122,.1),transparent 50%),#000;color:#fff}
+.project-state-sphere :is(.hexagon-label span,.hexagon-label strong){color:#fff}
 .home-loop-stage { margin-top: 34px; position: relative; }.home-loop-stage > .example-label { left: 18px; position: absolute; top: 18px; z-index: 5; }.home-loop-stage .cinematic-loop { background: #0a0a0a; color: #f5f5f5; margin: 0; }.home-loop-stage .cinematic-topbar, .home-loop-stage .cinematic-stage { background: #0a0a0a; color: #f5f5f5; }.home-loop-stage .cinematic-task, .home-loop-stage .cinematic-truth > div { background: #151515; color: #f5f5f5; }.home-loop-stage .cinematic-data-line { background: transparent; }
 .knowledge-weave { border-top: 1px solid #c8c8c8; display: grid; grid-template-columns: repeat(3,1fr); }
 .knowledge-node { display: flex; flex-direction: column; min-height: 430px; padding: 30px; }.knowledge-node + .knowledge-node { border-left: 1px solid #dedede; }.knowledge-node > span { color: #cdb47a; font: 600 11px/1 var(--font-mono); }.knowledge-node div { margin: auto 0; }.knowledge-node small { color: #0a0a0a; font: 600 10px/1 var(--font-mono); letter-spacing: .08em; }.knowledge-node h3 { font-size: clamp(28px,3vw,44px); letter-spacing: -.045em; line-height: 1.04; margin: 16px 0; }.knowledge-node p { color: #0a0a0a; line-height: 1.65; }.knowledge-node a { color: #0a0a0a; font-size: 13px; font-weight: 650; }
@@ -295,10 +297,17 @@
 .marketing-root .site-nav-shell { background:rgba(255,255,255,.78); border-bottom:1px solid rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px) }
 .marketing-root .site-nav-shell.is-scrolled { background:rgba(255,255,255,.9); border-bottom-color:rgba(0,0,0,.16); box-shadow:0 10px 36px rgba(0,0,0,.07) }
 .marketing-root :is(a,button,[role="tab"]):hover { border-color:rgba(205,180,122,.72) }
-[data-theme="dark"] .marketing-root{--bg-primary:#0a0a0a;--bg-secondary:#0a0a0a;--bg-tertiary:rgba(255,255,255,.05);--text-primary:#fff;--text-secondary:#fff;--text-tertiary:#fff;--paper:#fff;--paper-soft:#fff;--muted:#fff;--muted-dark:#fff;--line:rgba(255,255,255,.16);--line-strong:rgba(255,255,255,.3);background:#0a0a0a;color:#fff}
-[data-theme="dark"] .marketing-root :is(.home-hero,.public-hero,.pricing-hero,.public-section,.section-shell,.site-footer,.parent-company,.final-cta-section,.product-cta){background:#0a0a0a;color:#fff;border-color:rgba(255,255,255,.16)}
-[data-theme="dark"] .marketing-root :is(h1,h2,h3,h4,p,small,label,li,summary,a,button,strong,span){color:#fff}
-[data-theme="dark"] .marketing-root :is(.eyebrow,.example-label,code,b,.is-active>span,.contact-identity>span){color:#cdb47a}
-[data-theme="dark"] .marketing-root .site-nav-shell,[data-theme="dark"] .marketing-root .site-nav-shell.is-scrolled{background:rgba(10,10,10,.86);border-bottom-color:rgba(255,255,255,.16);box-shadow:0 10px 36px rgba(0,0,0,.24)}
-[data-theme="dark"] .marketing-root .button-primary{background:#fff;color:#0a0a0a}[data-theme="dark"] .marketing-root .button-secondary{background:#0a0a0a;border-color:rgba(255,255,255,.28);color:#fff}
-@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.marketing-root .site-nav-shell{background:#fff}[data-theme="dark"] .marketing-root .site-nav-shell{background:#0a0a0a}}
+[data-theme="dark"] .marketing-root{
+  --bg-primary:var(--surface);--bg-secondary:var(--surface);--bg-tertiary:var(--surface-subtle);
+  --text-primary:var(--on-surface);--text-secondary:var(--on-surface);--text-tertiary:var(--on-surface);
+  --paper:var(--on-surface);--paper-soft:var(--on-surface);--muted:var(--on-surface);--muted-dark:var(--on-surface);
+  --line:var(--border);--line-strong:color-mix(in srgb,var(--on-surface) 30%,transparent);
+  background:var(--surface);color:var(--on-surface)
+}
+.marketing-root :is(.home-hero,.public-hero,.pricing-hero,.public-section,.section-shell,.site-footer,.parent-company,.final-cta-section,.product-cta){background:var(--surface);color:var(--on-surface);border-color:var(--border)}
+.marketing-root :is(h1,h2,h3,h4,p,small,label,li,summary,a,button,strong,span){color:var(--on-surface)}
+.marketing-root :is(.eyebrow,.example-label,code,b,.is-active>span,.contact-identity>span){color:var(--accent)}
+.marketing-root .site-nav-shell,.marketing-root .site-nav-shell.is-scrolled{background:color-mix(in srgb,var(--surface) 88%,transparent);border-bottom-color:var(--border)}
+.marketing-root .button-primary{background:var(--surface-inverse);color:var(--on-surface-inverse)}
+.marketing-root .button-secondary{background:var(--surface);border-color:var(--border);color:var(--on-surface)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.marketing-root .site-nav-shell{background:var(--surface)}}

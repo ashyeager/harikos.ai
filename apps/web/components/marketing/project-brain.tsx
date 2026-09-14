@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-const HexagonHero = dynamic(() => import("./HexagonHero").then((module) => module.HexagonHero), {
+const CanonicalProjectStateSphere = dynamic(() => import("./ProjectStateSphere").then((module) => module.ProjectStateSphere), {
   ssr: false,
   loading: () => (
     <div className="brain-loading" aria-label="Loading interactive project-state object">
@@ -15,5 +15,5 @@ const HexagonHero = dynamic(() => import("./HexagonHero").then((module) => modul
 });
 
 export function ProjectBrain() {
-  return <HexagonHero />;
+  return <CanonicalProjectStateSphere />;
 }

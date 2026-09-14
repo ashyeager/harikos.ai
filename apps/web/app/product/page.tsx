@@ -19,7 +19,7 @@ export default function ProductPage() {
   return (
     <MarketingShell>
       <main className="public-page product-page">
-        <PublicHero eyebrow="PRODUCT / PROJECT BRAIN" title="One system for what changed," accent="what is true, and what matters next." copy="HARIKOS turns repository evidence and agent activity into a shared, inspectable project brain without confusing remembered history with current fact." secondary={["See how it works", "/how-it-works"]} visual={<div className="product-brain-frame"><ExampleLabel /><ProjectBrain /></div>} />
+        <PublicHero eyebrow="PRODUCT / PROJECT BRAIN" title="One system for what changed," accent="what is true, and what matters next." copy="HARIKOS turns repository evidence and agent activity into a shared, inspectable project brain without confusing remembered history with current fact." secondary={["See how it works", "/how-it-works"]} visual={<div className="product-brain-frame technical-sphere-stage"><ExampleLabel /><ProjectBrain /></div>} />
         <PrincipleStrip items={[["SOURCE", "Authorized repository"], ["RESOLVE", "Evidence to current Truth"], ["REMEMBER", "Structured project history"], ["HAND OFF", "Relevant context to agents"]]} />
         <PublicSection eyebrow="THE COMPLETE LOOP" title={<>From repository signal<br /><span>to better agent outcomes.</span></>} copy="Each stage has a clear authority boundary. Repository evidence establishes current state; agents contribute structured history; Context selects what is relevant for the task.">
           <ProjectStateFlow />

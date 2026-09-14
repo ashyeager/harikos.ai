@@ -1,4 +1,11 @@
 :root {
+  --surface: #0a0a0a;
+  --surface-subtle: #131313;
+  --on-surface: #ffffff;
+  --surface-inverse: #ffffff;
+  --on-surface-inverse: #0a0a0a;
+  --border: rgba(255,255,255,.16);
+  --accent: #cdb47a;
   --ink-950: #080808;
   --ink-900: #0a0a0a;
   --ink-850: #0f0f0f;
@@ -145,6 +152,33 @@ button { border: 0; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
   [data-reveal] { opacity: 1; transform: none; }
+}
+
+[data-theme="light"] {
+  --surface: #ffffff;
+  --surface-subtle: #f5f5f5;
+  --on-surface: #0a0a0a;
+  --surface-inverse: #0a0a0a;
+  --on-surface-inverse: #ffffff;
+  --border: rgba(0,0,0,.18);
+}
+
+[data-theme="dark"] {
+  --surface: #0a0a0a;
+  --surface-subtle: #131313;
+  --on-surface: #ffffff;
+  --surface-inverse: #ffffff;
+  --on-surface-inverse: #0a0a0a;
+  --border: rgba(255,255,255,.16);
+}
+
+.technical-sphere-stage {
+  --surface: #000000;
+  --surface-subtle: #0a0a0a;
+  --on-surface: #ffffff;
+  --border: rgba(255,255,255,.16);
+  background: radial-gradient(circle at center,rgba(205,180,122,.1),transparent 50%),var(--surface) !important;
+  color: var(--on-surface) !important;
 }
 
 .global-error-body { background: var(--ink-950); color: var(--paper); min-height: 100vh; }

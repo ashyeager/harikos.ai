@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const hasProvider = providers.github || providers.google;
   return <main className="login-page" id="main-content" tabIndex={-1}>
     <header className="login-nav"><Brand /><div className="login-nav-actions"><ThemeToggle /><Link href="/">Back to HARIKOS AI</Link></div></header>
-    <section className="login-visual">
+    <section className="login-visual technical-sphere-stage">
       <span className="example-label">ILLUSTRATIVE PROJECT BRAIN</span>
       <ProjectBrain />
       <div className="login-visual-copy"><span>ONE PROJECT / MANY AGENTS</span><h1>Your next agent should know what the last one learned.</h1><p>Truth stays current. Useful history persists. Context stays focused.</p></div>

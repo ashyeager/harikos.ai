@@ -60,7 +60,7 @@ export default async function LandingPage() {
           <SectionHeading eyebrow="PROJECT STATE / IN MOTION" title={<>See the system resolve.<br /><span>Then watch it stay current.</span></>} copy="Two focused views show the same HARIKOS loop: a shared project state formed from connected evidence, and the lifecycle that updates it when the repository changes." />
           <div className="home-brain-stage">
             <div className="home-brain-copy"><span>ILLUSTRATIVE SYSTEM VIEW</span><h3>One state shared across the project.</h3><p>The layered mesh represents Evidence, Truth, Memory, Context, and agent access staying connected without collapsing into one undifferentiated record.</p><Link href="/product">Explore the product <b aria-hidden="true">↗</b></Link></div>
-            <div className="home-brain-visual"><ProjectBrain /></div>
+            <div className="home-brain-visual technical-sphere-stage"><ProjectBrain /></div>
           </div>
           <div className="home-loop-stage"><span className="example-label">ILLUSTRATIVE PRODUCT MECHANIC</span><CinematicLoop /></div>
         </section>

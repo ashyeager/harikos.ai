@@ -1020,7 +1020,13 @@ button, input, textarea, select { color: var(--paper); }
 .command-palette > div a[data-command] { grid-template-columns:minmax(0,1fr) auto; padding:11px 12px }.command-palette > div a[data-command] small{color:var(--gold-accent);font:650 8px/1 var(--font-mono);grid-column:1/-1;letter-spacing:.1em}.command-palette > div a[data-command] strong{font-size:12px}.command-palette > div a[data-command].is-active,.command-palette > div a[data-command]:focus-visible{background:rgba(205,180,122,.1);border-color:var(--gold-accent);outline:0}.command-palette > div a[data-command] kbd{border:1px solid rgba(255,255,255,.2);padding:4px 6px}.command-empty{display:grid;gap:14px;padding:28px}.command-empty button{background:transparent;border:1px solid var(--gold-accent);color:var(--gold-accent);cursor:pointer;justify-self:start;padding:8px 10px}
 .app-frame :is(p,small,label){color:#fff}.app-frame :is(.panel,.source-card,.command-palette,.repository-selector){transition:border-color .18s,transform .18s}.app-frame :is(.project-row,.dashboard-project-grid>a,.memory-row,button,a){transition:border-color .18s,color .18s,background .18s,transform .18s}.app-frame :is(.project-row,.dashboard-project-grid>a):hover{border-color:rgba(205,180,122,.54);transform:translateY(-1px)}
 .repository-skeleton{background:#0a0a0a;border:1px solid var(--line);display:grid;margin-top:22px}.repository-skeleton>div{align-items:center;border-bottom:1px solid var(--line);display:grid;gap:14px;grid-template-columns:40px minmax(0,1fr) 90px;min-height:76px;padding:12px 19px}.repository-skeleton>div:last-of-type{border-bottom:0}.repository-skeleton>div>span{display:grid;gap:8px}.repository-avatar-skeleton{height:40px;width:40px}.repository-name-skeleton{height:12px;max-width:260px}.repository-meta-skeleton{height:8px;max-width:170px}.repository-action-skeleton{height:10px;width:90px}
-[data-theme="light"] body{background:#fff;color:#0a0a0a}[data-theme="light"] .app-frame{--paper:#0a0a0a;--muted:#0a0a0a;--muted-dark:#0a0a0a;--line:rgba(0,0,0,.16);--line-strong:rgba(0,0,0,.28);background:#fff;color:#0a0a0a}[data-theme="light"] .app-frame :is(.app-sidebar,.app-topbar,.panel,.source-card,.command-palette,.repository-selector,.dashboard-command-brief,.question-panel,.answer-panel){background:#fff;border-color:rgba(0,0,0,.18);color:#0a0a0a}[data-theme="light"] .app-frame :is(h1,h2,h3,h4,p,small,label,strong,a,button,span,input,textarea,select){color:#0a0a0a}[data-theme="light"] .app-frame :is(input,textarea,select,.command-trigger,.topbar-context){background:#fff;border-color:rgba(0,0,0,.24)}[data-theme="light"] .app-frame .button-dark{background:#0a0a0a;color:#fff}[data-theme="light"] .app-frame .harikos-skeleton{background:rgba(0,0,0,.09)}[data-theme="light"] .app-frame .empty-state-mark i{border-color:rgba(0,0,0,.24)}
+.app-frame { background:var(--surface);color:var(--on-surface) }
+.app-frame :is(p,small,label,h1,h2,h3,h4,strong,a,button,span,input,textarea,select){color:var(--on-surface)}
+.app-frame :is(.app-sidebar,.app-topbar,.panel,.source-card,.command-palette,.repository-selector,.dashboard-command-brief,.question-panel,.answer-panel){background:var(--surface-subtle);border-color:var(--border);color:var(--on-surface)}
+.app-frame :is(input,textarea,select,.command-trigger,.topbar-context){background:var(--surface);border-color:var(--border)}
+.app-frame .button-dark{background:var(--surface-inverse);color:var(--on-surface-inverse)}
+.app-frame .harikos-skeleton{background:color-mix(in srgb,var(--on-surface) 9%,transparent)}
+.app-frame .empty-state-mark i{border-color:color-mix(in srgb,var(--on-surface) 24%,transparent)}
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.app-topbar{background:#0a0a0a}}
 .app-error-page { align-items:center;background:var(--bg-primary);display:flex;flex-direction:column;gap:36px;justify-content:center;min-height:100vh;padding:32px }
 .app-error-page > .panel { max-width:680px;padding:32px;width:100% }
@@ -1097,6 +1103,13 @@ button, input, textarea, select { color: var(--paper); }
    historical redesign patches with one product-wide visual contract. */
 
 :root {
+  --surface: #0a0a0a;
+  --surface-subtle: #141414;
+  --on-surface: #ffffff;
+  --surface-inverse: #ffffff;
+  --on-surface-inverse: #0a0a0a;
+  --border: rgba(255,255,255,0.16);
+  --accent: #cdb47a;
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
   --bg-tertiary: #141414;
@@ -1154,6 +1167,50 @@ button, input, textarea, select { color: var(--paper); }
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-code), ui-monospace, monospace;
+}
+
+[data-theme="light"] {
+  --surface: #ffffff;
+  --surface-subtle: #f5f5f5;
+  --on-surface: #0a0a0a;
+  --surface-inverse: #0a0a0a;
+  --on-surface-inverse: #ffffff;
+  --border: rgba(0,0,0,.18);
+  --bg-primary: var(--surface);
+  --bg-secondary: var(--surface-subtle);
+  --bg-tertiary: #ececec;
+  --text-primary: var(--on-surface);
+  --text-secondary: #222222;
+  --text-tertiary: #424242;
+  --border-visible: var(--border);
+  --border-strong: rgba(0,0,0,.3);
+  --paper: var(--on-surface);
+  --paper-soft: #222222;
+  --panel: var(--surface-subtle);
+  --panel-solid: var(--surface-subtle);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --surface: #0a0a0a;
+  --surface-subtle: #141414;
+  --on-surface: #ffffff;
+  --surface-inverse: #ffffff;
+  --on-surface-inverse: #0a0a0a;
+  --border: rgba(255,255,255,.16);
+  --bg-primary: var(--surface);
+  --bg-secondary: var(--surface-subtle);
+  --bg-tertiary: #202020;
+  --text-primary: var(--on-surface);
+  --text-secondary: #d0d0d0;
+  --text-tertiary: #a0a0a0;
+  --border-visible: var(--border);
+  --border-strong: rgba(255,255,255,.28);
+  --paper: var(--on-surface);
+  --paper-soft: #e8e8e8;
+  --panel: rgba(12,12,12,.92);
+  --panel-solid: var(--surface-subtle);
+  color-scheme: dark;
 }
 
 html {
@@ -2206,6 +2263,8 @@ select:focus {
 [data-theme="light"] .login-page :is(h1,h2,p,small,a,strong) { color: #0a0a0a; }
 [data-theme="light"] .login-page :is(.auth-provider,.permission-note,.config-notice) { background: #fff; border-color: rgba(0,0,0,.2); color: #0a0a0a; }
 [data-theme="light"] .login-page .login-card > small { color: #343434; }
+.login-page .login-visual { background:radial-gradient(circle at center,rgba(205,180,122,.12),transparent 46%),#000;color:#fff }
+.login-page .login-visual :is(.hexagon-label span,.hexagon-label strong){color:#fff}
 .auth-provider {
   background: var(--bg-secondary);
   border-color: var(--border-strong);
