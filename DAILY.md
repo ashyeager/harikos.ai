@@ -198,3 +198,12 @@
 - Production configuration audit confirms Paddle, Resend, and the cron secret are not yet present in Vercel. Billing and lifecycle email remain honestly unavailable until those external credentials and catalog objects are configured.
 - Corrective Preview `dpl_63NdZ49J2bKd1fFoQUuA3ubVUYgm` for commit `1532be62acfe42008473fd797088934537caebf5` reached READY. All 13 public route families, `/api/status`, and the final MP4 returned 200; unauthenticated `/app/dashboard` redirected to `/login`; no new error-level runtime logs were present.
 - Final dependency review upgraded Next.js from 16.3.3 to 16.3.5 and pinned patched transitive Browserslist and baseline-browser-mapping releases. `pnpm audit --prod` now reports no known vulnerabilities.
+
+## SHARED UX SYSTEM AND BLACK / WHITE RELEASE
+
+- Added one shared UX provider for public and authenticated surfaces: binary BLACK/WHITE theme persistence, route transitions, scroll progress, accessible tooltips, global toasts, loading controls, skeletons, empty states, and safe confirmed-action feedback.
+- Expanded the shared command palette with grouped, searchable, project-aware routes, keyboard navigation, focus trapping/restoration, and empty-search recovery. Added bounded load-more behavior to Truth and Memory lists.
+- Placed the same BLACK/WHITE control across all 13 public routes, the authenticated app chrome, and the centered sign-in page. The Project Brain remains the sign-in backdrop; the authentication and GitHub authorization boundary remains unchanged.
+- Local release gates passed: lint, separate typecheck, 25 test files / 78 tests, production build with 40 routes, 6/6 desktop/mobile Playwright journeys, `git diff --check`, secret scan, and explicit 375px/430px browser checks.
+- Preview deployment `6443389935` completed for application commit `e1979ecaa147f4f343ffa380672dcdebb0e4f0a8`; rendered anonymous inspection was blocked by the configured Vercel SSO protection.
+- Production deployment `6443417022` completed for the same commit and the public alias `https://harikos-ai.vercel.app` was verified independently. All 13 public routes exposed the toggle, centered login passed, 375px/430px had no overflow, `/api/status` returned Supabase Auth, PostgreSQL, and GitHub App ready, the logged-out dashboard redirected to `/login`, and the browser console remained clean.
