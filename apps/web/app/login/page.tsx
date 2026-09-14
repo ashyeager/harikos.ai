@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Brand } from "../../components/brand";
 import { ProjectBrain } from "../../components/marketing/project-brain";
+import { ThemeToggle } from "../../components/ux-provider";
 import { safeAuthNext } from "../../lib/auth-redirect";
 import { getAuthIdentity } from "../../lib/auth";
 import { integrationStatus } from "../../lib/config";
@@ -19,7 +20,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const providers = await readSupabaseProviderStatus();
   const hasProvider = providers.github || providers.google;
   return <main className="login-page" id="main-content" tabIndex={-1}>
-    <header className="login-nav"><Brand /><Link href="/">Back to HARIKOS AI</Link></header>
+    <header className="login-nav"><Brand /><div className="login-nav-actions"><ThemeToggle /><Link href="/">Back to HARIKOS AI</Link></div></header>
     <section className="login-visual">
       <span className="example-label">ILLUSTRATIVE PROJECT BRAIN</span>
       <ProjectBrain />

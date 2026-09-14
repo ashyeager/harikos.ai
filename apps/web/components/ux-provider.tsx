@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-type ThemePreference = "light" | "dark" | "system";
+type ThemePreference = "light" | "dark";
 type ToastTone = "loading" | "success" | "error" | "info";
 type ToastInput = { message: string; tone?: ToastTone; action?: { label: string; run: () => void } };
 type ToastRecord = ToastInput & { id: number };
@@ -13,8 +13,7 @@ const ThemeContext = createContext<{ preference: ThemePreference; setPreference:
 const ToastContext = createContext<{ notify: (toast: ToastInput) => void } | null>(null);
 
 function applyTheme(preference: ThemePreference) {
-  const resolved = preference === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : preference === "system" ? "light" : preference;
-  document.documentElement.dataset.theme = resolved;
+  document.documentElement.dataset.theme = preference;
   document.documentElement.dataset.themePreference = preference;
 }
 
@@ -26,13 +25,9 @@ export function UXProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("harikos-theme");
-    const initial: ThemePreference = saved === "light" || saved === "dark" || saved === "system" ? saved : pathname.startsWith("/app") ? "dark" : "light";
+    const initial: ThemePreference = saved === "light" || saved === "dark" ? saved : pathname.startsWith("/app") ? "dark" : "light";
     setPreferenceState(initial);
     applyTheme(initial);
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const update = () => { if (document.documentElement.dataset.themePreference === "system") applyTheme("system"); };
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
   }, [pathname]);
 
   useEffect(() => {
@@ -69,8 +64,8 @@ export function useToast() {
 export function ThemeToggle() {
   const value = useContext(ThemeContext);
   if (!value) return null;
-  const next: ThemePreference = value.preference === "light" ? "dark" : value.preference === "dark" ? "system" : "light";
-  return <span className="tooltip-root"><button aria-label={`Theme: ${value.preference}. Switch to ${next}.`} className="theme-toggle" onClick={() => value.setPreference(next)} type="button"><span aria-hidden="true">{value.preference === "light" ? "◐" : value.preference === "dark" ? "◑" : "◒"}</span><small>{value.preference}</small></button><span className="tooltip-content" role="tooltip">Switch to {next} theme</span></span>;
+  const next: ThemePreference = value.preference === "light" ? "dark" : "light";
+  return <span className="tooltip-root"><button aria-label={`Color theme: ${value.preference === "light" ? "white" : "black"}. Switch to ${next === "light" ? "white" : "black"}.`} className="theme-toggle" onClick={() => value.setPreference(next)} type="button"><span aria-hidden="true">{value.preference === "light" ? "◐" : "◑"}</span><small>{value.preference === "light" ? "WHITE" : "BLACK"}</small></button><span className="tooltip-content" role="tooltip">Use {next === "light" ? "white" : "black"} theme</span></span>;
 }
 
 export function PageTransition({ children }: { children: ReactNode }) {
