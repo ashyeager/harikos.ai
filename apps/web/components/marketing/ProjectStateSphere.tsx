@@ -124,7 +124,7 @@ export function ProjectStateSphere() {
     return () => { renderer.setAnimationLoop(null); resizeObserver.disconnect(); visibilityObserver.disconnect(); reducedMotion.removeEventListener("change", onReducedMotionChange); container.removeEventListener("pointermove", onPointerMove); disposables.forEach((item) => item.dispose()); renderer.dispose(); renderer.domElement.remove(); };
   }, []);
 
-  return <div aria-label="A white holographic project-state globe with verified gold signals" className="hexagon-hero project-state-sphere" ref={containerRef} role="img">
+  return <div aria-label="A white holographic project-state globe with verified gold signals" className="hexagon-hero project-state-sphere" data-object="canonical-project-state-sphere" ref={containerRef} role="img">
     <div className="sphere-fallback" aria-hidden="true"><i /><i /><span /></div>
     <div className="hexagon-label hexagon-label-top"><span>STATE / VERIFIED</span><strong>EVIDENCE ALIGNED</strong></div>
     <div className="hexagon-label hexagon-label-bottom"><span>BRIDGE / MCP</span><strong>AGENTS IN SYNC</strong></div>

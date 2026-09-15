@@ -199,6 +199,15 @@
 - Corrective Preview `dpl_63NdZ49J2bKd1fFoQUuA3ubVUYgm` for commit `1532be62acfe42008473fd797088934537caebf5` reached READY. All 13 public route families, `/api/status`, and the final MP4 returned 200; unauthenticated `/app/dashboard` redirected to `/login`; no new error-level runtime logs were present.
 - Final dependency review upgraded Next.js from 16.3.3 to 16.3.5 and pinned patched transitive Browserslist and baseline-browser-mapping releases. `pnpm audit --prod` now reports no known vulnerabilities.
 
+## ROOT CONTRAST AND CANONICAL PROJECT-STATE SPHERE
+
+- Replaced the legacy grey nested-icosahedron implementation with one reusable `ProjectStateSphere`: white latitude/longitude and internal relationship geometry, layered white alpha depth, restrained gold nodes/scan path, slow independent shell motion, pointer parallax, reduced-motion handling, capped DPR, offscreen pause, resize observation, disposal, and the existing mobile fallback.
+- Home, Product, and Login now consume that single implementation and opt into one explicit black technical-stage contract. The former `HexagonHero` implementation was removed after its only lazy-loaded consumer was migrated.
+- Added semantic surface tokens for light/dark polarity and replaced the authenticated-app light selector forest with shared surface/foreground relationships. The authenticated app remains dark-first; public pages remain light-first.
+- Added a Playwright WCAG contrast regression gate covering every public/auth-boundary route in both themes plus the representative authorized-repository surface. Eight desktop/mobile E2E checks passed.
+- Local gates passed: lint, separate typecheck, 25 test files / 78 tests, production build with 40 routes, `git diff --check`, secret scan, both-theme browser checks, and the three sphere placements at 375, 430, 768, 1024, 1440, and 1920.
+- Preview deployment `6443827470` and Production deployment `6455155250` completed for application commit `a642ccd735a1f96dea667f05dba2c3ebae2937c2`. Live verification found no route overflow or console errors; `/api/status` reported Supabase Auth, PostgreSQL, and GitHub App ready; logged-out dashboard access redirected to `/login`.
+
 ## SHARED UX SYSTEM AND BLACK / WHITE RELEASE
 
 - Added one shared UX provider for public and authenticated surfaces: binary BLACK/WHITE theme persistence, route transitions, scroll progress, accessible tooltips, global toasts, loading controls, skeletons, empty states, and safe confirmed-action feedback.
