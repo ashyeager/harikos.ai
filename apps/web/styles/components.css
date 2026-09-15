@@ -1062,7 +1062,7 @@ button, input, textarea, select { color: var(--paper); }
 @media (max-width:720px) { .dashboard-metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .dashboard-project-grid { grid-template-columns:1fr; } .dashboard-actions { grid-template-columns:1fr; } .dashboard-metric { min-height:125px; } .dashboard-metric > strong { margin-top:18px; } }
 
 /* HARIKOS premium contrast pass */
-.app-frame { background: #0a0a0a; }
+.app-frame { background: var(--surface); color: var(--on-surface); }
 .app-sidebar { background: #090909; border-right-color: rgba(205,180,122,.16); }
 .sidebar-brand .brand { color: #fdfdfd; }
 .project-switcher { background: #121212; border-color: rgba(205,180,122,.24); }
@@ -1168,6 +1168,13 @@ button, input, textarea, select { color: var(--paper); }
   --font-display: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-code), ui-monospace, monospace;
 }
+
+/* Final app-polarity guard: dashboard surfaces follow the active theme tokens. */
+.app-frame{background:var(--surface);color:var(--on-surface)}
+.app-frame :is(.app-sidebar,.app-topbar,.panel,.truth-card,.source-card,.filter-bar,.overview-status-bar,.connected-projects,.repository-selector,.settings-nav,.profile-card,.account-actions,.plan-baseline,.dashboard-project-grid>a,.dashboard-actions article,.recent-change-card,.command-palette,.question-panel,.answer-panel){background:var(--surface-subtle);border-color:var(--border);color:var(--on-surface)}
+.app-frame :is(.page-header h1,.panel-heading h2,.dashboard-metric>span,.dashboard-metric>small,.dashboard-next-action>span,.project-row p,.project-row small,.repository-selector p,.repository-selector small){color:var(--on-surface)}
+.app-frame :is(.side-nav a,.sidebar-bottom>a,.settings-nav a){font-size:13px;font-weight:700}
+.app-frame :is(input,textarea,select){background:var(--surface);border-color:var(--border);color:var(--on-surface)}
 
 [data-theme="light"] {
   --surface: #ffffff;
@@ -2503,5 +2510,12 @@ select:focus {
   .security-grid article:hover,
   .pricing-preview-grid article:hover { transform: none; }
 }
+
+/* Keep late legacy declarations from breaking dashboard polarity. */
+.app-frame{background:var(--surface);color:var(--on-surface)}
+.app-frame :is(.app-sidebar,.app-topbar,.panel,.truth-card,.source-card,.filter-bar,.overview-status-bar,.connected-projects,.repository-selector,.settings-nav,.profile-card,.account-actions,.plan-baseline,.dashboard-project-grid>a,.dashboard-actions article,.recent-change-card,.command-palette,.question-panel,.answer-panel){background:var(--surface-subtle);border-color:var(--border);color:var(--on-surface)}
+.app-frame :is(.page-header h1,.panel-heading h2,.dashboard-metric>span,.dashboard-metric>small,.dashboard-next-action>span,.project-row p,.project-row small,.repository-selector p,.repository-selector small){color:var(--on-surface)}
+.app-frame :is(.side-nav a,.sidebar-bottom>a,.settings-nav a){font-size:13px;font-weight:700}
+.app-frame :is(input,textarea,select){background:var(--surface);border-color:var(--border);color:var(--on-surface)}
 
 

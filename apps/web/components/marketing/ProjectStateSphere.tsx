@@ -29,15 +29,39 @@ export function ProjectStateSphere() {
     const sphere = new THREE.Group();
     const outerShell = new THREE.Group();
     const innerShell = new THREE.Group();
+    const spaceField = new THREE.Group();
     sphere.rotation.set(-.12, -.28, .03);
     sphere.add(outerShell, innerShell);
-    scene.add(sphere);
+    scene.add(spaceField, sphere);
 
     const whiteFull = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .9 });
     const whiteMedium = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .55 });
     const whiteQuiet = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .24 });
     const gold = new THREE.LineBasicMaterial({ color: 0xcdb47a, transparent: true, opacity: .9 });
     disposables.push(whiteFull, whiteMedium, whiteQuiet, gold);
+
+    const glassGeometry = new THREE.SphereGeometry(2.08, 48, 32);
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      depthWrite: false,
+      metalness: 0,
+      opacity: .055,
+      roughness: .08,
+      side: THREE.DoubleSide,
+      thickness: .55,
+      transparent: true,
+      transmission: .88,
+    });
+    const glass = new THREE.Mesh(glassGeometry, glassMaterial);
+    disposables.push(glassGeometry, glassMaterial);
+    innerShell.add(glass);
+
+    const polygonGeometry = new THREE.IcosahedronGeometry(2.12, 3);
+    const polygonWireGeometry = new THREE.WireframeGeometry(polygonGeometry);
+    const polygonShell = new THREE.LineSegments(polygonWireGeometry, whiteQuiet);
+    polygonShell.scale.setScalar(.985);
+    disposables.push(polygonGeometry, polygonWireGeometry);
+    innerShell.add(polygonShell);
 
     const addLoop = (points: THREE.Vector3[], material: THREE.LineBasicMaterial, parent = outerShell) => {
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -92,6 +116,29 @@ export function ProjectStateSphere() {
       return node;
     });
 
+    const sparkGeometry = new THREE.BufferGeometry();
+    const sparkPositions = new Float32Array(42 * 3);
+    for (let index = 0; index < 42; index += 1) {
+      const longitude = index * 2.399963;
+      const latitude = Math.asin(-1 + (2 * index) / 41);
+      const radius = 2.55 + Math.sin(index * 3.17) * .42;
+      sparkPositions[index * 3] = Math.cos(latitude) * Math.cos(longitude) * radius;
+      sparkPositions[index * 3 + 1] = Math.sin(latitude) * radius;
+      sparkPositions[index * 3 + 2] = Math.cos(latitude) * Math.sin(longitude) * radius;
+    }
+    sparkGeometry.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
+    const sparkMaterial = new THREE.PointsMaterial({ color: 0xffffff, depthWrite: false, opacity: .72, size: .035, sizeAttenuation: true, transparent: true });
+    const sparks = new THREE.Points(sparkGeometry, sparkMaterial);
+    disposables.push(sparkGeometry, sparkMaterial);
+    sphere.add(sparks);
+
+    const grid = new THREE.GridHelper(8.5, 18, 0xffffff, 0xffffff);
+    const gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
+    gridMaterials.forEach((material) => { material.depthWrite = false; material.opacity = .075; material.transparent = true; disposables.push(material); });
+    grid.rotation.set(Math.PI / 2.5, 0, -.18);
+    grid.position.set(.35, -.6, -3.2);
+    spaceField.add(grid);
+
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let reduced = reducedMotion.matches;
     let visible = true;
@@ -109,6 +156,10 @@ export function ProjectStateSphere() {
       const elapsed = (now - started) / 1000;
       outerShell.rotation.y = elapsed * .035;
       innerShell.rotation.y = -elapsed * .022;
+      polygonShell.rotation.set(elapsed * .016, -elapsed * .028, elapsed * .012);
+      sparks.rotation.set(-elapsed * .009, elapsed * .026, elapsed * .006);
+      spaceField.rotation.z = Math.sin(elapsed * .08) * .035;
+      spaceField.position.x = Math.sin(elapsed * .06) * .08;
       scan.rotation.z = .16 + elapsed * .05;
       sphere.rotation.y = -.28 + pointer.x * .12;
       sphere.rotation.x = -.12 + pointer.y * .07;

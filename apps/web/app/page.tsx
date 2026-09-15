@@ -30,7 +30,6 @@ export default async function LandingPage() {
       <main>
         <section className="home-hero final-home-hero">
           <div className="hero-copy">
-            <p className="home-hero-kicker">HARIKOS / VERIFIED PROJECT STATE</p>
             <h1>Many agents. One verified project state.</h1>
             <p className="hero-support">Continuously verified project state, evidence, memory, and task-specific context for AI coding agents.</p>
             <div className="hero-actions">

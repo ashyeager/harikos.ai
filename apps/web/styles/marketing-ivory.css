@@ -311,3 +311,22 @@
 .marketing-root .button-primary{background:var(--surface-inverse);color:var(--on-surface-inverse)}
 .marketing-root .button-secondary{background:var(--surface);border-color:var(--border);color:var(--on-surface)}
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.marketing-root .site-nav-shell{background:var(--surface)}}
+
+/* The navigation is a permanent white instrument strip in both polarities. */
+.marketing-root .site-nav-shell,.marketing-root .site-nav-shell.is-scrolled{background:rgba(255,255,255,.94);border-bottom-color:rgba(0,0,0,.16);color:#0a0a0a}
+.marketing-root .site-nav-shell :is(a,button,strong,span,small,b){color:#0a0a0a}
+.marketing-root .site-nav-links>a,.marketing-root .nav-dropdown>button,.marketing-root .nav-sign-in{font-size:15px;font-weight:720}
+.marketing-root .site-nav-shell .brand{color:#0a0a0a;font-weight:780}
+.marketing-root .site-nav-shell .button-primary{background:#0a0a0a;color:#fff}
+.marketing-root .site-nav-shell .button-primary span{color:#fff}
+.marketing-root .final-home-hero .hero-copy{margin-inline:auto;text-align:center}
+.marketing-root .final-home-hero .hero-support{font-size:clamp(20px,1.55vw,23px);font-weight:600;text-align:center}
+.marketing-root main>section:first-child p:not(.sr-only){color:var(--on-surface)}
+.marketing-root :is(.button,.site-footer a,.public-page a){font-weight:680}
+.marketing-root{font-size:17px}
+.marketing-root .button{font-size:13px}
+.technical-sphere-stage{background-color:#000;isolation:isolate;overflow:hidden;position:relative}
+.technical-sphere-stage::before{background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:42px 42px;content:"";inset:-20%;mask-image:radial-gradient(ellipse at 72% 48%,#000 0,transparent 63%);opacity:.42;pointer-events:none;position:absolute;transform:perspective(620px) rotateX(63deg) rotateZ(-9deg);z-index:0}
+.technical-sphere-stage>.project-state-sphere{position:relative;z-index:1}
+@media(max-width:900px){.marketing-root .site-nav-links{background:#fff;border-color:rgba(0,0,0,.16)}.marketing-root .mobile-menu-button{background:#fff;border-color:rgba(0,0,0,.2)}.marketing-root .mobile-menu-button i{background:#0a0a0a}}
+@media(prefers-reduced-motion:reduce){.technical-sphere-stage::before{transform:perspective(620px) rotateX(63deg) rotateZ(-9deg)}}
