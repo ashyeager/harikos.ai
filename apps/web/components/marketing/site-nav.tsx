@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { Brand } from "../brand";
+import { CommandPalette } from "../command-palette";
 import { ThemeToggle } from "../ux-provider";
 
 const productLinks = [
@@ -86,6 +87,7 @@ export function SiteNav() {
           </div>
         </nav>
         <div className="site-nav-actions">
+          <CommandPalette />
           <ThemeToggle />
           <Link className="nav-sign-in" href="/login">Sign in</Link>
             <Link className="button button-primary button-small" href={`/login?next=${encodeURIComponent("/app/projects")}`}>Start Free <span>↗</span></Link>

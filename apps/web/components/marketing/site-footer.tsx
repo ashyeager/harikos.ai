@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Brand } from "../brand";
+import { brandLinks } from "../../lib/brand-links";
 
 const columns = [
   ["Product", [["Overview", "/product"], ["Truth", "/truth"], ["Memory", "/memory"], ["Context", "/context"], ["Agents", "/agents"], ["Pricing", "/pricing"]]],
@@ -29,7 +30,7 @@ export function SiteFooter() {
       </div>
       <div className="site-footer-bottom">
         <span>HARIKOS AI — A HARIKOS product.</span>
-          <span><a href="mailto:zeusyeager469@gmail.com">zeusyeager469@gmail.com</a> · <a href="https://www.instagram.com/harikos.ai/" rel="noreferrer" target="_blank">Instagram @harikos.ai</a></span>
+          <span><a href={`mailto:${brandLinks.contactEmail}`}>{brandLinks.contactEmail}</a> · <a href={brandLinks.instagram} rel="noreferrer" target="_blank">{brandLinks.instagramLabel}</a></span>
           <a href="https://harikos.vercel.app/" rel="noreferrer" target="_blank">HARIKOS <b>→</b></a>
       </div>
     </footer>

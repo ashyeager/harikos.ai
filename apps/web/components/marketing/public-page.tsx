@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { Reveal } from "./reveal";
+
 export function PublicHero({
   eyebrow,
   title,
@@ -58,12 +60,12 @@ export function PublicSection({
 }) {
   return (
     <section className={`public-section public-section-${tone}`}>
-      <div className="public-section-heading" data-reveal>
+      <Reveal className="public-section-heading">
         <span className="eyebrow"><i />{eyebrow}</span>
         <h2>{title}</h2>
         <p>{copy}</p>
-      </div>
-      <div data-reveal>{children}</div>
+      </Reveal>
+      <Reveal mode="stage">{children}</Reveal>
     </section>
   );
 }

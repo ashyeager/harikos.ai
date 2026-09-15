@@ -6,6 +6,7 @@ import { CinematicLoop, InteractiveTerminal } from "../components/marketing/inte
 import { MarketingShell } from "../components/marketing/marketing-shell";
 import { ProductDemo } from "../components/marketing/product-demo";
 import { ProjectBrain } from "../components/marketing/project-brain";
+import { RenaissanceHero } from "../components/marketing/renaissance-hero";
 import { SectionHeading } from "../components/marketing/section-heading";
 import { getAuthIdentity } from "../lib/auth";
 
@@ -28,16 +29,7 @@ export default async function LandingPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="home-hero final-home-hero">
-          <div className="hero-copy">
-            <h1>Many agents. One verified project state.</h1>
-            <p className="hero-support">Continuously verified project state, evidence, memory, and task-specific context for AI coding agents.</p>
-            <div className="hero-actions">
-              <Link className="button button-primary button-large" href={startHref}>Start Free <span aria-hidden="true">↗</span></Link>
-              <Link className="button button-secondary button-large" href="#product-demo">Watch the product walkthrough <span aria-hidden="true">↓</span></Link>
-            </div>
-          </div>
-        </section>
+        <RenaissanceHero startHref={startHref} />
 
         <ProductDemo />
 

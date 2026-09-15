@@ -216,3 +216,12 @@
 - Local release gates passed: lint, separate typecheck, 25 test files / 78 tests, production build with 40 routes, 6/6 desktop/mobile Playwright journeys, `git diff --check`, secret scan, and explicit 375px/430px browser checks.
 - Preview deployment `6443389935` completed for application commit `e1979ecaa147f4f343ffa380672dcdebb0e4f0a8`; rendered anonymous inspection was blocked by the configured Vercel SSO protection.
 - Production deployment `6443417022` completed for the same commit and the public alias `https://harikos-ai.vercel.app` was verified independently. All 13 public routes exposed the toggle, centered login passed, 375px/430px had no overflow, `/api/status` returned Supabase Auth, PostgreSQL, and GitHub App ready, the logged-out dashboard redirected to `/login`, and the browser console remained clean.
+
+## CLASSICAL BRAND AND UX RELEASE CANDIDATE
+
+- Rebuilt the homepage opening around the locked HARIKOS message and an original, locally optimized Renaissance-inspired human/machine hand study, with restrained scroll-linked Motion and a readable black/white treatment.
+- Kept the canonical `ProjectStateSphere` implementation shared by Home, Product, and Login; no parallel 3D implementation or backend contract was introduced.
+- Extended the shared UX layer with pre-paint theme restoration, public command access, real viewport reveals, a reduced-motion-aware scroll indicator, a controllable product loop, semantic contrast repairs, and a tablet navigation breakpoint.
+- Centralized the verified HARIKOS contact and Instagram links and removed the stale contact identity from public surfaces.
+- Release-candidate evidence: lint and separate TypeScript passed; 25 Vitest files / 78 tests passed; the Next.js 16.3.5 production build generated 40 routes; 10/10 desktop/mobile Playwright checks passed across all public routes, protected redirects, theme contrast, command access, and canonical sphere placement; `git diff --check` and the focused secret scan passed.
+- Local browser inspection covered the rebuilt hero and corrected 768px navigation. Preview and Production identifiers are intentionally pending until this candidate is committed and promoted.

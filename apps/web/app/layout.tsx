@@ -10,7 +10,10 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-body", display: "swa
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-code", display: "swap" });
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
+  themeColor: [
+    { color: "#ffffff", media: "(prefers-color-scheme: light)" },
+    { color: "#0a0a0a", media: "(prefers-color-scheme: dark)" },
+  ],
 };
 
 export const metadata: Metadata = {
@@ -39,6 +42,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={`${geist.variable} ${geistMono.variable}`} data-scroll-behavior="smooth" lang="en" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("harikos-theme");var p=t==="light"||t==="dark"?t:location.pathname.startsWith("/app")?"dark":"light";document.documentElement.dataset.theme=p;document.documentElement.dataset.themePreference=p}catch(e){}` }} /></head>
       <body><MotionProvider><UXProvider><a className="skip-link" href="#main-content">Skip to content</a>{children}</UXProvider></MotionProvider></body>
     </html>
   );

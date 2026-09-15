@@ -14,6 +14,7 @@ export function CinematicLoop() {
   const ref = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);
   const [active, setActive] = useState(true);
+  const [playing, setPlaying] = useState(true);
   useEffect(() => {
     if (!ref.current) return;
     const observer = new IntersectionObserver(([entry]) => setActive(Boolean(entry?.isIntersecting)), { threshold: 0.15 });
@@ -21,14 +22,14 @@ export function CinematicLoop() {
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    if (!active || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!active || !playing || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const interval = window.setInterval(() => setStep((value) => (value + 1) % loopStages.length), 1900);
     return () => window.clearInterval(interval);
-  }, [active]);
+  }, [active, playing]);
   const current = loopStages[step]!;
   return (
     <div className="cinematic-loop" ref={ref}>
-      <div className="cinematic-topbar"><span><i /> LIVE PRODUCT MECHANIC</span><span>LOOP / 0{step + 1}:05</span></div>
+      <div className="cinematic-topbar"><span><i /> LIVE PRODUCT MECHANIC</span><span>LOOP / 0{step + 1}:05</span><button aria-pressed={playing} onClick={() => setPlaying((value) => !value)} type="button">{playing ? "PAUSE" : "PLAY"}</button></div>
       <div className="cinematic-stage">
         <div className="cinematic-task"><small>{current.label}</small><strong>{current.title}</strong><span className={`loop-status loop-${current.status}`}>{current.status}</span></div>
         <div className="cinematic-data-line"><i /><b /><em /></div>

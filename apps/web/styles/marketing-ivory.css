@@ -305,11 +305,14 @@
   background:var(--surface);color:var(--on-surface)
 }
 .marketing-root :is(.home-hero,.public-hero,.pricing-hero,.public-section,.section-shell,.site-footer,.parent-company,.final-cta-section,.product-cta){background:var(--surface);color:var(--on-surface);border-color:var(--border)}
-.marketing-root :is(h1,h2,h3,h4,p,small,label,li,summary,a,button,strong,span){color:var(--on-surface)}
-.marketing-root :is(.eyebrow,.example-label,code,b,.is-active>span,.contact-identity>span){color:var(--accent)}
+.marketing-root :is(h1,h2,h3,h4,p,small,label,li,summary){color:var(--on-surface)}
+.marketing-root :is(code,b,.is-active>span){color:var(--accent)}
 .marketing-root .site-nav-shell,.marketing-root .site-nav-shell.is-scrolled{background:color-mix(in srgb,var(--surface) 88%,transparent);border-bottom-color:var(--border)}
 .marketing-root .button-primary{background:var(--surface-inverse);color:var(--on-surface-inverse)}
 .marketing-root .button-secondary{background:var(--surface);border-color:var(--border);color:var(--on-surface)}
+.marketing-root .button :is(span,b,strong){color:inherit}
+.marketing-root :is(.eyebrow,.contact-identity>span){color:var(--on-surface)}
+.marketing-root .eyebrow>i{background:var(--accent);color:var(--accent)}
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.marketing-root .site-nav-shell{background:var(--surface)}}
 
 /* The navigation is a permanent white instrument strip in both polarities. */
@@ -328,5 +331,26 @@
 .technical-sphere-stage{background-color:#000;isolation:isolate;overflow:hidden;position:relative}
 .technical-sphere-stage::before{background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:42px 42px;content:"";inset:-20%;mask-image:radial-gradient(ellipse at 72% 48%,#000 0,transparent 63%);opacity:.42;pointer-events:none;position:absolute;transform:perspective(620px) rotateX(63deg) rotateZ(-9deg);z-index:0}
 .technical-sphere-stage>.project-state-sphere{position:relative;z-index:1}
-@media(max-width:900px){.marketing-root .site-nav-links{background:#fff;border-color:rgba(0,0,0,.16)}.marketing-root .mobile-menu-button{background:#fff;border-color:rgba(0,0,0,.2)}.marketing-root .mobile-menu-button i{background:#0a0a0a}}
+.renaissance-hero{background:var(--surface);isolation:isolate;min-height:min(920px,100svh);overflow:hidden;position:relative}
+.renaissance-hero::before{background:linear-gradient(180deg,var(--surface) 0%,transparent 16%,transparent 76%,var(--surface) 100%),linear-gradient(90deg,var(--surface) 0%,transparent 20%,transparent 80%,var(--surface) 100%);content:"";inset:0;pointer-events:none;position:absolute;z-index:1}
+.renaissance-hero-art{inset:66px 0 0;position:absolute;transform-origin:center center;z-index:0}
+.renaissance-hero-art img{filter:grayscale(.34) contrast(.84) saturate(.5) sepia(.16);object-fit:cover;object-position:center}
+[data-theme="dark"] .renaissance-hero-art{mix-blend-mode:screen;opacity:.2!important}
+[data-theme="dark"] .renaissance-hero-art img{filter:grayscale(.8) contrast(.68) brightness(.62) sepia(.18)}
+.renaissance-hero .hero-copy{max-width:1240px;position:relative;z-index:3}
+.renaissance-hero h1{display:grid;font-size:clamp(72px,7.5vw,122px);font-weight:720;gap:.05em;letter-spacing:-.075em;line-height:.86;margin:0;text-wrap:balance}
+.renaissance-hero h1 span,.renaissance-hero h1 strong{color:var(--on-surface);font:inherit}
+.renaissance-hero h1 span{font-size:.72em;letter-spacing:-.065em}
+.renaissance-hero h1 strong{max-width:1200px}
+.renaissance-hero .hero-support{color:var(--on-surface);font-size:clamp(20px,1.7vw,26px);font-weight:650;margin:34px 0 0}
+.renaissance-hero .hero-actions{margin-top:32px}
+.renaissance-construction{inset:90px max(22px,4vw) 40px;opacity:.22;pointer-events:none;position:absolute;z-index:2}
+.renaissance-construction::before,.renaissance-construction::after,.renaissance-construction i{border:1px solid var(--on-surface);border-radius:50%;content:"";height:min(44vw,590px);position:absolute;top:50%;transform:translateY(-50%);width:min(44vw,590px)}
+.renaissance-construction::before{left:-18vw}.renaissance-construction::after{right:-18vw}.renaissance-construction i:first-child{border-radius:0;border-width:1px 0 0;left:11%;right:11%;top:50%;width:auto}.renaissance-construction i:nth-child(2){border-radius:0;border-width:0 0 0 1px;height:auto;inset:9% auto 9% 50%;width:1px}.renaissance-construction span{background:var(--accent);height:7px;left:calc(50% - 3px);position:absolute;top:calc(50% - 3px);transform:rotate(45deg);width:7px}
+.hero-state-gap{align-items:center;bottom:26px;color:var(--on-surface);display:flex;font:700 10px/1 var(--font-mono);gap:13px;justify-content:center;letter-spacing:.1em;opacity:.86;position:absolute;z-index:3}.hero-state-gap i{background:var(--accent);height:1px;width:34px}
+.marketing-root .site-nav-actions>.command-trigger{background:#fff;border:1px solid rgba(0,0,0,.2);color:#0a0a0a;min-height:36px;padding-inline:10px}
+.marketing-root .site-nav-actions>.command-trigger>span{display:none}.marketing-root .site-nav-actions>.command-trigger kbd{background:#0a0a0a;border-color:#0a0a0a;color:#fff}
+.cinematic-topbar>button{background:transparent;border:1px solid rgba(205,180,122,.34);color:#fff;cursor:pointer;font:700 9px/1 var(--font-mono);letter-spacing:.08em;min-height:28px;padding:0 9px}
+@media(max-width:900px){.marketing-root .site-nav-links{background:#fff;border-color:rgba(0,0,0,.16);visibility:hidden}.marketing-root .site-nav-links.is-open{visibility:visible}.marketing-root .mobile-menu-button{background:#fff;border-color:rgba(0,0,0,.2)}.marketing-root .mobile-menu-button i{background:#0a0a0a}.marketing-root .site-nav-actions>.command-trigger{display:none}}
+@media(max-width:700px){.renaissance-hero{min-height:820px;padding:132px 18px 90px}.renaissance-hero-art{inset:70px -68% 0}.renaissance-hero-art img{object-position:center}.renaissance-hero h1{font-size:clamp(52px,14vw,72px);gap:.15em;line-height:.91}.renaissance-hero h1 span{font-size:.64em;line-height:1}.renaissance-hero .hero-support{font-size:19px}.renaissance-construction{inset:80px 12px 32px}.hero-state-gap{bottom:18px;font-size:8px;gap:8px}.hero-state-gap i{width:20px}}
 @media(prefers-reduced-motion:reduce){.technical-sphere-stage::before{transform:perspective(620px) rotateX(63deg) rotateZ(-9deg)}}

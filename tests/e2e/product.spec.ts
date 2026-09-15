@@ -19,7 +19,7 @@ test("every public product route renders without horizontal overflow", async ({ 
 test("the public story, product interaction, sign-in boundary, and protected redirect work", async ({ page }) => {
   test.setTimeout(90_000);
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Many agents.*One verified project state/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Your agents can read the code.*HARIKOS tells them what.*actually true/i })).toBeVisible();
   await page.getByRole("link", { name: /Watch the product walkthrough/i }).click();
   await expect(page.locator("#product-demo video")).toBeVisible();
   await page.goto("/product");
@@ -43,6 +43,28 @@ test("unknown routes use the designed 404 state", async ({ page }) => {
   const response = await page.goto("/route-that-does-not-exist");
   expect(response?.status()).toBe(404);
   await expect(page.getByRole("heading", { name: /could not resolve this route/i })).toBeVisible();
+});
+
+test("shared navigation utilities respect route, keyboard, and 3D boundaries", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".scroll-progress")).toBeAttached();
+  await page.evaluate(() => window.scrollTo(0, 24));
+  await expect(page.locator(".site-nav-shell")).toHaveClass(/is-scrolled/u);
+  await page.keyboard.press("Control+k");
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Command palette" }).getByText("Truth", { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Command palette" })).toHaveCount(0);
+
+  for (const route of ["/", "/product", "/login"] as const) {
+    await page.goto(route);
+    await expect(page.locator('[data-object="canonical-project-state-sphere"]')).toHaveCount(1);
+  }
+  await page.goto("/login");
+  await expect(page.locator(".scroll-progress")).toHaveCount(0);
+  await page.goto("/app/dashboard");
+  await page.waitForURL("**/login");
+  await expect(page.locator(".scroll-progress")).toHaveCount(0);
 });
 
 test("semantic surfaces keep representative text at WCAG AA contrast in both themes", async ({ page }) => {
@@ -73,6 +95,12 @@ test("semantic surfaces keep representative text at WCAG AA contrast in both the
       expect(await contrast(body), `${theme} ${route} body text`).toBeGreaterThanOrEqual(4.5);
     }
     await page.goto("/");
+    expect(await contrast(".renaissance-hero .button-primary span"), `${theme} primary button label`).toBeGreaterThanOrEqual(4.5);
+    expect(await contrast(".renaissance-hero .button-secondary span"), `${theme} secondary button label`).toBeGreaterThanOrEqual(4.5);
+    expect(await contrast(".site-nav-links > a"), `${theme} navigation link`).toBeGreaterThanOrEqual(4.5);
+    await page.keyboard.press("Control+k");
+    expect(await contrast(".command-palette a[data-command] strong"), `${theme} command dialog text`).toBeGreaterThanOrEqual(4.5);
+    await page.keyboard.press("Escape");
     await page.evaluate((value) => {
       localStorage.setItem("harikos-theme", value);
       document.documentElement.dataset.theme = value;
